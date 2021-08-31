@@ -1,4 +1,5 @@
 ﻿CREATE TABLE [dbo].[Curator]
 (
-	[Id] INT NOT NULL IDENTITY (1, 1) PRIMARY KEY
+	[Id] INT NOT NULL IDENTITY (1, 1) PRIMARY KEY, 
+    [Surname] NVARCHAR(50) NULL
 )
