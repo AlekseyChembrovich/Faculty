@@ -1,5 +1,5 @@
 ﻿GO
-USE [Faculty.Database]
+USE [PublishTask]
 
 GO
 INSERT INTO [dbo].[Student] ([dbo].[Student].[Surname], [dbo].[Student].[Name], [dbo].[Student].[Doublename])
