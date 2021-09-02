@@ -66,8 +66,6 @@
     <Build Include="dbo\Tables\Curator.sql" />
     <Build Include="dbo\Tables\Group.sql" />
     <Build Include="dbo\Tables\Faculty.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="dbo\Scripts\Deploy.sql" />
+    <Build Include="dbo\Scripts\Deploy.sql" />
   </ItemGroup>
 </Project>
