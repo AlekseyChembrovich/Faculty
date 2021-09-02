@@ -1,13 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Data.SqlClient;
+using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
-using Microsoft.Data.SqlClient;
 
 namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
 {
+    /// <summary>
+    /// Implementation of the repository pattern for the Curator data model.
+    /// </summary>
     public class RepositoryCurator : BaseRepositoryAdo<Curator>
     {
+        /// <summary>
+        /// Connection context initialization constructor.
+        /// </summary>
+        /// <param name="context">Database connection.</param>
         public RepositoryCurator(DatabaseContextAdo context) : base(context) { }
 
+        /// <summary>
+        /// Method for setting the add request parameters.
+        /// </summary>
+        /// <param name="entity">Entity object.</param>
+        /// <param name="command">Object SqlCommand.</param>
         protected override void SetParametersInsertCommand(Curator entity, SqlCommand command)
         {
             command.CommandText = "INSERT INTO dbo.Curators (dbo.Curators.Surname, dbo.Curators.Name, dbo.Curators.Doublename, dbo.Curators.Phone) " +
@@ -18,6 +30,11 @@ namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
             command.Parameters.AddWithValue("@phone", entity.Phone);
         }
 
+        /// <summary>
+        /// Method for setting change request parameters.
+        /// </summary>
+        /// <param name="entity">Entity object.</param>
+        /// <param name="command">Object SqlCommand.</param>
         protected override void SetParametersUpdateCommand(Curator entity, SqlCommand command)
         {
             command.CommandText = "UPDATE dbo.Curators SET dbo.Curators.Surname = @surname, dbo.Curators.Name = @name, dbo.Curators.Doublename = @doublename," +
@@ -29,12 +46,22 @@ namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
             command.Parameters.AddWithValue("@id", entity.Id);
         }
 
+        /// <summary>
+        /// Method for setting delete request parameters.
+        /// </summary>
+        /// <param name="entity">Entity object.</param>
+        /// <param name="command">Object SqlCommand.</param>
         protected override void SetParametersDeleteCommand(Curator entity, SqlCommand command)
         {
             command.CommandText = "DELETE FROM dbo.Curators WHERE dbo.Curators.Id = @id;";
             command.Parameters.AddWithValue("@id", entity.Id);
         }
 
+        /// <summary>
+        /// Method for setting query parameters for fetching all data.
+        /// </summary>
+        /// <param name="command">Object SqlCommand.</param>
+        /// <returns>List of Entity objects.</returns>
         protected override List<Curator> SetParametersSelectCommand(SqlCommand command)
         {
             command.CommandText = "SELECT * FROM dbo.Curators;";
