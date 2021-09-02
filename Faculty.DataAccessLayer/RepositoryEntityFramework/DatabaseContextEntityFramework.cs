@@ -8,10 +8,29 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
     /// </summary>
     public class DatabaseContextEntityFramework : DbContext
     {
+        /// <summary>
+        /// Set of objects entity Curator.
+        /// </summary>
         public virtual DbSet<Curator> Curators { get; set; }
+
+        /// <summary>
+        /// Set of objects entity Faculty.
+        /// </summary>
         public virtual DbSet<Models.Faculty> Faculties { get; set; }
+
+        /// <summary>
+        /// Set of objects entity Group.
+        /// </summary>
         public virtual DbSet<Group> Groups { get; set; }
+
+        /// <summary>
+        /// Set of objects entity Specialization.
+        /// </summary>
         public virtual DbSet<Specialization> Specializations { get; set; }
+
+        /// <summary>
+        /// Set of objects entity Student.
+        /// </summary>
         public virtual DbSet<Student> Students { get; set; }
 
         /// <summary>
