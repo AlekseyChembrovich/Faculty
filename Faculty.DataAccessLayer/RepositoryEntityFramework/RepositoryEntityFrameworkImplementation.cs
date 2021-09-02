@@ -32,7 +32,4 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
 
         public IEnumerable<T> GetAll() => _context.Set<T>().ToList();
     }
-    {
-        
-    }
 }
