@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 using Faculty.DataAccessLayer;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryAdo;
-using Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
-using NUnit.Framework;
+using Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels;
 
 namespace Faculty.IntegrationTests
 {
@@ -162,6 +163,62 @@ namespace Faculty.IntegrationTests
             repository.Delete(curatorUpdated);
             // Assert
             Assert.IsTrue(curatorUpdated.Doublename == "Сергеевна");
+        }
+
+
+
+
+
+
+
+        [Test]
+        public void CanSelectAllAdoImplementation()
+        {
+            // Arrange
+            IRepository<Specialization> repository = new RepositorySpecialization(_contextAdo);
+            var listModel = new List<Specialization>
+            {
+                new Specialization { Name = "Техник-прогрммист" },
+                new Specialization { Name = "Бухгалтер" },
+                new Specialization { Name = "Экономист" }
+            };
+            // Act
+            foreach (var model in listModel)
+            {
+                repository.Insert(model);
+            }
+            var listResult = repository.GetAll().ToList();
+            foreach (var model in listResult)
+            {
+                repository.Delete(model);
+            }
+            // Assert
+            Assert.IsTrue(listResult.Count == 3);
+        }
+
+        [Test]
+        public void CanSelectAllEntityFrameworkImplementation()
+        {
+            // Arrange
+            IRepository<Specialization> repository = new RepositoryEntityFrameworkImplementation<Specialization>(_contextEntity);
+            var listModel = new List<Specialization>
+            {
+                new Specialization { Name = "Техник-прогрммист" },
+                new Specialization { Name = "Бухгалтер" },
+                new Specialization { Name = "Экономист" }
+            };
+            // Act
+            foreach (var model in listModel)
+            {
+                repository.Insert(model);
+            }
+            var listResult = repository.GetAll().ToList();
+            foreach (var model in listResult)
+            {
+                repository.Delete(model);
+            }
+            // Assert
+            Assert.IsTrue(listResult.Count == 3);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         public virtual DbSet<Curator> Curators { get; set; }
         public virtual DbSet<Models.Faculty> Faculties { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
-        public virtual DbSet<Specialization> Specialozations { get; set; }
+        public virtual DbSet<Specialization> Specializations { get; set; }
         public virtual DbSet<Student> Students { get; set; }
 
         /// <summary>
