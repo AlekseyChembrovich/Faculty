@@ -1,8 +1,11 @@
-﻿using Faculty.DataAccessLayer.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Faculty.DataAccessLayer.Models;
 
 namespace Faculty.DataAccessLayer.RepositoryEntityFramework
 {
+    /// <summary>
+    /// Context database.
+    /// </summary>
     public class DatabaseContextEntityFramework : DbContext
     {
         public virtual DbSet<Curator> Curators { get; set; }
@@ -11,6 +14,10 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         public virtual DbSet<Specialization> Specialozations { get; set; }
         public virtual DbSet<Student> Students { get; set; }
 
+        /// <summary>
+        /// Method for connection at a database.
+        /// </summary>
+        /// <param name="optionsBuilder"></param>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

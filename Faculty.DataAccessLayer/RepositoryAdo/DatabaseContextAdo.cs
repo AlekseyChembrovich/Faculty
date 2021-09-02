@@ -4,11 +4,23 @@ using Microsoft.Data.SqlClient;
 
 namespace Faculty.DataAccessLayer.RepositoryAdo
 {
+    /// <summary>
+    /// Database connection context.
+    /// </summary>
     public class DatabaseContextAdo : IDisposable
     {
+        /// <summary>
+        /// Database connection.
+        /// </summary>
         private SqlConnection _sqlConnection;
+        /// <summary>
+        /// Database connection string.
+        /// </summary>
         private readonly string _connectionString;
 
+        /// <summary>
+        /// Property to return the connection to the database.
+        /// </summary>
         public SqlConnection SqlConnection
         {
             get
@@ -22,11 +34,18 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
             }
         }
 
+        /// <summary>
+        /// Constructor for setting the connection string.
+        /// </summary>
+        /// <param name="connectionString"></param>
         public DatabaseContextAdo(string connectionString)
         {
             _connectionString = connectionString;
         }
 
+        /// <summary>
+        /// Method for freeing up resources.
+        /// </summary>
         public void Dispose()
         {
             if (_sqlConnection is { State: ConnectionState.Open })
