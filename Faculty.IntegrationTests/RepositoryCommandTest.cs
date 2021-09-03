@@ -1,7 +1,8 @@
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using System.Configuration;
 using Faculty.DataAccessLayer;
+using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryAdo;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
@@ -9,7 +10,7 @@ using Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels;
 
 namespace Faculty.IntegrationTests
 {
-    public class Tests
+    public class RepositoryCommandTest
     {
         private DatabaseContextAdo _contextAdo;
         private DatabaseContextEntityFramework _contextEntity;
@@ -17,23 +18,17 @@ namespace Faculty.IntegrationTests
         [SetUp]
         public void Setup()
         {
-            _contextAdo =
-                new DatabaseContextAdo(
-                    @"Data Source=DESKTOP-ALEKSEY\SQLEXPRESS;Initial Catalog=MbTask;Integrated Security=True");
+            var connectionString = ConfigurationManager.ConnectionStrings["ConnectionStr"]?.ConnectionString;
+            _contextAdo = new DatabaseContextAdo(connectionString);
             _contextEntity = new DatabaseContextEntityFramework();
         }
 
         [Test]
-        public void CanInsertAdoImplementation()
+        public void InsertMethod_WhenInsertStudentEntityRepositotyAdo_ThenStudentEntityInserted()
         {
             // Arrange
             IRepository<Student> repository = new RepositoryStudent(_contextAdo);
-            var student = new Student
-            {
-                Surname = "Хороводоведов",
-                Name = "Архыз",
-                Doublename = "Иванович"
-            };
+            var student = new Student { Surname = "Хороводоведов", Name = "Архыз", Doublename = "Иванович" };
             // Act
             repository.Insert(student);
             var studentInserted = repository.GetAll().FirstOrDefault(st => st.Surname == student.Surname &&
@@ -45,17 +40,11 @@ namespace Faculty.IntegrationTests
         }
 
         [Test]
-        public void CanInsertEntityFrameworkImplementation()
+        public void InsertMethod_WhenInsertCuratorEntityRepositotyEntityFramework_ThenCuratorEntityInserted()
         {
             // Arrange
             IRepository<Curator> repository = new RepositoryEntityFrameworkImplementation<Curator>(_contextEntity);
-            var curator = new Curator()
-            {
-                Surname = "Хороводоведов",
-                Name = "Архыз",
-                Doublename = "Иванович",
-                Phone = "+375-33-557-06-67"
-            };
+            var curator = new Curator { Surname = "Хороводоведов", Name = "Архыз", Doublename = "Иванович", Phone = "+375-33-557-06-67" };
             // Act
             repository.Insert(curator);
             var curatorInserted = repository.GetAll().FirstOrDefault(c => c.Surname == curator.Surname &&
@@ -68,40 +57,28 @@ namespace Faculty.IntegrationTests
         }
 
         [Test]
-        public void CanDeleteAdoImplementation()
+        public void DeleteMethod_WhenDeleteStudentEntityRepositotyAdo_ThenStudentEntityDeleted()
         {
             // Arrange
             IRepository<Student> repository = new RepositoryStudent(_contextAdo);
-            var student = new Student
-            {
-                Surname = "Иванчук",
-                Name = "Ирина",
-                Doublename = "Александровна"
-            };
+            var student = new Student { Surname = "Иванчук", Name = "Ирина", Doublename = "Александровна" };
             repository.Insert(student);
             var studentInserted = repository.GetAll().FirstOrDefault(st => st.Surname == student.Surname &&
                                                                            st.Name == student.Name &&
                                                                            st.Doublename == student.Doublename);
             // Act
             repository.Delete(studentInserted);
-            var studentDeleted = repository.GetAll().FirstOrDefault(st => studentInserted != null &&
-                                                                          st.Id == studentInserted.Id);
+            var studentDeleted = repository.GetAll().FirstOrDefault(st => studentInserted != null && st.Id == studentInserted.Id);
             // Assert
             Assert.IsNull(studentDeleted);
         }
 
         [Test]
-        public void CanDeleteEntityFrameworkImplementation()
+        public void DeleteMethod_WhenDeleteCuratorEntityRepositotyEntityFramework_ThenCuratorEntityDeleted()
         {
             // Arrange
             IRepository<Curator> repository = new RepositoryEntityFrameworkImplementation<Curator>(_contextEntity);
-            var curator = new Curator()
-            {
-                Surname = "Иванчук",
-                Name = "Ирина",
-                Doublename = "Александровна",
-                Phone = "+375-33-557-06-67"
-            };
+            var curator = new Curator() { Surname = "Иванчук", Name = "Ирина", Doublename = "Александровна", Phone = "+375-33-557-06-67" };
             repository.Insert(curator);
             var curatorInserted = repository.GetAll().FirstOrDefault(c => c.Surname == curator.Surname &&
                                                                            c.Name == curator.Name &&
@@ -109,23 +86,17 @@ namespace Faculty.IntegrationTests
                                                                            c.Phone == curator.Phone);
             // Act
             repository.Delete(curator);
-            var curatorDeleted = repository.GetAll().FirstOrDefault(c => curatorInserted != null &&
-                                                                         c.Id == curatorInserted.Id);
+            var curatorDeleted = repository.GetAll().FirstOrDefault(c => curatorInserted != null && c.Id == curatorInserted.Id);
             // Assert
             Assert.IsNull(curatorDeleted);
         }
 
         [Test]
-        public void CanUpdateAdoImplementation()
+        public void UpdateMethod_WhenUpdateStudentEntityRepositotyAdo_ThenStudentEntityUpdated()
         {
             // Arrange
             IRepository<Student> repository = new RepositoryStudent(_contextAdo);
-            var student = new Student
-            {
-                Surname = "Малышева",
-                Name = "Зинаида",
-                Doublename = "Петровна"
-            };
+            var student = new Student { Surname = "Малышева", Name = "Зинаида", Doublename = "Петровна" };
             // Act
             repository.Insert(student);
             var studentInserted = repository.GetAll().FirstOrDefault(st => st.Surname == student.Surname &&
@@ -140,17 +111,11 @@ namespace Faculty.IntegrationTests
         }
 
         [Test]
-        public void CanUpdateEntityFrameworkImplementation()
+        public void UpdateMethod_WhenUpdateCuratorEntityRepositotyEntityFramework_ThenCuratorEntityUpdated()
         {
             // Arrange
             IRepository<Curator> repository = new RepositoryEntityFrameworkImplementation<Curator>(_contextEntity);
-            var curator = new Curator()
-            {
-                Surname = "Малышева",
-                Name = "Зинаида",
-                Doublename = "Петровна",
-                Phone = "+375-33-557-06-67"
-            };
+            var curator = new Curator() { Surname = "Малышева", Name = "Зинаида", Doublename = "Петровна", Phone = "+375-33-557-06-67" };
             // Act
             repository.Insert(curator);
             var curatorInserted = repository.GetAll().FirstOrDefault(c => c.Surname == curator.Surname &&
@@ -165,58 +130,34 @@ namespace Faculty.IntegrationTests
             Assert.IsTrue(curatorUpdated.Doublename == "Сергеевна");
         }
 
-
-
-
-
-
-
         [Test]
-        public void CanSelectAllAdoImplementation()
+        public void GetAllMethod_WhenSelectSpecializationsEntitiesRepositotyAdo_ThenSpecializationsEntitiesSelected()
         {
             // Arrange
             IRepository<Specialization> repository = new RepositorySpecialization(_contextAdo);
-            var listModel = new List<Specialization>
-            {
-                new Specialization { Name = "Техник-прогрммист" },
-                new Specialization { Name = "Бухгалтер" },
-                new Specialization { Name = "Экономист" }
-            };
+            var listModel = new List<Specialization> { new Specialization { Name = "Техник-прогрммист" }, new Specialization { Name = "Бухгалтер" }, new Specialization { Name = "Экономист" } };
             // Act
             foreach (var model in listModel)
-            {
                 repository.Insert(model);
-            }
             var listResult = repository.GetAll().ToList();
             foreach (var model in listResult)
-            {
                 repository.Delete(model);
-            }
             // Assert
             Assert.IsTrue(listResult.Count == 3);
         }
 
         [Test]
-        public void CanSelectAllEntityFrameworkImplementation()
+        public void GetAllMethod_WhenSelectSpecializationsEntitiesRepositotyEntityFramework_ThenSpecializationsEntitiesSelected()
         {
             // Arrange
             IRepository<Specialization> repository = new RepositoryEntityFrameworkImplementation<Specialization>(_contextEntity);
-            var listModel = new List<Specialization>
-            {
-                new Specialization { Name = "Техник-прогрммист" },
-                new Specialization { Name = "Бухгалтер" },
-                new Specialization { Name = "Экономист" }
-            };
+            var listModel = new List<Specialization> { new Specialization { Name = "Техник-прогрммист" }, new Specialization { Name = "Бухгалтер" }, new Specialization { Name = "Экономист" } };
             // Act
             foreach (var model in listModel)
-            {
                 repository.Insert(model);
-            }
             var listResult = repository.GetAll().ToList();
             foreach (var model in listResult)
-            {
                 repository.Delete(model);
-            }
             // Assert
             Assert.IsTrue(listResult.Count == 3);
         }
