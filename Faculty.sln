@@ -11,7 +11,7 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Faculty.Database", "Faculty
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faculty.DataAccessLayer", "Faculty.DataAccessLayer\Faculty.DataAccessLayer.csproj", "{2C7EB79F-6EB1-46D9-B8C2-DBD2BF243F9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faculty.IntegrationTests", "Faculty.IntegrationTests\Faculty.IntegrationTests.csproj", "{140AE9D2-761D-4577-8A18-FAF008E509E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faculty.IntegrationTests", "Faculty.IntegrationTests\Faculty.IntegrationTests.csproj", "{140AE9D2-761D-4577-8A18-FAF008E509E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

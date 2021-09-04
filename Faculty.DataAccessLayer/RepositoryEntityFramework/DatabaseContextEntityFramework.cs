@@ -44,5 +44,16 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
                 optionsBuilder.UseSqlServer("Data Source=DESKTOP-ALEKSEY\\SQLEXPRESS;Initial Catalog=MbTask;Integrated Security=True");
             }
         }
+
+        /// <summary>
+        /// Constructor for init database context options.
+        /// </summary>
+        /// <param name="options"></param>
+        public DatabaseContextEntityFramework(DbContextOptions options) : base(options) { }
+
+        /// <summary>
+        /// Empty constructor
+        /// </summary>
+        public DatabaseContextEntityFramework() { }
     }
 }
