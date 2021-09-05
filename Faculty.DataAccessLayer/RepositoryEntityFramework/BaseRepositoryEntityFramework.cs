@@ -8,7 +8,7 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
     /// Implementing the repository pattern (Entity Framework).
     /// </summary>
     /// <typeparam name="T">Entity model.</typeparam>
-    public class RepositoryEntityFrameworkImplementation<T> : IRepository<T> where T : class, new()
+    public class BaseRepositoryEntityFramework<T> : IRepository<T> where T : class, new()
     {
         /// <summary>
         /// Private field to store the database context for executing operations.
@@ -19,7 +19,7 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         /// Constructor to initialize the database context.
         /// </summary>
         /// <param name="context">Database context.</param>
-        public RepositoryEntityFrameworkImplementation(DbContext context)
+        public BaseRepositoryEntityFramework(DbContext context)
         {
             _context = context;
         }
@@ -28,35 +28,56 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         /// Method for adding data to the database (Entity Framework implementation). 
         /// </summary>
         /// <param name="entity">Entity model.</param>
-        public void Insert(T entity)
+        /// <returns>Count added models.</returns>
+        public int Insert(T entity)
         {
-            if (entity is null) return;
+            if (entity is null) return 0;
             _context.Set<T>().Add(entity);
-            _context.SaveChanges();
+            try
+            {
+                var count = _context.SaveChanges();
+                return count;
+            }
+            catch (DbUpdateConcurrencyException) { }
+            return 0;
         }
 
         /// <summary>
         /// Method for changing data to the database (Entity Framework implementation).
         /// </summary>
         /// <param name="entity">Entity model.</param>
-        public void Update(T entity)
+        /// <returns>Count changed models.</returns>
+        public int Update(T entity)
         {
-            if (entity is null) return;
+            if (entity is null) return 0;
             _context.Set<T>().Attach(entity);
             _context.Set<T>().Update(entity);
-            _context.SaveChanges();
+            try
+            {
+                var count = _context.SaveChanges();
+                return count;
+            }
+            catch (DbUpdateConcurrencyException) { }
+            return 0;
         }
 
         /// <summary>
         /// Method for removing data to the database (Entity Framework implementation).
         /// </summary>
         /// <param name="entity">Entity model.</param>
-        public void Delete(T entity)
+        /// <returns>Count deleted models.</returns>
+        public int Delete(T entity)
         {
-            if (entity is null) return;
+            if (entity is null) return 0;
             _context.Set<T>().Attach(entity);
             _context.Set<T>().Remove(entity);
-            _context.SaveChanges();
+            try
+            {
+                var count = _context.SaveChanges();
+                return count;
+            }
+            catch (DbUpdateConcurrencyException) { }
+            return 0;
         }
 
         /// <summary>
@@ -66,6 +87,16 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         public IEnumerable<T> GetAll() 
         {
             return _context.Set<T>().ToList();
+        }
+
+        /// <summary>
+        /// Method for selecting data from a database (Entity Framework implementation).
+        /// </summary>
+        /// <param name="id">Unique identificator model.</param>
+        /// <returns>Entity object.</returns>
+        public T GetById(int id)
+        {
+            return _context.Set<T>().Find(id);
         }
     }
 }

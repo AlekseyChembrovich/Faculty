@@ -1,19 +1,20 @@
-﻿using Microsoft.Data.SqlClient;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
+using Faculty.DataAccessLayer.RepositoryAdo;
+using Microsoft.Data.SqlClient;
 
-namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
+namespace Faculty.DataAccessLayer.RepositoryAdoModel
 {
     /// <summary>
     /// Implementation of the repository pattern for the Student data model.
     /// </summary>
-    public class RepositoryStudent : BaseRepositoryAdo<Student>
+    public class RepositoryAdoStudent : BaseRepositoryAdo<Student>
     {
         /// <summary>
         /// Connection context initialization constructor.
         /// </summary>
         /// <param name="context">Database connection.</param>
-        public RepositoryStudent(DatabaseContextAdo context) : base(context) { }
+        public RepositoryAdoStudent(DatabaseContextAdo context) : base(context) { }
 
         /// <summary>
         /// Method for setting the add request parameters.
@@ -60,7 +61,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
         /// </summary>
         /// <param name="command">Object SqlCommand.</param>
         /// <returns>List of Entity objects.</returns>
-        protected override List<Student> SetParametersSelectCommand(SqlCommand command)
+        protected override List<Student> SetParametersSelectCommandModels(SqlCommand command)
         {
             command.CommandText = "SELECT * FROM dbo.Students;";
             var sqlDataReader = command.ExecuteReader();
@@ -76,6 +77,30 @@ namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
             }
             sqlDataReader.Close();
             return students;
+        }
+
+        /// <summary>
+        /// Method for selecting data from a database.
+        /// </summary>
+        /// <param name="id">Unique identificator model.</param>
+        /// <returns>Entity object.</returns>
+        protected override Student SetParametersSelectCommandModel(int id, SqlCommand command)
+        {
+            command.CommandText = "SELECT * FROM dbo.Students WHERE dbo.Students.Id = @id;";
+            command.Parameters.AddWithValue("@id", id);
+            var sqlDataReader = command.ExecuteReader();
+            Student student = null;
+            while (sqlDataReader.Read())
+            {
+                student = new Student();
+                int.TryParse(sqlDataReader.GetValue(0)?.ToString() ?? string.Empty, out var modelId);
+                var surname = sqlDataReader.GetValue(1)?.ToString() ?? string.Empty;
+                var name = sqlDataReader.GetValue(2)?.ToString() ?? string.Empty;
+                var doublename = sqlDataReader.GetValue(3)?.ToString() ?? string.Empty;
+                student = new Student { Id = modelId, Surname = surname, Name = name, Doublename = doublename };
+            }
+            sqlDataReader.Close();
+            return student;
         }
     }
 }

@@ -52,7 +52,7 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         public DatabaseContextEntityFramework(DbContextOptions options) : base(options) { }
 
         /// <summary>
-        /// Empty constructor
+        /// Empty constructor.
         /// </summary>
         public DatabaseContextEntityFramework() { }
     }

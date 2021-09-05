@@ -7,9 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Microsoft.Extensions.Configuration;
 using Faculty.DataAccessLayer.RepositoryAdo;
-using Microsoft.Extensions.Configuration.Json;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
-using Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels;
+using Faculty.DataAccessLayer.RepositoryAdoModel;
 
 namespace Faculty.IntegrationTests
 {
@@ -22,136 +21,143 @@ namespace Faculty.IntegrationTests
         [SetUp]
         public void Setup()
         {
-            IConfiguration configuration = new ConfigurationBuilder()
-                .AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json"))
-                .Build();
+            var configuration = new ConfigurationBuilder().AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json")).Build();
             var connectionString = configuration["ConnectionStrings:DefaultConnection"];
             _contextAdo = new DatabaseContextAdo(connectionString);
+
             var options = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(databaseName: "Test").Options;
             _contextEntity = new DatabaseContextEntityFramework(options);
         }
 
-        [Test]
-        public void InsertMethod_WhenInsertStudentEntityRepositotyAdo_ThenStudentEntityInserted()
+        [TestCase("Test1", "Test1", "Test1")]
+        public void InsertMethod_WhenInsertStudentEntityRepositoryAdo_ThenStudentEntityInserted(string surname, string name, string doublename)
         {
             // Arrange
-            IRepository<Student> repository = new RepositoryStudent(_contextAdo);
-            var student = new Student { Surname = "Хороводоведов", Name = "Архыз", Doublename = "Иванович" };
+            IRepository<Student> repository = new RepositoryAdoStudent(_contextAdo);
+            var student = new Student { Surname = surname, Name = name, Doublename = doublename };
             // Act
+            var countAdded = repository.Insert(student);
+            // Assert
+            Assert.IsTrue(countAdded > 0);
+        }
+
+        [TestCase(1, "Test1", "Test1", "Test1", "+375-33-557-06-67")]
+        public void InsertMethod_WhenInsertCuratorEntityRepositoryEntityFramework_ThenCuratorEntityInserted(int id, string surname, string name, string doublename, string phone)
+        {
+            // Arrange
+            IRepository<Curator> repository = new BaseRepositoryEntityFramework<Curator>(_contextEntity);
+            var curator = new Curator { Id = id, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
+            // Act
+            var countAdded = repository.Insert(curator);
+            // Assert
+            Assert.IsNotNull(countAdded > 0);
+        }
+
+        [TestCase("Test2", "Test2", "Test2")]
+        public void UpdateMethod_WhenUpdateStudentEntityRepositoryAdo_ThenStudentEntityUpdated(string surname, string name, string doublename)
+        {
+            // Arrange
+            const string newDoublename = "Test4";
+            IRepository<Student> repository = new RepositoryAdoStudent(_contextAdo);
+            var student = new Student { Surname = surname, Name = name, Doublename = doublename };
             repository.Insert(student);
-            var studentInserted = repository.GetAll().FirstOrDefault(st => st.Surname == student.Surname && st.Name == student.Name && st.Doublename == student.Doublename);
-            repository.Delete(studentInserted);
-            // Assert
-            Assert.IsNotNull(studentInserted);
-        }
-
-        [Test]
-        public void InsertMethod_WhenInsertCuratorEntityRepositotyEntityFramework_ThenCuratorEntityInserted()
-        {
-            // Arrange
-            IRepository<Curator> repository = new RepositoryEntityFrameworkImplementation<Curator>(_contextEntity);
-            var curator = new Curator { Surname = "Хороводоведов", Name = "Архыз", Doublename = "Иванович", Phone = "+375-33-557-06-67" };
+            var studentInserted = repository.GetAll().FirstOrDefault(st => st.Surname == surname && st.Name == name && st.Doublename == doublename);
             // Act
-            repository.Insert(curator);
-            var curatorInserted = repository.GetAll().FirstOrDefault(c => c.Surname == curator.Surname && c.Name == curator.Name && c.Doublename == curator.Doublename && c.Phone == curator.Phone);
+            studentInserted.Doublename = newDoublename;
+            var countChanged = repository.Update(studentInserted);
             // Assert
-            Assert.IsNotNull(curatorInserted);
+            Assert.IsTrue(countChanged > 0);
         }
 
-        [Test]
-        public void DeleteMethod_WhenDeleteStudentEntityRepositotyAdo_ThenStudentEntityDeleted()
+        [TestCase(2, "Test2", "Test2", "Test2", "+375-33-557-06-67")]
+        public void UpdateMethod_WhenUpdateCuratorEntityRepositoryEntityFramework_ThenCuratorEntityUpdated(int id, string surname, string name, string doublename, string phone)
         {
             // Arrange
-            IRepository<Student> repository = new RepositoryStudent(_contextAdo);
-            var student = new Student { Surname = "Иванчук", Name = "Ирина", Doublename = "Александровна" };
+            const string newDoublename = "Test4";
+            IRepository<Curator> repository = new BaseRepositoryEntityFramework<Curator>(_contextEntity);
+            var curator = new Curator { Id = id, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
+            repository.Insert(curator);
+            // Act
+            curator.Doublename = newDoublename;
+            var countChanged = repository.Update(curator);
+            // Assert
+            Assert.IsTrue(countChanged > 0);
+        }
+
+        [TestCase("Test3", "Test3", "Test3")]
+        public void DeleteMethod_WhenDeleteStudentEntityRepositoryAdo_ThenStudentEntityDeleted(string surname, string name, string doublename)
+        {
+            // Arrange
+            IRepository<Student> repository = new RepositoryAdoStudent(_contextAdo);
+            var student = new Student { Surname = surname, Name = name, Doublename = doublename };
             repository.Insert(student);
-            var studentInserted = repository.GetAll().FirstOrDefault(st => st.Surname == student.Surname && st.Name == student.Name && st.Doublename == student.Doublename);
+            var studentInserted = repository.GetAll().FirstOrDefault(st => st.Surname == surname && st.Name == name && st.Doublename == doublename);
             // Act
-            repository.Delete(studentInserted);
-            var studentDeleted = repository.GetAll().FirstOrDefault(st => studentInserted != null && st.Id == studentInserted.Id);
+            var countDeleted = repository.Delete(studentInserted);
             // Assert
-            Assert.IsNull(studentDeleted);
+            Assert.IsTrue(countDeleted > 0);
         }
 
-        [Test]
-        public void DeleteMethod_WhenDeleteCuratorEntityRepositotyEntityFramework_ThenCuratorEntityDeleted()
+        [TestCase(3, "Test3", "Test3", "Test3", "+375-33-557-06-67")]
+        public void DeleteMethod_WhenDeleteCuratorEntityRepositoryEntityFramework_ThenCuratorEntityDeleted(int id, string surname, string name, string doublename, string phone)
         {
             // Arrange
-            IRepository<Curator> repository = new RepositoryEntityFrameworkImplementation<Curator>(_contextEntity);
-            var curator = new Curator() { Surname = "Иванчук", Name = "Ирина", Doublename = "Александровна", Phone = "+375-33-557-06-67" };
+            IRepository<Curator> repository = new BaseRepositoryEntityFramework<Curator>(_contextEntity);
+            var curator = new Curator { Id = id, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
             repository.Insert(curator);
-            var curatorInserted = repository.GetAll().FirstOrDefault(c => c.Surname == curator.Surname && c.Name == curator.Name && c.Doublename == curator.Doublename && c.Phone == curator.Phone);
             // Act
-            repository.Delete(curatorInserted);
-            var curatorDeleted = repository.GetAll().FirstOrDefault(c => curatorInserted != null && c.Id == curatorInserted.Id);
+            var countDeleted = repository.Delete(curator);
             // Assert
-            Assert.IsNull(curatorDeleted);
+            Assert.IsTrue(countDeleted > 0);
         }
 
         [Test]
-        [TestCase("Сергеевна")]
-        public void UpdateMethod_WhenUpdateStudentEntityRepositotyAdo_ThenStudentEntityUpdated(string changedDoublename)
+        public void GetAllMethod_WhenSelectSpecializationsEntitiesRepositoryAdo_ThenSpecializationsEntitiesSelected()
         {
             // Arrange
-            IRepository<Student> repository = new RepositoryStudent(_contextAdo);
-            var student = new Student { Surname = "Малышева", Name = "Зинаида", Doublename = "Петровна" };
+            IRepository<Specialization> repository = new RepositoryAdoSpecialization(_contextAdo);
             // Act
-            repository.Insert(student);
-            var studentInserted = repository.GetAll().FirstOrDefault(st => st.Surname == student.Surname && st.Name == student.Name && st.Doublename == student.Doublename);
-            studentInserted.Doublename = changedDoublename;
-            repository.Update(studentInserted);
-            var studentUpdated = repository.GetAll().FirstOrDefault(st => st.Id == studentInserted.Id);
-            repository.Delete(studentUpdated);
-            // Assert
-            Assert.IsTrue(studentUpdated.Doublename == changedDoublename);
-        }
-
-        [Test]
-        [TestCase("Сергеевна")]
-        public void UpdateMethod_WhenUpdateCuratorEntityRepositotyEntityFramework_ThenCuratorEntityUpdated(string changedDoublename)
-        {
-            // Arrange
-            IRepository<Curator> repository = new RepositoryEntityFrameworkImplementation<Curator>(_contextEntity);
-            var curator = new Curator() { Id = 1, Surname = "Малышева", Name = "Зинаида", Doublename = "Петровна", Phone = "+375-33-557-06-67" };
-            // Act
-            repository.Insert(curator);
-            curator.Doublename = changedDoublename;
-            repository.Update(curator);
-            var curatorUpdated = repository.GetAll().FirstOrDefault(c => c.Id == curator.Id);
-            // Assert
-            Assert.IsTrue(curatorUpdated.Doublename == changedDoublename);
-        }
-
-        [Test]
-        [TestCase("Техник-прогрммист")]
-        public void GetAllMethod_WhenSelectSpecializationsEntitiesRepositotyAdo_ThenSpecializationsEntitiesSelected(string name)
-        {
-            // Arrange
-            const int countRecords = 1;
-            IRepository<Specialization> repository = new RepositorySpecialization(_contextAdo);
-            var specialization = new Specialization { Name = name };
-            // Act
-            repository.Insert(specialization);
-            var specializationInserted = repository.GetAll().FirstOrDefault(sp => sp.Name == specialization.Name);
             var listResult = repository.GetAll().ToList();
-            repository.Delete(specializationInserted);
             // Assert
-            Assert.IsTrue(listResult.Count == countRecords);
+            Assert.IsTrue(listResult.Count > 0);
         }
 
-        [Test]
-        [TestCase("Техник-прогрммист")]
-        public void GetAllMethod_WhenSelectSpecializationsEntitiesRepositotyEntityFramework_ThenSpecializationsEntitiesSelected(string name)
+        [TestCase(1, "Test name")]
+        public void GetAllMethod_WhenSelectSpecializationsEntitiesRepositoryEntityFramework_ThenSpecializationsEntitiesSelected(int id, string name)
         {
             // Arrange
-            const int countRecords = 1;
-            IRepository<Specialization> repository = new RepositoryEntityFrameworkImplementation<Specialization>(_contextEntity);
-            var specialization = new Specialization { Name = name };
+            IRepository<Specialization> repository = new BaseRepositoryEntityFramework<Specialization>(_contextEntity);
+            var specialization = new Specialization { Id = id, Name = name };
             // Act
             repository.Insert(specialization);
             var listResult = repository.GetAll().ToList();
             // Assert
-            Assert.IsTrue(listResult.Count == countRecords);
+            Assert.IsTrue(listResult.Count > 0);
+        }
+
+        [Test]
+        public void GetByIdMethod_WhenSelectSpecializationEntityRepositoryAdo_ThenSpecializationEntitySelected()
+        {
+            // Arrange
+            const int idExistsModel = 12;
+            IRepository<Specialization> repository = new RepositoryAdoSpecialization(_contextAdo);
+            // Act
+            var result = repository.GetById(idExistsModel);
+            // Assert
+            Assert.IsNotNull(result);
+        }
+
+        [TestCase(2, "Test name")]
+        public void GetByIdMethod_WhenSelectSpecializationEntityRepositoryEntityFramework_ThenSpecializationEntitySelected(int id, string name)
+        {
+            // Arrange
+            IRepository<Specialization> repository = new BaseRepositoryEntityFramework<Specialization>(_contextEntity);
+            var specialization = new Specialization { Id = id, Name = name };
+            // Act
+            repository.Insert(specialization);
+            var result = repository.GetById(id);
+            // Assert
+            Assert.IsNotNull(result);
         }
     }
 }

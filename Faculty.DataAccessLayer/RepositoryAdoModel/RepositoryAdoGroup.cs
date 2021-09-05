@@ -1,19 +1,20 @@
-﻿using Microsoft.Data.SqlClient;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
+using Faculty.DataAccessLayer.RepositoryAdo;
+using Microsoft.Data.SqlClient;
 
-namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
+namespace Faculty.DataAccessLayer.RepositoryAdoModel
 {
     /// <summary>
     /// Implementation of the repository pattern for the Group data model.
     /// </summary>
-    public class RepositoryGroup : BaseRepositoryAdo<Group>
+    public class RepositoryAdoGroup : BaseRepositoryAdo<Group>
     {
         /// <summary>
         /// Connection context initialization constructor.
         /// </summary>
         /// <param name="context">Database connection.</param>
-        public RepositoryGroup(DatabaseContextAdo context) : base(context) { }
+        public RepositoryAdoGroup(DatabaseContextAdo context) : base(context) { }
 
         /// <summary>
         /// Method for setting the add request parameters.
@@ -58,7 +59,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
         /// </summary>
         /// <param name="command">Object SqlCommand.</param>
         /// <returns>List of Entity objects.</returns>
-        protected override List<Group> SetParametersSelectCommand(SqlCommand command)
+        protected override List<Group> SetParametersSelectCommandModels(SqlCommand command)
         {
             command.CommandText = "SELECT * FROM dbo.Groups;";
             var sqlDataReader = command.ExecuteReader();
@@ -73,6 +74,29 @@ namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
             }
             sqlDataReader.Close();
             return groups;
+        }
+
+        /// <summary>
+        /// Method for selecting data from a database.
+        /// </summary>
+        /// <param name="id">Unique identificator model.</param>
+        /// <returns>Entity object.</returns>
+        protected override Group SetParametersSelectCommandModel(int id, SqlCommand command)
+        {
+            command.CommandText = "SELECT * FROM dbo.Groups WHERE dbo.Groups.Id = @id;";
+            command.Parameters.AddWithValue("@id", id);
+            var sqlDataReader = command.ExecuteReader();
+            Group group = null;
+            while (sqlDataReader.Read())
+            {
+                group = new Group();
+                int.TryParse(sqlDataReader.GetValue(0)?.ToString() ?? string.Empty, out var modelId);
+                var name = sqlDataReader.GetValue(1)?.ToString() ?? string.Empty;
+                int.TryParse(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty, out var specializationId);
+                group = new Group { Id = modelId, Name = name, SpecializationId = specializationId };
+            }
+            sqlDataReader.Close();
+            return group;
         }
     }
 }

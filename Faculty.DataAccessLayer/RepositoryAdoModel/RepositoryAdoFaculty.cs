@@ -1,19 +1,20 @@
 ﻿using System;
-using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
+using Faculty.DataAccessLayer.RepositoryAdo;
+using Microsoft.Data.SqlClient;
 
-namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
+namespace Faculty.DataAccessLayer.RepositoryAdoModel
 {
     /// <summary>
     /// Implementation of the repository pattern for the Faculty data model.
     /// </summary>
-    public class RepositoryFaculty : BaseRepositoryAdo<Models.Faculty>
+    public class RepositoryAdoFaculty : BaseRepositoryAdo<Models.Faculty>
     {
         /// <summary>
         /// Connection context initialization constructor.
         /// </summary>
         /// <param name="context">Database connection.</param>
-        public RepositoryFaculty(DatabaseContextAdo context) : base(context) { }
+        public RepositoryAdoFaculty(DatabaseContextAdo context) : base(context) { }
 
         /// <summary>
         /// Method for setting the add request parameters.
@@ -66,7 +67,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
         /// </summary>
         /// <param name="command">Object SqlCommand.</param>
         /// <returns>List of Entity objects.</returns>
-        protected override List<Models.Faculty> SetParametersSelectCommand(SqlCommand command)
+        protected override List<Models.Faculty> SetParametersSelectCommandModels(SqlCommand command)
         {
             command.CommandText = "SELECT * FROM dbo.Faculties;";
             var sqlDataReader = command.ExecuteReader();
@@ -92,6 +93,40 @@ namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
             }
             sqlDataReader.Close();
             return faculties;
+        }
+
+        /// <summary>
+        /// Method for selecting data from a database.
+        /// </summary>
+        /// <param name="id">Unique identificator model.</param>
+        /// <returns>Entity object.</returns>
+        protected override Models.Faculty SetParametersSelectCommandModel(int id, SqlCommand command)
+        {
+            command.CommandText = "SELECT * FROM dbo.Faculties WHERE dbo.Faculties.Id = @id;";
+            command.Parameters.AddWithValue("@id", id);
+            var sqlDataReader = command.ExecuteReader();
+            Models.Faculty faculty = null;
+            while (sqlDataReader.Read())
+            {
+                faculty = new Models.Faculty();
+                int.TryParse(sqlDataReader.GetValue(0)?.ToString() ?? string.Empty, out var modelId);
+                DateTime.TryParse(sqlDataReader.GetValue(1)?.ToString() ?? string.Empty, out var startDateEducation);
+                int.TryParse(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty, out var countYearEducation);
+                int.TryParse(sqlDataReader.GetValue(3)?.ToString() ?? string.Empty, out var studentId);
+                int.TryParse(sqlDataReader.GetValue(4)?.ToString() ?? string.Empty, out var groupId);
+                int.TryParse(sqlDataReader.GetValue(5)?.ToString() ?? string.Empty, out var curatorId); 
+                faculty = new Models.Faculty
+                {
+                    Id = modelId,
+                    StartDateEducation = startDateEducation,
+                    CountYearEducation = countYearEducation,
+                    StudentId = studentId,
+                    GroupId = groupId,
+                    CuratorId = curatorId
+                };
+            }
+            sqlDataReader.Close();
+            return faculty;
         }
     }
 }

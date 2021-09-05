@@ -1,19 +1,20 @@
-﻿using Microsoft.Data.SqlClient;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
+using Faculty.DataAccessLayer.RepositoryAdo;
+using Microsoft.Data.SqlClient;
 
-namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
+namespace Faculty.DataAccessLayer.RepositoryAdoModel
 {
     /// <summary>
     /// Implementation of the repository pattern for the Curator data model.
     /// </summary>
-    public class RepositoryCurator : BaseRepositoryAdo<Curator>
+    public class RepositoryAdoCurator : BaseRepositoryAdo<Curator>
     {
         /// <summary>
         /// Connection context initialization constructor.
         /// </summary>
         /// <param name="context">Database connection.</param>
-        public RepositoryCurator(DatabaseContextAdo context) : base(context) { }
+        public RepositoryAdoCurator(DatabaseContextAdo context) : base(context) { }
 
         /// <summary>
         /// Method for setting the add request parameters.
@@ -62,7 +63,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
         /// </summary>
         /// <param name="command">Object SqlCommand.</param>
         /// <returns>List of Entity objects.</returns>
-        protected override List<Curator> SetParametersSelectCommand(SqlCommand command)
+        protected override List<Curator> SetParametersSelectCommandModels(SqlCommand command)
         {
             command.CommandText = "SELECT * FROM dbo.Curators;";
             var sqlDataReader = command.ExecuteReader();
@@ -79,6 +80,31 @@ namespace Faculty.DataAccessLayer.RepositoryAdo.RepositoryModels
             }
             sqlDataReader.Close();
             return curators;
+        }
+
+        /// <summary>
+        /// Method for selecting data from a database.
+        /// </summary>
+        /// <param name="id">Unique identificator model.</param>
+        /// <returns>Entity object.</returns>
+        protected override Curator SetParametersSelectCommandModel(int id, SqlCommand command)
+        {
+            command.CommandText = "SELECT * FROM dbo.Curators WHERE dbo.Curators.Id = @id;";
+            command.Parameters.AddWithValue("@id", id);
+            var sqlDataReader = command.ExecuteReader();
+            Curator curator = null;
+            while (sqlDataReader.Read())
+            {
+                curator = new Curator();
+                int.TryParse(sqlDataReader.GetValue(0)?.ToString() ?? string.Empty, out var modelId);
+                var surname = sqlDataReader.GetValue(1)?.ToString() ?? string.Empty;
+                var name = sqlDataReader.GetValue(2)?.ToString() ?? string.Empty;
+                var doublename = sqlDataReader.GetValue(3)?.ToString() ?? string.Empty;
+                var phone = sqlDataReader.GetValue(4)?.ToString() ?? string.Empty;
+                curator = new Curator { Id = modelId, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
+            }
+            sqlDataReader.Close();
+            return curator;
         }
     }
 }

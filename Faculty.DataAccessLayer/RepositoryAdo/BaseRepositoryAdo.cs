@@ -7,7 +7,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
     /// Implementing the repository pattern (Ado).
     /// </summary>
     /// <typeparam name="T">Entity model.</typeparam>
-    public abstract class BaseRepositoryAdo<T> : IRepository<T>
+    public abstract class BaseRepositoryAdo<T> : IRepository<T> where T: class, new()
     {
         /// <summary>
         /// Field for establishing a connection to the database.
@@ -27,42 +27,51 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
         /// Method for adding data to the database (Ado implementation).
         /// </summary>
         /// <param name="entity">Entity model.</param>
-        public void Insert(T entity)
+        /// <returns>Count added models.</returns>
+        public int Insert(T entity)
         {
-            if (entity is null) return;
+            if (entity is null) return 0;
+            var count = 0;
             using (var command = _context.SqlConnection.CreateCommand())
             {
                 SetParametersInsertCommand(entity, command);
-                command.ExecuteNonQuery();
+                count = command.ExecuteNonQuery();
             }
+            return count;
         }
 
         /// <summary>
         /// Method for changing data to the database (Ado implementation).
         /// </summary>
         /// <param name="entity">Entity model.</param>
-        public void Update(T entity)
+        /// <returns>Count changed models.</returns>
+        public int Update(T entity)
         {
-            if (entity is null) return;
+            if (entity is null) return 0;
+            var count = 0;
             using (var command = _context.SqlConnection.CreateCommand())
             {
                 SetParametersUpdateCommand(entity, command);
-                command.ExecuteNonQuery();
+                count = command.ExecuteNonQuery();
             }
+            return count;
         }
 
         /// <summary>
         /// Method for removing data to the database (Ado implementation).
         /// </summary>
         /// <param name="entity">Entity model.</param>
-        public void Delete(T entity)
+        /// <returns>Count deleted models.</returns>
+        public int Delete(T entity)
         {
-            if (entity is null) return;
+            if (entity is null) return 0;
+            var count = 0;
             using (var command = _context.SqlConnection.CreateCommand())
             {
                 SetParametersDeleteCommand(entity, command);
-                command.ExecuteNonQuery();
+                count = command.ExecuteNonQuery();
             }
+            return count;
         }
 
         /// <summary>
@@ -74,7 +83,22 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
             List<T> result = null;
             using (var command = _context.SqlConnection.CreateCommand())
             {
-                result = SetParametersSelectCommand(command);
+                result = SetParametersSelectCommandModels(command);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Method for selecting data from a database (Entity Framework implementation).
+        /// </summary>
+        /// <param name="id">Unique identificator model.</param>
+        /// <returns>Entity object.</returns>
+        public T GetById(int id)
+        {
+            T result = null;
+            using (var command = _context.SqlConnection.CreateCommand())
+            {
+                result = SetParametersSelectCommandModel(id, command);
             }
             return result;
         }
@@ -105,6 +129,13 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
         /// </summary>
         /// <param name="command">Object SqlCommand.</param>
         /// <returns>List of Entity objects.</returns>
-        protected abstract List<T> SetParametersSelectCommand(SqlCommand command);
+        protected abstract List<T> SetParametersSelectCommandModels(SqlCommand command);
+
+        /// <summary>
+        /// Method for setting query parameters for fetching model.
+        /// </summary>
+        /// <param name="command">Object SqlCommand.</param>
+        /// <returns>Entity objects.</returns>
+        protected abstract T SetParametersSelectCommandModel(int id, SqlCommand command);
     }
 }
