@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryAdo;
 using Microsoft.Data.SqlClient;
@@ -25,8 +26,8 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
         {
             command.CommandText = "INSERT INTO dbo.Groups (dbo.Groups.Name, dbo.Groups.SpecializationId) " +
                                   "VALUES (@name, @specializationId);";
-            command.Parameters.AddWithValue("@name", entity.Name);
-            command.Parameters.AddWithValue("@specializationId", entity.SpecializationId);
+            command.Parameters.AddWithValue("@name", entity.Name is null ? DBNull.Value : entity.Name);
+            command.Parameters.AddWithValue("@specializationId", entity.SpecializationId is null ? DBNull.Value : entity.SpecializationId);
         }
 
         /// <summary>
@@ -38,8 +39,8 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
         {
             command.CommandText = "UPDATE dbo.Groups SET dbo.Groups.Name = @name, " +
                                   "dbo.Groups.SpecializationId = @specializationId WHERE dbo.Groups.Id = @id;";
-            command.Parameters.AddWithValue("@name", entity.Name);
-            command.Parameters.AddWithValue("@specializationId", entity.SpecializationId);
+            command.Parameters.AddWithValue("@name", entity.Name is null ? DBNull.Value : entity.Name);
+            command.Parameters.AddWithValue("@specializationId", entity.SpecializationId is null ? DBNull.Value : entity.SpecializationId);
             command.Parameters.AddWithValue("@id", entity.Id);
         }
 
@@ -66,14 +67,17 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
             var groups = new List<Group>();
             while (sqlDataReader.Read())
             {
-                int.TryParse(sqlDataReader.GetValue(0)?.ToString() ?? string.Empty, out var id);
-                var name = sqlDataReader.GetValue(1)?.ToString() ?? string.Empty;
-                int.TryParse(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty, out var specializationId);
+                int.TryParse(sqlDataReader.GetValue(0)?.ToString(), out var id);
+                var name = TryParseNullableString(sqlDataReader.GetValue(1).ToString());
+                var specializationId = TryParseNullableInt(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty);
                 var group = new Group { Id = id, Name = name, SpecializationId = specializationId };
                 groups.Add(group);
             }
             sqlDataReader.Close();
             return groups;
+
+            int? TryParseNullableInt(string value) => int.TryParse(value, out var outValue) ? (int?)outValue : null;
+            string? TryParseNullableString(object value) => value.ToString() == "" ? null : value.ToString();
         }
 
         /// <summary>
@@ -89,14 +93,16 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
             Group group = null;
             while (sqlDataReader.Read())
             {
-                group = new Group();
-                int.TryParse(sqlDataReader.GetValue(0)?.ToString() ?? string.Empty, out var modelId);
-                var name = sqlDataReader.GetValue(1)?.ToString() ?? string.Empty;
-                int.TryParse(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty, out var specializationId);
+                int.TryParse(sqlDataReader.GetValue(0)?.ToString(), out var modelId);
+                var name = TryParseNullableString(sqlDataReader.GetValue(1).ToString());
+                var specializationId = TryParseNullableInt(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty);
                 group = new Group { Id = modelId, Name = name, SpecializationId = specializationId };
             }
             sqlDataReader.Close();
             return group;
+
+            int? TryParseNullableInt(string value) => int.TryParse(value, out var outValue) ? (int?)outValue : null;
+            string? TryParseNullableString(object value) => value.ToString() == "" ? null : value.ToString();
         }
     }
 }

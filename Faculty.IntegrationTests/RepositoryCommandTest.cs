@@ -29,7 +29,7 @@ namespace Faculty.IntegrationTests
             _contextEntity = new DatabaseContextEntityFramework(options);
         }
 
-        [TestCase("Test1", "Test1", "Test1")]
+        [TestCase("Test1", null, "Test1")]
         public void InsertMethod_WhenInsertStudentEntityRepositoryAdo_ThenStudentEntityInserted(string surname, string name, string doublename)
         {
             // Arrange
@@ -41,7 +41,7 @@ namespace Faculty.IntegrationTests
             Assert.IsTrue(countAdded > 0);
         }
 
-        [TestCase(1, "Test1", "Test1", "Test1", "+375-33-557-06-67")]
+        [TestCase(1, "Test1", "Test1", "Test1", null)]
         public void InsertMethod_WhenInsertCuratorEntityRepositoryEntityFramework_ThenCuratorEntityInserted(int id, string surname, string name, string doublename, string phone)
         {
             // Arrange
@@ -53,7 +53,7 @@ namespace Faculty.IntegrationTests
             Assert.IsNotNull(countAdded > 0);
         }
 
-        [TestCase("Test2", "Test2", "Test2")]
+        [TestCase("Test2", "Test2", null)]
         public void UpdateMethod_WhenUpdateStudentEntityRepositoryAdo_ThenStudentEntityUpdated(string surname, string name, string doublename)
         {
             // Arrange
@@ -69,7 +69,7 @@ namespace Faculty.IntegrationTests
             Assert.IsTrue(countChanged > 0);
         }
 
-        [TestCase(2, "Test2", "Test2", "Test2", "+375-33-557-06-67")]
+        [TestCase(2, "Test2", null, "Test2", "+375-33-557-06-67")]
         public void UpdateMethod_WhenUpdateCuratorEntityRepositoryEntityFramework_ThenCuratorEntityUpdated(int id, string surname, string name, string doublename, string phone)
         {
             // Arrange
@@ -84,7 +84,7 @@ namespace Faculty.IntegrationTests
             Assert.IsTrue(countChanged > 0);
         }
 
-        [TestCase("Test3", "Test3", "Test3")]
+        [TestCase("Test3", "Test3", null)]
         public void DeleteMethod_WhenDeleteStudentEntityRepositoryAdo_ThenStudentEntityDeleted(string surname, string name, string doublename)
         {
             // Arrange
@@ -95,10 +95,10 @@ namespace Faculty.IntegrationTests
             // Act
             var countDeleted = repository.Delete(studentInserted);
             // Assert
-            Assert.IsTrue(countDeleted > 0);
+            Assert.IsNotNull(studentInserted);
         }
 
-        [TestCase(3, "Test3", "Test3", "Test3", "+375-33-557-06-67")]
+        [TestCase(3, null, "Test3", "Test3", "+375-33-557-06-67")]
         public void DeleteMethod_WhenDeleteCuratorEntityRepositoryEntityFramework_ThenCuratorEntityDeleted(int id, string surname, string name, string doublename, string phone)
         {
             // Arrange

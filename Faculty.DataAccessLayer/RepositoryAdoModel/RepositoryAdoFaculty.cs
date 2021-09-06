@@ -26,11 +26,11 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
             command.CommandText = "INSERT INTO dbo.Faculties (dbo.Faculties.StartDateEducation, dbo.Faculties.CountYearEducation, " +
                                   "dbo.Faculties.StudentId, dbo.Faculties.GroupId, dbo.Faculties.CuratorId) " +
                                   "VALUES (@date, @years, @studentId, @groupId, @curatorId);";
-            command.Parameters.AddWithValue("@date", entity.StartDateEducation?.ToShortDateString());
-            command.Parameters.AddWithValue("@years", entity.CountYearEducation);
-            command.Parameters.AddWithValue("@studentId", entity.StudentId);
-            command.Parameters.AddWithValue("@groupId", entity.GroupId);
-            command.Parameters.AddWithValue("@curatorId", entity.CuratorId);
+            command.Parameters.AddWithValue("@date", entity.StartDateEducation?.ToShortDateString() is null ? DBNull.Value : entity.StartDateEducation);
+            command.Parameters.AddWithValue("@years", entity.CountYearEducation is null ? DBNull.Value : entity.CountYearEducation);
+            command.Parameters.AddWithValue("@studentId", entity.StudentId is null ? DBNull.Value : entity.StudentId);
+            command.Parameters.AddWithValue("@groupId", entity.GroupId is null ? DBNull.Value : entity.GroupId);
+            command.Parameters.AddWithValue("@curatorId", entity.CuratorId is null ? DBNull.Value : entity.CuratorId);
         }
 
         /// <summary>
@@ -43,11 +43,11 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
             command.CommandText = "UPDATE dbo.Faculties SET dbo.Faculties.StartDateEducation = @date, dbo.Faculties.CountYearEducation = @years, " +
                                   "dbo.Faculties.StudentId = @studentId, dbo.Faculties.GroupId = @curatorId, dbo.Faculties.CuratorId = @curatorId " +
                                   "WHERE dbo.Faculties.Id = @id;";
-            command.Parameters.AddWithValue("@date", entity.StartDateEducation?.ToShortDateString());
-            command.Parameters.AddWithValue("@years", entity.CountYearEducation);
-            command.Parameters.AddWithValue("@studentId", entity.StudentId);
-            command.Parameters.AddWithValue("@groupId", entity.GroupId);
-            command.Parameters.AddWithValue("@curatorId", entity.CuratorId);
+            command.Parameters.AddWithValue("@date", entity.StartDateEducation?.ToShortDateString() is null ? DBNull.Value : entity.StartDateEducation);
+            command.Parameters.AddWithValue("@years", entity.CountYearEducation is null ? DBNull.Value : entity.CountYearEducation);
+            command.Parameters.AddWithValue("@studentId", entity.StudentId is null ? DBNull.Value : entity.StudentId);
+            command.Parameters.AddWithValue("@groupId", entity.GroupId is null ? DBNull.Value : entity.GroupId);
+            command.Parameters.AddWithValue("@curatorId", entity.CuratorId is null ? DBNull.Value : entity.CuratorId);
             command.Parameters.AddWithValue("@id", entity.Id);
         }
 
@@ -74,12 +74,12 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
             var faculties = new List<Models.Faculty>();
             while (sqlDataReader.Read())
             {
-                int.TryParse(sqlDataReader.GetValue(0)?.ToString() ?? string.Empty, out var id);
-                DateTime.TryParse(sqlDataReader.GetValue(1)?.ToString() ?? string.Empty, out var startDateEducation);
-                int.TryParse(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty, out var countYearEducation);
-                int.TryParse(sqlDataReader.GetValue(3)?.ToString() ?? string.Empty, out var studentId);
-                int.TryParse(sqlDataReader.GetValue(4)?.ToString() ?? string.Empty, out var groupId);
-                int.TryParse(sqlDataReader.GetValue(5)?.ToString() ?? string.Empty, out var curatorId);
+                int.TryParse(sqlDataReader.GetValue(0)?.ToString(), out var id);
+                var startDateEducation = TryParseNullableDateTime(sqlDataReader.GetValue(1)?.ToString() ?? string.Empty);
+                var countYearEducation = TryParseNullableInt(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty);
+                var studentId = TryParseNullableInt(sqlDataReader.GetValue(3)?.ToString() ?? string.Empty);
+                var groupId = TryParseNullableInt(sqlDataReader.GetValue(4)?.ToString() ?? string.Empty);
+                var curatorId = TryParseNullableInt(sqlDataReader.GetValue(5)?.ToString() ?? string.Empty);
                 var faculty = new Models.Faculty
                 {
                     Id = id,
@@ -93,6 +93,9 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
             }
             sqlDataReader.Close();
             return faculties;
+
+            int? TryParseNullableInt(string value) => int.TryParse(value, out var outValue) ? (int?)outValue : null;
+            DateTime? TryParseNullableDateTime(string value) => DateTime.TryParse(value, out var outValue) ? (DateTime?)outValue : null;
         }
 
         /// <summary>
@@ -108,13 +111,12 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
             Models.Faculty faculty = null;
             while (sqlDataReader.Read())
             {
-                faculty = new Models.Faculty();
-                int.TryParse(sqlDataReader.GetValue(0)?.ToString() ?? string.Empty, out var modelId);
-                DateTime.TryParse(sqlDataReader.GetValue(1)?.ToString() ?? string.Empty, out var startDateEducation);
-                int.TryParse(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty, out var countYearEducation);
-                int.TryParse(sqlDataReader.GetValue(3)?.ToString() ?? string.Empty, out var studentId);
-                int.TryParse(sqlDataReader.GetValue(4)?.ToString() ?? string.Empty, out var groupId);
-                int.TryParse(sqlDataReader.GetValue(5)?.ToString() ?? string.Empty, out var curatorId); 
+                int.TryParse(sqlDataReader.GetValue(0)?.ToString(), out var modelId);
+                var startDateEducation = TryParseNullableDateTime(sqlDataReader.GetValue(1)?.ToString() ?? string.Empty);
+                var countYearEducation = TryParseNullableInt(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty);
+                var studentId = TryParseNullableInt(sqlDataReader.GetValue(3)?.ToString() ?? string.Empty);
+                var groupId = TryParseNullableInt(sqlDataReader.GetValue(4)?.ToString() ?? string.Empty);
+                var curatorId = TryParseNullableInt(sqlDataReader.GetValue(5)?.ToString() ?? string.Empty);
                 faculty = new Models.Faculty
                 {
                     Id = modelId,
@@ -127,6 +129,9 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
             }
             sqlDataReader.Close();
             return faculty;
+
+            int? TryParseNullableInt(string value) => int.TryParse(value, out var outValue) ? (int?)outValue : null;
+            DateTime? TryParseNullableDateTime(string value) => DateTime.TryParse(value, out var outValue) ? (DateTime?)outValue : null;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryAdo;
 using Microsoft.Data.SqlClient;
@@ -24,7 +25,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
         protected override void SetParametersInsertCommand(Specialization entity, SqlCommand command)
         {
             command.CommandText = "INSERT INTO dbo.Specializations (dbo.Specializations.Name) VALUES (@name);";
-            command.Parameters.AddWithValue("@name", entity.Name);
+            command.Parameters.AddWithValue("@name", entity.Name is null ? DBNull.Value : entity.Name);
         }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
         protected override void SetParametersUpdateCommand(Specialization entity, SqlCommand command)
         {
             command.CommandText = "UPDATE dbo.Specializations SET dbo.Specializations.Name = @name WHERE dbo.Specializations.Id = @id;";
-            command.Parameters.AddWithValue("@name", entity.Name);
+            command.Parameters.AddWithValue("@name", entity.Name is null ? DBNull.Value : entity.Name);
             command.Parameters.AddWithValue("@id", entity.Id);
         }
 
@@ -62,13 +63,15 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
             var specializations = new List<Specialization>();
             while (sqlDataReader.Read())
             {
-                int.TryParse(sqlDataReader.GetValue(0)?.ToString() ?? string.Empty, out var id);
-                var name = sqlDataReader.GetValue(1)?.ToString() ?? string.Empty;
+                int.TryParse(sqlDataReader.GetValue(0)?.ToString(), out var id);
+                var name = TryParseNullableString(sqlDataReader.GetValue(1).ToString());
                 var specialization = new Specialization { Id = id, Name = name };
                 specializations.Add(specialization);
             }
             sqlDataReader.Close();
             return specializations;
+
+            string? TryParseNullableString(object value) => value.ToString() == "" ? null : value.ToString();
         }
 
         /// <summary>
@@ -84,13 +87,14 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
             Specialization specialization = null;
             while (sqlDataReader.Read())
             {
-                specialization = new Specialization();
-                int.TryParse(sqlDataReader.GetValue(0)?.ToString() ?? string.Empty, out var modelId);
-                var name = sqlDataReader.GetValue(1)?.ToString() ?? string.Empty;
+                int.TryParse(sqlDataReader.GetValue(0)?.ToString(), out var modelId);
+                var name = TryParseNullableString(sqlDataReader.GetValue(1).ToString());
                 specialization = new Specialization { Id = modelId, Name = name };
             }
             sqlDataReader.Close();
             return specialization;
+
+            string? TryParseNullableString(object value) => value.ToString() == "" ? null : value.ToString();
         }
     }
 }

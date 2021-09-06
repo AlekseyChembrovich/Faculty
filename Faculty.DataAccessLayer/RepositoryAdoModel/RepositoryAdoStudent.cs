@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryAdo;
 using Microsoft.Data.SqlClient;
@@ -25,9 +26,9 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
         {
             command.CommandText = "INSERT INTO dbo.Students (dbo.Students.Surname, dbo.Students.Name, dbo.Students.Doublename) " +
                                   "VALUES (@surname, @name, @doublename);";
-            command.Parameters.AddWithValue("@surname", entity.Surname);
-            command.Parameters.AddWithValue("@name", entity.Name);
-            command.Parameters.AddWithValue("@doublename", entity.Doublename);
+            command.Parameters.AddWithValue("@surname", entity.Surname is null ? DBNull.Value : entity.Surname);
+            command.Parameters.AddWithValue("@name", entity.Name is null ? DBNull.Value : entity.Name);
+            command.Parameters.AddWithValue("@doublename", entity.Doublename is null ? DBNull.Value : entity.Doublename);
         }
 
         /// <summary>
@@ -39,9 +40,9 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
         {
             command.CommandText = "UPDATE dbo.Students SET dbo.Students.Surname = @surname, dbo.Students.Name = @name, dbo.Students.Doublename = @doublename " +
                                   "WHERE dbo.Students.Id = @id;";
-            command.Parameters.AddWithValue("@surname", entity.Surname);
-            command.Parameters.AddWithValue("@name", entity.Name);
-            command.Parameters.AddWithValue("@doublename", entity.Doublename);
+            command.Parameters.AddWithValue("@surname", entity.Surname is null ? DBNull.Value : entity.Surname);
+            command.Parameters.AddWithValue("@name", entity.Name is null ? DBNull.Value : entity.Name);
+            command.Parameters.AddWithValue("@doublename", entity.Doublename is null ? DBNull.Value : entity.Doublename);
             command.Parameters.AddWithValue("@id", entity.Id);
         }
 
@@ -68,15 +69,17 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
             var students = new List<Student>();
             while (sqlDataReader.Read())
             {
-                int.TryParse(sqlDataReader.GetValue(0)?.ToString() ?? string.Empty, out var id);
-                var surname = sqlDataReader.GetValue(1)?.ToString() ?? string.Empty;
-                var name = sqlDataReader.GetValue(2)?.ToString() ?? string.Empty;
-                var doublename = sqlDataReader.GetValue(3)?.ToString() ?? string.Empty;
+                int.TryParse(sqlDataReader.GetValue(0)?.ToString(), out var id);
+                var surname = TryParseNullableString(sqlDataReader.GetValue(1).ToString());
+                var name = TryParseNullableString(sqlDataReader.GetValue(2).ToString());
+                var doublename = TryParseNullableString(sqlDataReader.GetValue(3).ToString());
                 var student = new Student { Id = id, Surname = surname, Name = name, Doublename = doublename };
                 students.Add(student);
             }
             sqlDataReader.Close();
             return students;
+
+            string? TryParseNullableString(object value) => value.ToString() == "" ? null : value.ToString();
         }
 
         /// <summary>
@@ -92,15 +95,16 @@ namespace Faculty.DataAccessLayer.RepositoryAdoModel
             Student student = null;
             while (sqlDataReader.Read())
             {
-                student = new Student();
-                int.TryParse(sqlDataReader.GetValue(0)?.ToString() ?? string.Empty, out var modelId);
-                var surname = sqlDataReader.GetValue(1)?.ToString() ?? string.Empty;
-                var name = sqlDataReader.GetValue(2)?.ToString() ?? string.Empty;
-                var doublename = sqlDataReader.GetValue(3)?.ToString() ?? string.Empty;
+                int.TryParse(sqlDataReader.GetValue(0)?.ToString(), out var modelId);
+                var surname = TryParseNullableString(sqlDataReader.GetValue(1).ToString());
+                var name = TryParseNullableString(sqlDataReader.GetValue(2).ToString());
+                var doublename = TryParseNullableString(sqlDataReader.GetValue(3).ToString());
                 student = new Student { Id = modelId, Surname = surname, Name = name, Doublename = doublename };
             }
             sqlDataReader.Close();
             return student;
+
+            string? TryParseNullableString(object value) => value.ToString() == "" ? null : value.ToString();
         }
     }
 }
