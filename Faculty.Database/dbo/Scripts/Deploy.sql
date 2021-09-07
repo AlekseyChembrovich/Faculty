@@ -4,15 +4,15 @@ USE [FacultyTest]
 GO
 INSERT INTO [dbo].[Students] ([dbo].[Students].[Surname], [dbo].[Students].[Name], [dbo].[Students].[Doublename])
 	VALUES ('test1', 'test1', 'test1'),
-		   ('test2', 'test2', 'test3'),
-		   ('test1', 'test2', 'test3')
+		   ('test2', 'test2', 'test2'),
+		   ('test3', 'test3', 'test3')
 
 GO
 INSERT INTO [dbo].[Curators] 
 	([dbo].[Curators].[Surname], [dbo].[Curators].[Name], [dbo].[Curators].[Doublename], [dbo].[Curators].[Phone]) 
-		VALUES ('test1', 'test2', 'test3', '+375-33-111-11-11'), 
-			   ('test1', 'test2', 'test3', '+375-33-222-22-22'),
-			   ('test1', 'test2', 'test3', '+375-33-333-33-33')
+		VALUES ('test1', 'test1', 'test1', '+375-33-111-11-11'), 
+			   ('test2', 'test2', 'test2', '+375-33-222-22-22'),
+			   ('test3', 'test3', 'test3', '+375-33-333-33-33')
 
 GO
 INSERT INTO [dbo].[Specializations] ([dbo].[Specializations].[Name])
