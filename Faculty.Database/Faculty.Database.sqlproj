@@ -62,12 +62,12 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Students.sql" />
-    <Build Include="dbo\Tables\Specialozations.sql" />
+    <Build Include="dbo\Tables\Specializations.sql" />
     <Build Include="dbo\Tables\Curators.sql" />
     <Build Include="dbo\Tables\Groups.sql" />
     <Build Include="dbo\Tables\Faculties.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="dbo\Scripts\Deploy.sql" />
+    <PostDeploy Include="dbo\Scripts\Deploy.sql" />
   </ItemGroup>
 </Project>
