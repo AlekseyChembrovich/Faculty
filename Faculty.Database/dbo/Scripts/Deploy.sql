@@ -1,5 +1,5 @@
 ﻿GO
-USE [Repository]
+USE [FacultyTest]
 
 GO
 INSERT INTO [dbo].[Students] ([dbo].[Students].[Surname], [dbo].[Students].[Name], [dbo].[Students].[Doublename])
