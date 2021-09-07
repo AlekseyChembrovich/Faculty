@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Data.SqlClient;
+using Faculty.DataAccessLayer.RepositoryAdo;
 using Microsoft.Extensions.Configuration;
 using Microsoft.SqlServer.Dac;
 
@@ -12,19 +12,34 @@ namespace Faculty.IntegrationTests
     public class DatabaseConfiguration
     {
         /// <summary>
+        /// Table name constant.
+        /// </summary>
+        private const string TableName = "FacultyTest";
+
+        /// <summary>
         /// Connection string.
         /// </summary>
         private readonly string _connectionString;
+
+        /// <summary>
+        /// Context Ado data base.
+        /// </summary>
+        public DatabaseContextAdo ContextAdo { get; set; }
 
         /// <summary>
         /// Configuration properties.
         /// </summary>
         private readonly IConfiguration _configuration;
 
+        /// <summary>
+        /// Constructor for init IConfiguration.
+        /// </summary>
+        /// <param name="configuration"></param>
         public DatabaseConfiguration(IConfiguration configuration)
         {
             _configuration = configuration;
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+            ContextAdo = new DatabaseContextAdo(_connectionString);
         }
 
         /// <summary>
@@ -47,7 +62,7 @@ namespace Faculty.IntegrationTests
             {
                 using (var dacPackage = DacPackage.Load(dacPacPath))
                 {
-                    dacService.Deploy(dacPackage, "FactoryTest", true, dacOptions);
+                    dacService.Deploy(dacPackage, TableName, true, dacOptions);
                 }
             }
             else
@@ -61,16 +76,10 @@ namespace Faculty.IntegrationTests
         /// </summary>
         public void DropTestDatabase()
         {
-            using (var connection = new SqlConnection(_connectionString))
+            using (var command = ContextAdo.SqlConnection.CreateCommand())
             {
-                using (var command = connection.CreateCommand())
-                {
-                    connection.Open();
-                    command.CommandText = @"
-                        USE master;
-                        drop database[TestMusicCatalog]";
-                    command.ExecuteNonQuery();
-                }
+                command.CommandText = $"USE master; DROP DATABASE IF EXISTS [{TableName}];";
+                command.ExecuteNonQuery();
             }
         }
     }

@@ -12,25 +12,25 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
     [TestFixture]
     public class RepositoryAdoStudentCommandTest
     {
-        private DatabaseContextAdo _contextAdo;
+        private IRepository<Student> _repository;
 
         [SetUp]
         public void Setup()
         {
             var configuration = new ConfigurationBuilder().AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json")).Build();
             var connectionString = configuration["ConnectionStrings:DefaultConnection"];
-            _contextAdo = new DatabaseContextAdo(connectionString);
+            var contextAdo = new DatabaseContextAdo(connectionString);
+            _repository = new RepositoryAdoStudent(contextAdo);
         }
 
         [TestCase("Test1", null, "Test1")]
         public void InsertMethod_WhenInsertStudentEntityRepositoryAdo_ThenStudentEntityInserted(string surname, string name, string doublename)
         {
             // Arrange
-            IRepository<Student> repository = new RepositoryAdoStudent(_contextAdo);
             var student = new Student { Surname = surname, Name = name, Doublename = doublename };
             
             // Act
-            var countAdded = repository.Insert(student);
+            var countAdded = _repository.Insert(student);
             
             // Assert
             Assert.IsTrue(countAdded > 0);
@@ -40,15 +40,14 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
         public void UpdateMethod_WhenUpdateStudentEntityRepositoryAdo_ThenStudentEntityUpdated(string surname, string name, string doublename)
         {
             // Arrange
-            const string newDoublename = "Test4";
-            IRepository<Student> repository = new RepositoryAdoStudent(_contextAdo);
+            const string newName = "Test4";
             var student = new Student { Surname = surname, Name = name, Doublename = doublename };
-            repository.Insert(student);
-            var studentInserted = repository.GetAll().FirstOrDefault(st => st.Surname == surname && st.Name == name && st.Doublename == doublename);
+            _repository.Insert(student);
+            var studentInserted = _repository.GetAll().FirstOrDefault(st => st.Surname == surname && st.Name == name && st.Doublename == doublename);
             
             // Act
-            studentInserted.Doublename = newDoublename;
-            var countChanged = repository.Update(studentInserted);
+            studentInserted.Name = newName;
+            var countChanged = _repository.Update(studentInserted);
             
             // Assert
             Assert.IsTrue(countChanged > 0);
@@ -58,16 +57,42 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
         public void DeleteMethod_WhenDeleteStudentEntityRepositoryAdo_ThenStudentEntityDeleted(string surname, string name, string doublename)
         {
             // Arrange
-            IRepository<Student> repository = new RepositoryAdoStudent(_contextAdo);
             var student = new Student { Surname = surname, Name = name, Doublename = doublename };
-            repository.Insert(student);
-            var studentInserted = repository.GetAll().FirstOrDefault(st => st.Surname == surname && st.Name == name && st.Doublename == doublename);
+            _repository.Insert(student);
+            var studentInserted = _repository.GetAll().FirstOrDefault(st => st.Surname == surname && st.Name == name && st.Doublename == doublename);
             
             // Act
-            var countDeleted = repository.Delete(studentInserted);
+            var countDeleted = _repository.Delete(studentInserted);
             
             // Assert
-            Assert.IsNotNull(studentInserted);
+            Assert.IsNotNull(countDeleted > 0);
+        }
+
+        [Test]
+        public void GetAllMethod_WhenSelectStudentsEntitiesRepositoryAdo_ThenSpecializationsEntitiesSelected()
+        {
+            // Arrange
+            //IRepository<Specialization> repository = new RepositoryAdoSpecialization(_contextAdo);
+
+            // Act
+            var listResult = _repository.GetAll().ToList();
+
+            // Assert
+            Assert.IsTrue(listResult.Count > 0);
+        }
+
+        [Test]
+        public void GetByIdMethod_WhenSelectStudentEntityRepositoryAdo_ThenSpecializationEntitySelected()
+        {
+            // Arrange
+            const int idExistsModel = 1;
+            //IRepository<Specialization> repository = new RepositoryAdoSpecialization(_contextAdo);
+
+            // Act
+            var result = _repository.GetById(idExistsModel);
+
+            // Assert
+            Assert.IsNotNull(result);
         }
     }
 }
