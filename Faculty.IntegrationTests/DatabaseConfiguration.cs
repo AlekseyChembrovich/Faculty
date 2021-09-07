@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Faculty.DataAccessLayer.RepositoryAdo;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.SqlServer.Dac;
 
@@ -78,8 +79,12 @@ namespace Faculty.IntegrationTests
         {
             using (var command = ContextAdo.SqlConnection.CreateCommand())
             {
-                command.CommandText = $"USE master; DROP DATABASE IF EXISTS [{TableName}];";
-                command.ExecuteNonQuery();
+                try
+                {
+                    command.CommandText = $"USE master; DROP DATABASE IF EXISTS [{TableName}];";
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception) { }
             }
         }
     }

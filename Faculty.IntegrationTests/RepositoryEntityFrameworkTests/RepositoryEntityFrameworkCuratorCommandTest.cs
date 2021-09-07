@@ -4,6 +4,7 @@ using Faculty.DataAccessLayer.RepositoryEntityFramework;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Linq;
+using FluentAssertions;
 
 namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
 {
@@ -27,13 +28,14 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             var curator = new Curator { Id = id, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
 
             // Act
-            var countAdded = _repository.Insert(curator);
+            _repository.Insert(curator);
+            var curatorFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(countAdded > 0);
+            curator.Should().BeEquivalentTo(curatorFound);
         }
 
-        [TestCase(2, "Test2", null, "Test2", "+375-33-557-06-67")]
+        [TestCase(2, "Test2", "Test2", "Test2", "+375-33-557-06-67")]
         public void UpdateMethod_WhenUpdateCuratorEntityRepositoryEntityFramework_ThenCuratorEntityUpdated(int id, string surname, string name, string doublename, string phone)
         {
             // Arrange
@@ -43,13 +45,14 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
 
             // Act
             curator.Name = newName;
-            var countChanged = _repository.Update(curator);
+            _repository.Update(curator);
+            var curatorFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countChanged > 0);
+            curator.Should().BeEquivalentTo(curatorFound);
         }
 
-        [TestCase(3, null, "Test3", "Test3", "+375-33-557-06-67")]
+        [TestCase(3, "Test3", "Test3", "Test3", "+375-33-557-06-67")]
         public void DeleteMethod_WhenDeleteCuratorEntityRepositoryEntityFramework_ThenCuratorEntityDeleted(int id, string surname, string name, string doublename, string phone)
         {
             // Arrange
@@ -57,10 +60,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             _repository.Insert(curator);
 
             // Act
-            var countDeleted = _repository.Delete(curator);
+            _repository.Delete(curator);
+            var curatorFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countDeleted > 0);
+            Assert.IsNull(curatorFound);
         }
 
         [TestCase(4, "Test4", "Test4", "Test4", "+375-33-557-06-67")]
@@ -85,10 +89,10 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             _repository.Insert(curator);
 
             // Act
-            var result = _repository.GetById(id);
+            var curatorFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(result);
+            curator.Should().BeEquivalentTo(curatorFound);
         }
     }
 }

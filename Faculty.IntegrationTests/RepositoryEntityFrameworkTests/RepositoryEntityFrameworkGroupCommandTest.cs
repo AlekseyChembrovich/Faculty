@@ -2,6 +2,7 @@
 using Faculty.DataAccessLayer;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
@@ -27,10 +28,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             var group = new Group { Id = id, Name = name, SpecializationId = specializationId };
 
             // Act
-            var countAdded = _repository.Insert(group);
+            _repository.Insert(group);
+            var groupFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(countAdded > 0);
+            group.Should().BeEquivalentTo(groupFound);
         }
 
         [TestCase(2, "Test2", 1)]
@@ -43,10 +45,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
 
             // Act
             group.Name = newName;
-            var countChanged = _repository.Update(group);
+            _repository.Update(group);
+            var groupFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countChanged > 0);
+            group.Should().BeEquivalentTo(groupFound);
         }
 
         [TestCase(3, "Test3", 1)]
@@ -57,10 +60,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             _repository.Insert(group);
 
             // Act
-            var countDeleted = _repository.Delete(group);
+            _repository.Delete(group);
+            var groupFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countDeleted > 0);
+            Assert.IsNull(groupFound);
         }
 
         [TestCase(4, "Test4", 1)]
@@ -85,10 +89,10 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             _repository.Insert(group);
 
             // Act
-            var result = _repository.GetById(id);
+            var groupFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(result);
+            group.Should().BeEquivalentTo(groupFound);
         }
     }
 }

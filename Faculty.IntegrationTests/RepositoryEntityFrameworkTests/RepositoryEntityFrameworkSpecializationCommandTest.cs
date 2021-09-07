@@ -2,6 +2,7 @@
 using Faculty.DataAccessLayer;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
@@ -27,10 +28,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             var specialization = new Specialization { Id = id, Name = name };
 
             // Act
-            var countAdded = _repository.Insert(specialization);
+            _repository.Insert(specialization);
+            var specializationFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(countAdded > 0);
+            specialization.Should().BeEquivalentTo(specializationFound);
         }
 
         [TestCase(2, "Test2")]
@@ -43,10 +45,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
 
             // Act
             specialization.Name = newName;
-            var countChanged = _repository.Update(specialization);
+            _repository.Update(specialization);
+            var specializationFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countChanged > 0);
+            specialization.Should().BeEquivalentTo(specializationFound);
         }
 
         [TestCase(3, "Test3")]
@@ -57,10 +60,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             _repository.Insert(specialization);
 
             // Act
-            var countDeleted = _repository.Delete(specialization);
+            _repository.Delete(specialization);
+            var specializationFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countDeleted > 0);
+            Assert.IsNull(specializationFound);
         }
 
         [TestCase(4, "Test4")]
@@ -85,10 +89,10 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             _repository.Insert(specialization);
 
             // Act
-            var result = _repository.GetById(id);
+            var specializationFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(result);
+            specialization.Should().BeEquivalentTo(specializationFound);
         }
     }
 }

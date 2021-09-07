@@ -4,6 +4,7 @@ using System.Linq;
 using Faculty.DataAccessLayer;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryAdo;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 
@@ -20,59 +21,49 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
         {
             var configuration = new ConfigurationBuilder().AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json")).Build();
             _databaseConfiguration = new DatabaseConfiguration(configuration);
+            //_databaseConfiguration.DropTestDatabase();
             _databaseConfiguration.DeployTestDatabase();
             _repository = new RepositoryAdoCurator(_databaseConfiguration.ContextAdo);
         }
-
-        /*[Test]
-        public void Test1()
-        {
-            var configuration = new ConfigurationBuilder().AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json")).Build();
-            var databaseConfiguration = new DatabaseConfiguration(configuration);
-
-            databaseConfiguration.DropTestDatabase();
-
-            Assert.IsTrue(true);
-        }*/
 
         [TestCase("Test4", "Test4", "Test4", "+375-29-557-06-67")]
         public void InsertMethod_WhenInsertCuratorEntityRepositoryAdo_ThenStudentEntityInserted(string surname, string name, string doublename, string phone)
         {
             // Arrange
-            var curator = new Curator { Surname = surname, Name = name, Doublename = doublename };
+            const int id = 4;
+            var curator = new Curator { Id = id, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
 
             // Act
-            var countAdded = _repository.Insert(curator);
-            _databaseConfiguration.DropTestDatabase();
+            _repository.Insert(curator);
+            var curatorFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countAdded > 0);
+            curator.Should().BeEquivalentTo(curatorFound);
         }
 
-        [TestCase("Test2", "Test2", null, "+375-29-557-06-67")]
-        public void UpdateMethod_WhenUpdateCuratorEntityRepositoryAdo_ThenStudentEntityUpdated(string surname, string name, string doublename, string phone)
+        [Test]
+        public void UpdateMethod_WhenUpdateCuratorEntityRepositoryAdo_ThenStudentEntityUpdated()
         {
             // Arrange
             const string newName = "Test6";
-            var curator = new Curator { Surname = surname, Name = name, Doublename = doublename };
-            _repository.Insert(curator);
-            var curatorInserted = _repository.GetAll().FirstOrDefault(st => st.Surname == surname && st.Name == name && st.Doublename == doublename);
+            const int id = 1;
+            var curator = _repository.GetById(id);
 
             // Act
-            curatorInserted.Doublename = newName;
-            var countChanged = _repository.Update(curatorInserted);
+            curator.Doublename = newName;
+            _repository.Update(curator);
+            var curatorFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countChanged > 0);
+            curator.Should().BeEquivalentTo(curatorFound);
         }
 
-        [TestCase("Test3", "Test3", null, "+375-29-557-06-67")]
-        public void DeleteMethod_WhenDeleteCuratorEntityRepositoryAdo_ThenStudentEntityDeleted(string surname, string name, string doublename, string phone)
+        [Test]
+        public void DeleteMethod_WhenDeleteCuratorEntityRepositoryAdo_ThenStudentEntityDeleted()
         {
             // Arrange
-            var curator = new Curator { Surname = surname, Name = name, Doublename = doublename };
-            _repository.Insert(curator);
-            var curatorInserted = _repository.GetAll().FirstOrDefault(st => st.Surname == surname && st.Name == name && st.Doublename == doublename);
+            const int id = 2;
+            var curatorInserted = _repository.GetById(id);
 
             // Act
             var countDeleted = _repository.Delete(curatorInserted);
@@ -98,14 +89,16 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
         public void GetByIdMethod_WhenSelectCuratorEntityRepositoryAdo_ThenSpecializationEntitySelected()
         {
             // Arrange
-            const int idExistsModel = 1;
+            const int id = 3;
             //IRepository<Specialization> repository = new RepositoryAdoSpecialization(_contextAdo);
 
             // Act
-            var result = _repository.GetById(idExistsModel);
+            var result = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(result);
+            result.Surname.Should().Be("Test3");
+            result.Name.Should().Be("Test3");
+            result.Doublename.Should().Be("Test3");
         }
     }
 }

@@ -2,6 +2,7 @@
 using Faculty.DataAccessLayer;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
@@ -27,10 +28,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             var student = new Student { Id = id, Surname = surname, Name = name, Doublename = doublename };
 
             // Act
-            var countAdded = _repository.Insert(student);
+            _repository.Insert(student);
+            var studentFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(countAdded > 0);
+            student.Should().BeEquivalentTo(studentFound);
         }
 
         [TestCase(2, "Test2", null, "Test2")]
@@ -43,10 +45,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
 
             // Act
             student.Name = newName;
-            var countChanged = _repository.Update(student);
+            _repository.Update(student);
+            var studentFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countChanged > 0);
+            student.Should().BeEquivalentTo(studentFound);
         }
 
         [TestCase(3, null, "Test3", "Test3")]
@@ -57,10 +60,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             _repository.Insert(student);
 
             // Act
-            var countDeleted = _repository.Delete(student);
+            _repository.Delete(student);
+            var studentFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countDeleted > 0);
+            Assert.IsNull(studentFound);
         }
 
         [TestCase(4, "Test4", "Test4", "Test4")]
@@ -85,10 +89,10 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             _repository.Insert(student);
 
             // Act
-            var result = _repository.GetById(id);
+            var studentFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(result);
+            student.Should().BeEquivalentTo(studentFound);
         }
     }
 }

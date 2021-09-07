@@ -2,6 +2,7 @@
 using System.Linq;
 using Faculty.DataAccessLayer;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
@@ -35,10 +36,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             };
 
             // Act
-            var countAdded = _repository.Insert(faculty);
+            _repository.Insert(faculty);
+            var facultyFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(countAdded > 0);
+            faculty.Should().BeEquivalentTo(facultyFound);
         }
 
         [TestCase(2, 5, 2, 2, 2)]
@@ -59,10 +61,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
 
             // Act
             faculty.CountYearEducation = newCountYear;
-            var countChanged = _repository.Update(faculty);
+            _repository.Update(faculty);
+            var facultyFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countChanged > 0);
+            faculty.Should().BeEquivalentTo(facultyFound);
         }
 
         [TestCase(3, 5, 1, 1, 1)]
@@ -81,10 +84,11 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             _repository.Insert(faculty);
 
             // Act
-            var countDeleted = _repository.Delete(faculty);
+            _repository.Delete(faculty);
+            var facultyFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countDeleted > 0);
+            Assert.IsNull(facultyFound);
         }
 
         [TestCase(4, 5, 3, 3, 1)]
@@ -125,10 +129,10 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
             _repository.Insert(faculty);
 
             // Act
-            var result = _repository.GetById(id);
+            var facultyFound = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(result);
+            faculty.Should().BeEquivalentTo(facultyFound);
         }
     }
 }
