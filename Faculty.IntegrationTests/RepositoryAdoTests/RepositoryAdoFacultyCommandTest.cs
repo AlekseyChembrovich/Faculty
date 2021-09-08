@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Faculty.DataAccessLayer;
 using Faculty.DataAccessLayer.RepositoryAdo;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 
@@ -12,23 +14,27 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
     public class RepositoryAdoFacultyCommandTest
     {
         private IRepository<DataAccessLayer.Models.Faculty> _repository;
+        private DatabaseConfiguration _databaseConfiguration;
 
         [SetUp]
         public void Setup()
         {
             var configuration = new ConfigurationBuilder().AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json")).Build();
-            var connectionString = configuration["ConnectionStrings:DefaultConnection"];
-            var contextAdo = new DatabaseContextAdo(connectionString);
-            _repository = new RepositoryAdoFaculty(contextAdo);
+            _databaseConfiguration = new DatabaseConfiguration(configuration);
+            //_databaseConfiguration.DropTestDatabase();
+            _databaseConfiguration.DeployTestDatabase();
+            _repository = new RepositoryAdoFaculty(_databaseConfiguration.ContextAdo);
         }
 
         [TestCase(5, 1, 1, 1)]
         public void InsertMethod_WhenInsertCuratorEntityRepositoryAdo_ThenStudentEntityInserted(int countYear, int groupId, int studentId, int curatorId)
         {
             // Arrange
+            const int id = 6;
             var faculty = new DataAccessLayer.Models.Faculty
             {
-                StartDateEducation = DateTime.Now,
+                Id = id,
+                StartDateEducation = new DateTime(2000, 09, 01),
                 CountYearEducation = countYear,
                 GroupId = groupId,
                 StudentId = studentId,
@@ -36,59 +42,43 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
             };
 
             // Act
-            var countAdded = _repository.Insert(faculty);
+            _repository.Insert(faculty);
+            var facultyInserted = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countAdded > 0);
+            faculty.Should().BeEquivalentTo(facultyInserted);
         }
 
-        [TestCase(4, 2, 2, 2)]
-        public void UpdateMethod_WhenUpdateCuratorEntityRepositoryAdo_ThenStudentEntityUpdated(int countYear, int groupId, int studentId, int curatorId)
+        [Test]
+        public void UpdateMethod_WhenUpdateCuratorEntityRepositoryAdo_ThenStudentEntityUpdated()
         {
             // Arrange
+            const int id = 1;
             const int newCountYear = 2;
-            var faculty = new DataAccessLayer.Models.Faculty
-            {
-                StartDateEducation = DateTime.Now,
-                CountYearEducation = countYear,
-                GroupId = groupId,
-                StudentId = studentId,
-                CuratorId = curatorId
-            };
-            _repository.Insert(faculty);
-            var facultyInserted = _repository.GetAll().FirstOrDefault(st => st.StudentId == studentId && st.GroupId == groupId && 
-                                                                            st.CuratorId == curatorId && st.CountYearEducation == countYear);
+            var faculty = _repository.GetById(id);
 
             // Act
-            facultyInserted.CountYearEducation = newCountYear;
-            var countChanged = _repository.Update(facultyInserted);
+            faculty.CountYearEducation = newCountYear;
+            _repository.Update(faculty);
+            var facultyChanged = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countChanged > 0);
+            faculty.Should().BeEquivalentTo(facultyChanged);
         }
 
-        [TestCase(5, 3, 3, 3)]
-        public void DeleteMethod_WhenDeleteCuratorEntityRepositoryAdo_ThenStudentEntityDeleted(int countYear, int groupId, int studentId, int curatorId)
+        [Test]
+        public void DeleteMethod_WhenDeleteCuratorEntityRepositoryAdo_ThenStudentEntityDeleted()
         {
             // Arrange
-            // Arrange
-            var faculty = new DataAccessLayer.Models.Faculty
-            {
-                StartDateEducation = DateTime.Now,
-                CountYearEducation = countYear,
-                GroupId = groupId,
-                StudentId = studentId,
-                CuratorId = curatorId
-            };
-            _repository.Insert(faculty);
-            var facultyInserted = _repository.GetAll().FirstOrDefault(st => st.StudentId == studentId && st.GroupId == groupId &&
-                                                                            st.CuratorId == curatorId && st.CountYearEducation == countYear);
+            const int id = 2;
+            var faculty = _repository.GetById(id);
 
             // Act
-            var countDeleted = _repository.Delete(facultyInserted);
+            _repository.Delete(faculty);
+            var facultyDeleted = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(countDeleted > 0);
+            Assert.IsNull(facultyDeleted);
         }
 
         [Test]
@@ -108,14 +98,13 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
         public void GetByIdMethod_WhenSelectCuratorEntityRepositoryAdo_ThenSpecializationEntitySelected()
         {
             // Arrange
-            const int idExistsModel = 1;
-            //IRepository<Specialization> repository = new RepositoryAdoSpecialization(_contextAdo);
+            const int id = 3;
 
             // Act
-            var result = _repository.GetById(idExistsModel);
+            var facultyFinded = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.IsTrue(facultyFinded.Id == id);
         }
     }
 }

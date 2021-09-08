@@ -6,6 +6,7 @@ using Faculty.DataAccessLayer;
 using Faculty.DataAccessLayer.Models;
 using Microsoft.Extensions.Configuration;
 using Faculty.DataAccessLayer.RepositoryAdo;
+using FluentAssertions;
 
 namespace Faculty.IntegrationTests.RepositoryAdoTests
 {
@@ -13,59 +14,63 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
     public class RepositoryAdoStudentCommandTest
     {
         private IRepository<Student> _repository;
+        private DatabaseConfiguration _databaseConfiguration;
 
         [SetUp]
         public void Setup()
         {
             var configuration = new ConfigurationBuilder().AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json")).Build();
-            var connectionString = configuration["ConnectionStrings:DefaultConnection"];
-            var contextAdo = new DatabaseContextAdo(connectionString);
-            _repository = new RepositoryAdoStudent(contextAdo);
+            _databaseConfiguration = new DatabaseConfiguration(configuration);
+            //_databaseConfiguration.DropTestDatabase();
+            _databaseConfiguration.DeployTestDatabase();
+            _repository = new RepositoryAdoStudent(_databaseConfiguration.ContextAdo);
         }
 
-        [TestCase("Test1", null, "Test1")]
+        [TestCase("test6", "test6", "test6")]
         public void InsertMethod_WhenInsertStudentEntityRepositoryAdo_ThenStudentEntityInserted(string surname, string name, string doublename)
         {
             // Arrange
-            var student = new Student { Surname = surname, Name = name, Doublename = doublename };
+            const int id = 6;
+            var student = new Student { Id = id, Surname = surname, Name = name, Doublename = doublename };
             
             // Act
-            var countAdded = _repository.Insert(student);
-            
+            _repository.Insert(student);
+            var studentInserted = _repository.GetById(id);
+
             // Assert
-            Assert.IsTrue(countAdded > 0);
+            student.Should().BeEquivalentTo(studentInserted);
         }
 
-        [TestCase("Test2", "Test2", null)]
-        public void UpdateMethod_WhenUpdateStudentEntityRepositoryAdo_ThenStudentEntityUpdated(string surname, string name, string doublename)
+        [Test]
+        public void UpdateMethod_WhenUpdateStudentEntityRepositoryAdo_ThenStudentEntityUpdated()
         {
             // Arrange
-            const string newName = "Test4";
-            var student = new Student { Surname = surname, Name = name, Doublename = doublename };
-            _repository.Insert(student);
-            var studentInserted = _repository.GetAll().FirstOrDefault(st => st.Surname == surname && st.Name == name && st.Doublename == doublename);
-            
+            const int id = 1;
+            const string newName = "test7";
+            var student = _repository.GetById(id);
+
             // Act
-            studentInserted.Name = newName;
-            var countChanged = _repository.Update(studentInserted);
-            
+            student.Name = newName;
+            _repository.Update(student);
+            var studentChanged = _repository.GetById(id);
+
             // Assert
-            Assert.IsTrue(countChanged > 0);
+            student.Should().BeEquivalentTo(studentChanged);
         }
 
-        [TestCase("Test3", "Test3", null)]
-        public void DeleteMethod_WhenDeleteStudentEntityRepositoryAdo_ThenStudentEntityDeleted(string surname, string name, string doublename)
+        [Test]
+        public void DeleteMethod_WhenDeleteStudentEntityRepositoryAdo_ThenStudentEntityDeleted()
         {
             // Arrange
-            var student = new Student { Surname = surname, Name = name, Doublename = doublename };
-            _repository.Insert(student);
-            var studentInserted = _repository.GetAll().FirstOrDefault(st => st.Surname == surname && st.Name == name && st.Doublename == doublename);
-            
+            const int id = 2;
+            var student = _repository.GetById(id);
+
             // Act
-            var countDeleted = _repository.Delete(studentInserted);
-            
+            _repository.Delete(student);
+            var studentDeleted = _repository.GetById(id);
+
             // Assert
-            Assert.IsNotNull(countDeleted > 0);
+            Assert.IsNull(studentDeleted);
         }
 
         [Test]
@@ -85,14 +90,13 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
         public void GetByIdMethod_WhenSelectStudentEntityRepositoryAdo_ThenSpecializationEntitySelected()
         {
             // Arrange
-            const int idExistsModel = 1;
-            //IRepository<Specialization> repository = new RepositoryAdoSpecialization(_contextAdo);
+            const int id = 1;
 
             // Act
-            var result = _repository.GetById(idExistsModel);
+            var student = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.IsTrue(student.Id == id);
         }
     }
 }

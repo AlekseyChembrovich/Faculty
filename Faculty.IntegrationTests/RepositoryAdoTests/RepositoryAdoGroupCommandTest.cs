@@ -4,6 +4,7 @@ using System.Linq;
 using Faculty.DataAccessLayer;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryAdo;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 
@@ -13,59 +14,63 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
     public class RepositoryAdoGroupCommandTest
     {
         private IRepository<Group> _repository;
+        private DatabaseConfiguration _databaseConfiguration;
 
         [SetUp]
         public void Setup()
         {
             var configuration = new ConfigurationBuilder().AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json")).Build();
-            var connectionString = configuration["ConnectionStrings:DefaultConnection"];
-            var contextAdo = new DatabaseContextAdo(connectionString);
-            _repository = new RepositoryAdoGroup(contextAdo);
+            _databaseConfiguration = new DatabaseConfiguration(configuration);
+            //_databaseConfiguration.DropTestDatabase();
+            _databaseConfiguration.DeployTestDatabase();
+            _repository = new RepositoryAdoGroup(_databaseConfiguration.ContextAdo);
         }
 
-        [TestCase("Test1", 1)]
+        [TestCase("test6", 1)]
         public void InsertMethod_WhenInsertStudentEntityRepositoryAdo_ThenStudentEntityInserted(string name, int specializationId)
         {
             // Arrange
-            var group = new Group { Name = name, SpecializationId = specializationId };
+            const int id = 6;
+            var group = new Group { Id = id, Name = name, SpecializationId = specializationId };
 
             // Act
-            var countAdded = _repository.Insert(group);
+            _repository.Insert(group);
+            var groupInserted = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countAdded > 0);
+            group.Should().BeEquivalentTo(groupInserted);
         }
 
-        [TestCase("Test2", 1)]
-        public void UpdateMethod_WhenUpdateStudentEntityRepositoryAdo_ThenStudentEntityUpdated(string name, int specializationId)
+        [Test]
+        public void UpdateMethod_WhenUpdateStudentEntityRepositoryAdo_ThenStudentEntityUpdated()
         {
             // Arrange
-            const string newName = "Test4";
-            var group = new Group { Name = name, SpecializationId = specializationId };
-            _repository.Insert(group);
-            var groupInserted = _repository.GetAll().FirstOrDefault(st => st.Name == name && st.SpecializationId == specializationId);
+            const int id = 1;
+            const string newName = "test7";
+            var group = _repository.GetById(id);
 
             // Act
-            groupInserted.Name = newName;
-            var countChanged = _repository.Update(groupInserted);
+            group.Name = newName;
+            _repository.Update(group);
+            var groupChanged = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(countChanged > 0);
+            group.Should().BeEquivalentTo(groupChanged);
         }
 
-        [TestCase("Test3", 1)]
-        public void DeleteMethod_WhenDeleteStudentEntityRepositoryAdo_ThenStudentEntityDeleted(string name, int specializationId)
+        [Test]
+        public void DeleteMethod_WhenDeleteStudentEntityRepositoryAdo_ThenStudentEntityDeleted()
         {
             // Arrange
-            var group = new Group { Name = name, SpecializationId = specializationId };
-            _repository.Insert(group);
-            var groupInserted = _repository.GetAll().FirstOrDefault(st => st.Name == name);
+            const int id = 2;
+            var group = _repository.GetById(id);
 
             // Act
-            var countDeleted = _repository.Delete(groupInserted);
+            _repository.Delete(group);
+            var groupDeleted = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(countDeleted > 0);
+            Assert.IsNull(groupDeleted);
         }
 
         [Test]
@@ -85,14 +90,13 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
         public void GetByIdMethod_WhenSelectSpecializationEntityRepositoryAdo_ThenSpecializationEntitySelected()
         {
             // Arrange
-            const int idExistsModel = 1;
-            //IRepository<Specialization> repository = new RepositoryAdoSpecialization(_contextAdo);
+            const int id = 1;
 
             // Act
-            var result = _repository.GetById(idExistsModel);
+            var group = _repository.GetById(id);
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.IsTrue(group.Id == id);
         }
     }
 }
