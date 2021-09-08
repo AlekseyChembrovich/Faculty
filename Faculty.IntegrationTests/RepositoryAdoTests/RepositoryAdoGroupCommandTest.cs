@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Faculty.DataAccessLayer;
@@ -77,13 +78,21 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
         public void GetAllMethod_WhenSelectSpecializationsEntitiesRepositoryAdo_ThenSpecializationsEntitiesSelected()
         {
             // Arrange
-            //IRepository<Specialization> repository = new RepositoryAdoSpecialization(_contextAdo);
+            _databaseConfiguration.DeployTestDatabase();
+            var groups = new List<Group>()
+            {
+                new() { Id = 1, Name = "test1", SpecializationId = 1 },
+                new() { Id = 2, Name = "test2", SpecializationId = 2 },
+                new() { Id = 3, Name = "test3", SpecializationId = 1 },
+                new() { Id = 4, Name = "test3", SpecializationId = 2 },
+                new() { Id = 5, Name = "test3", SpecializationId = 3 }
+            };
 
             // Act
-            var listResult = _repository.GetAll().ToList();
+            var groupsFinded = _repository.GetAll().ToList();
 
             // Assert
-            Assert.IsTrue(listResult.Count > 0);
+            groups.Should().BeEquivalentTo(groupsFinded);
         }
 
         [Test]

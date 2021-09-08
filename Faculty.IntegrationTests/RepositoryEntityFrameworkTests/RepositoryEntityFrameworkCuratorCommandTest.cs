@@ -39,7 +39,7 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
         public void UpdateMethod_WhenUpdateCuratorEntityRepositoryEntityFramework_ThenCuratorEntityUpdated(int id, string surname, string name, string doublename, string phone)
         {
             // Arrange
-            const string newName = "Test4";
+            const string newName = "Test6";
             var curator = new Curator { Id = id, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
             _repository.Insert(curator);
 

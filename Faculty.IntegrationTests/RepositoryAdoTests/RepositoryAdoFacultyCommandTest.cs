@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Faculty.DataAccessLayer;
@@ -85,13 +85,21 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
         public void GetAllMethod_WhenSelectCuratorsEntitiesRepositoryAdo_ThenSpecializationsEntitiesSelected()
         {
             // Arrange
-            //IRepository<Specialization> repository = new RepositoryAdoSpecialization(_contextAdo);
+            _databaseConfiguration.DeployTestDatabase();
+            var faculties = new List<DataAccessLayer.Models.Faculty>()
+            {
+                new() { Id = 1, StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 1, GroupId = 1, CuratorId = 1 },
+                new() { Id = 2, StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 4, StudentId = 2, GroupId = 2, CuratorId = 2 },
+                new() { Id = 3, StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 4, StudentId = 3, GroupId = 3, CuratorId = 3 },
+                new() { Id = 4, StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 4, GroupId = 3, CuratorId = 3 },
+                new() { Id = 5, StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 5, GroupId = 2, CuratorId = 2 }
+            };
 
             // Act
-            var listResult = _repository.GetAll().ToList();
+            var facultiesFinded = _repository.GetAll().ToList();
 
             // Assert
-            Assert.IsTrue(listResult.Count > 0);
+            faculties.Should().BeEquivalentTo(facultiesFinded);
         }
 
         [Test]

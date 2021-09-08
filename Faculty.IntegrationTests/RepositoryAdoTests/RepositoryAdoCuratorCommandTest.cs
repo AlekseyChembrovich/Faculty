@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Faculty.DataAccessLayer;
@@ -22,15 +23,16 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
             var configuration = new ConfigurationBuilder().AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json")).Build();
             _databaseConfiguration = new DatabaseConfiguration(configuration);
             //_databaseConfiguration.DropTestDatabase();
+            //_databaseConfiguration.DeployTestDatabase();
             _repository = new RepositoryAdoCurator(_databaseConfiguration.ContextAdo);
         }
 
-        /*[Test]
+        [Test]
         public void Test()
         {
             _databaseConfiguration.DeployTestDatabase();
             Assert.IsTrue(true);
-        }*/
+        }
 
         [TestCase("test6", "test6", "test6", "+375-29-557-06-67")]
         public void InsertMethod_WhenInsertCuratorEntityRepositoryAdo_ThenStudentEntityInserted(string surname, string name, string doublename, string phone)
@@ -83,13 +85,21 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
         public void GetAllMethod_WhenSelectCuratorsEntitiesRepositoryAdo_ThenSpecializationsEntitiesSelected()
         {
             // Arrange
-            //IRepository<Specialization> repository = new RepositoryAdoSpecialization(_contextAdo);
+            _databaseConfiguration.DeployTestDatabase();
+            var curators = new List<Curator>() 
+            {
+                new() { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-33-111-11-11" },
+                new() { Id = 2, Surname = "test2", Name = "test2", Doublename = "test2", Phone = "+375-33-222-22-22" },
+                new() { Id = 3, Surname = "test3", Name = "test3", Doublename = "test3", Phone = "+375-33-333-33-33" },
+                new() { Id = 4, Surname = "test4", Name = "test4", Doublename = "test4", Phone = "+375-33-444-44-44" },
+                new() { Id = 5, Surname = "test5", Name = "test5", Doublename = "test5", Phone = "+375-33-555-55-55" }
+            };
 
             // Act
-            var listResult = _repository.GetAll().ToList();
+            var curatorsFinded = _repository.GetAll().ToList();
 
             // Assert
-            Assert.IsTrue(listResult.Count > 0);
+            curators.Should().BeEquivalentTo(curatorsFinded);
         }
 
         [Test]
@@ -99,10 +109,10 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
             const int id = 3;
 
             // Act
-            var curator = _repository.GetById(id);
+            var curatorFinded = _repository.GetById(id);
 
             // Assert
-            Assert.IsTrue(curator.Id == id);
+            Assert.IsTrue(curatorFinded.Id == id);
         }
     }
 }

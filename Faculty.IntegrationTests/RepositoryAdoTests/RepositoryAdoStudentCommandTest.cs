@@ -7,6 +7,7 @@ using Faculty.DataAccessLayer.Models;
 using Microsoft.Extensions.Configuration;
 using Faculty.DataAccessLayer.RepositoryAdo;
 using FluentAssertions;
+using System.Collections.Generic;
 
 namespace Faculty.IntegrationTests.RepositoryAdoTests
 {
@@ -77,13 +78,21 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
         public void GetAllMethod_WhenSelectStudentsEntitiesRepositoryAdo_ThenSpecializationsEntitiesSelected()
         {
             // Arrange
-            //IRepository<Specialization> repository = new RepositoryAdoSpecialization(_contextAdo);
+            _databaseConfiguration.DeployTestDatabase();
+            var students = new List<Student>()
+            {
+                new() { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1" },
+                new() { Id = 2, Surname = "test2", Name = "test2", Doublename = "test2" },
+                new() { Id = 3, Surname = "test1", Name = "test1", Doublename = "test1" },
+                new() { Id = 4, Surname = "test1", Name = "test1", Doublename = "test1" },
+                new() { Id = 5, Surname = "test5", Name = "test5", Doublename = "test5" }
+            };
 
             // Act
-            var listResult = _repository.GetAll().ToList();
+            var studentsFinded = _repository.GetAll().ToList();
 
             // Assert
-            Assert.IsTrue(listResult.Count > 0);
+            students.Should().BeEquivalentTo(studentsFinded);
         }
 
         [Test]
