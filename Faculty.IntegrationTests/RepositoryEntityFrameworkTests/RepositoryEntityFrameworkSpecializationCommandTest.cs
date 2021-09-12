@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using NUnit.Framework;
+using FluentAssertions;
 using Faculty.DataAccessLayer;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 
 namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
 {
@@ -12,87 +14,129 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
     public class RepositoryEntityFrameworkSpecializationCommandTest
     {
         private IRepository<Specialization> _repository;
+        private DatabaseContextEntityFramework _context;
+        private DatabaseFiller _databaseFiller;
 
         [SetUp]
         public void Setup()
         {
-            var options = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(databaseName: "Test").Options;
-            var contextEntity = new DatabaseContextEntityFramework(options);
-            _repository = new BaseRepositoryEntityFramework<Specialization>(contextEntity);
+            var options = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
+            _context = new DatabaseContextEntityFramework(options);
+            _repository = new BaseRepositoryEntityFramework<Specialization>(_context);
+            _databaseFiller = new DatabaseFiller(_context);
+            _databaseFiller.Fill();
         }
 
-        [TestCase(1, "Test1")]
-        public void InsertMethod_WhenInsertCuratorEntityRepositoryEntityFramework_ThenCuratorEntityInserted(int id, string name)
+        [TearDown]
+        public void TearDown()
         {
-            // Arrange
-            var specialization = new Specialization { Id = id, Name = name };
-
-            // Act
-            _repository.Insert(specialization);
-            var specializationFound = _repository.GetById(id);
-
-            // Assert
-            specialization.Should().BeEquivalentTo(specializationFound);
+            _databaseFiller.Clear();
+            _context.Database.EnsureDeleted();
+            _context.Dispose();
         }
 
-        [TestCase(2, "Test2")]
-        public void UpdateMethod_WhenUpdateCuratorEntityRepositoryEntityFramework_ThenCuratorEntityUpdated(int id, string name)
+        [TestCase("test6")]
+        public void InsertMethod_WhenInsertSpecializationEntity_ThenEntityInserted(string name)
         {
             // Arrange
-            const string newName = "Test10";
-            var specialization = new Specialization { Id = id, Name = name };
-            _repository.Insert(specialization);
+            var specializationToInsert = new Specialization { Name = name };
+            var specializationsExisting = new List<Specialization>
+            {
+                new() { Name = "test1" },
+                new() { Name = "test2" },
+                new() { Name = "test3" },
+                new() { Name = "test4" },
+                new() { Name = "test5" }
+            };
 
             // Act
-            specialization.Name = newName;
-            _repository.Update(specialization);
-            var specializationFound = _repository.GetById(id);
+            _repository.Insert(specializationToInsert);
+            specializationsExisting.Add(specializationToInsert);
+            var modifiedSpecializationsFromDatabase = _repository.GetAll();
 
             // Assert
-            specialization.Should().BeEquivalentTo(specializationFound);
+            specializationsExisting.Should().BeEquivalentTo(modifiedSpecializationsFromDatabase, options => options.Excluding(c => c.Id).Excluding(c => c.Groups));
         }
 
-        [TestCase(3, "Test3")]
-        public void DeleteMethod_WhenDeleteCuratorEntityRepositoryEntityFramework_ThenCuratorEntityDeleted(int id, string name)
+        [Test]
+        public void UpdateMethod_WhenUpdateSpecializationEntity_ThenEntityUpdated()
         {
             // Arrange
-            var specialization = new Specialization { Id = id, Name = name };
-            _repository.Insert(specialization);
+            const int specializationExistingId = 1;
+            const string specializationNewName = "test7";
+            var specializationsModified = new List<Specialization>
+            {
+                new() { Name = specializationNewName },
+                new() { Name = "test2" },
+                new() { Name = "test3" },
+                new() { Name = "test4" },
+                new() { Name = "test5" }
+            };
+            var specializationToChange = _repository.GetById(specializationExistingId);
 
             // Act
-            _repository.Delete(specialization);
-            var specializationFound = _repository.GetById(id);
+            specializationToChange.Name = specializationNewName;
+            _repository.Update(specializationToChange);
+            var modifiedSpecializationsFromDatabase = _repository.GetAll();
 
             // Assert
-            Assert.IsNull(specializationFound);
+            specializationsModified.Should().BeEquivalentTo(modifiedSpecializationsFromDatabase, options => options.Excluding(c => c.Id).Excluding(c => c.Groups));
         }
 
-        [TestCase(4, "Test4")]
-        public void GetAllMethod_WhenSelectSpecializationsEntitiesRepositoryEntityFramework_ThenSpecializationsEntitiesSelected(int id, string name)
+        [Test]
+        public void DeleteMethod_WhenDeleteSpecializationEntity_ThenEntityDeleted()
         {
             // Arrange
-            var specialization = new Specialization { Id = id, Name = name };
-            _repository.Insert(specialization);
+            const int specializationExistingId = 2;
+            var specializationToDelete = _repository.GetById(specializationExistingId);
+            var specializationsWithoutDeletedEntity = new List<Specialization>
+            {
+                new() { Name = "test1" },
+                new() { Name = "test3" },
+                new() { Name = "test4" },
+                new() { Name = "test5" }
+            };
 
             // Act
-            var listResult = _repository.GetAll().ToList();
+            _repository.Delete(specializationToDelete);
+            var modifiedSpecializationsFromDatabase = _repository.GetAll().ToList();
 
             // Assert
-            Assert.IsTrue(listResult.Count > 0);
+            specializationsWithoutDeletedEntity.Should().BeEquivalentTo(modifiedSpecializationsFromDatabase, options => options.Excluding(c => c.Id).Excluding(c => c.Groups));
         }
 
-        [TestCase(5, "Test5")]
-        public void GetByIdMethod_WhenSelectSpecializationEntityRepositoryEntityFramework_ThenSpecializationEntitySelected(int id, string name)
+        [Test]
+        public void GetAllMethod_WhenSelectSpecializationsEntities_ThenEntitiesSelected()
         {
             // Arrange
-            var specialization = new Specialization { Id = id, Name = name };
-            _repository.Insert(specialization);
+            var specializationsExisting = new List<Specialization>
+            {
+                new() { Name = "test1" },
+                new() { Name = "test2" },
+                new() { Name = "test3" },
+                new() { Name = "test4" },
+                new() { Name = "test5" }
+            };
 
             // Act
-            var specializationFound = _repository.GetById(id);
+            var wholeSpecializationsDataSet = _repository.GetAll().ToList();
 
             // Assert
-            specialization.Should().BeEquivalentTo(specializationFound);
+            specializationsExisting.Should().BeEquivalentTo(wholeSpecializationsDataSet, options => options.Excluding(c => c.Id).Excluding(c => c.Groups));
+        }
+
+        [Test]
+        public void GetByIdMethod_WhenSelectSpecializationEntity_ThenEntitySelected()
+        {
+            // Arrange
+            const int curatorExistingId = 3;
+            var specializationExisting = new Student { Surname = "test3", Name = "test3", Doublename = "test3" };
+
+            // Act
+            var specializationFounded = _repository.GetById(curatorExistingId);
+
+            // Assert
+            specializationExisting.Should().BeEquivalentTo(specializationFounded, options => options.Excluding(c => c.Id).Excluding(c => c.Groups));
         }
     }
 }

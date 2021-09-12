@@ -37,6 +37,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 SetParametersInsertCommand(entity, command);
                 count = command.ExecuteNonQuery();
             }
+
             return count;
         }
 
@@ -54,6 +55,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 SetParametersUpdateCommand(entity, command);
                 count = command.ExecuteNonQuery();
             }
+
             return count;
         }
 
@@ -71,6 +73,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 SetParametersDeleteCommand(entity, command);
                 count = command.ExecuteNonQuery();
             }
+
             return count;
         }
 
@@ -85,6 +88,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
             {
                 result = SetParametersSelectCommandModels(command);
             }
+
             return result;
         }
 
@@ -100,6 +104,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
             {
                 result = SetParametersSelectCommandModel(id, command);
             }
+
             return result;
         }
 

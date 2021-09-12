@@ -78,6 +78,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 var curator = new Curator { Id = id, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
                 curators.Add(curator);
             }
+
             sqlDataReader.Close();
             return curators;
 
@@ -104,6 +105,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 var phone = TryParseNullableString(sqlDataReader.GetValue(4).ToString());
                 curator = new Curator { Id = modelId, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
             }
+
             sqlDataReader.Close();
             return curator;
 

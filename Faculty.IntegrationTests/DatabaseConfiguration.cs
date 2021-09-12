@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using Faculty.DataAccessLayer.RepositoryAdo;
+using Microsoft.SqlServer.Dac;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using Microsoft.SqlServer.Dac;
+using Faculty.DataAccessLayer.RepositoryAdo;
 
 namespace Faculty.IntegrationTests
 {
@@ -15,7 +15,7 @@ namespace Faculty.IntegrationTests
         /// <summary>
         /// Table name constant.
         /// </summary>
-        private const string TableName = "FacultyTest";
+        private const string TestTableName = "FacultyTest";
 
         /// <summary>
         /// Connection string.
@@ -50,9 +50,13 @@ namespace Faculty.IntegrationTests
         {
             var dacOptions = new DacDeployOptions
             {
-                CreateNewDatabase = true,
+                IncludeCompositeObjects = true,
+                BlockOnPossibleDataLoss = false,
                 IgnoreAuthorizer = true,
-                IgnoreUserSettingsObjects = true
+                IgnoreUserSettingsObjects = true,
+                VerifyDeployment = false,
+                VerifyCollationCompatibility = false,
+                CreateNewDatabase = true
             };
 
             var dacService = new DacServices(_connectionString);
@@ -63,7 +67,7 @@ namespace Faculty.IntegrationTests
             {
                 using (var dacPackage = DacPackage.Load(dacPacPath))
                 {
-                    dacService.Deploy(dacPackage, TableName, true, dacOptions);
+                    dacService.Deploy(dacPackage, TestTableName, true, dacOptions);
                 }
             }
             else
@@ -77,13 +81,13 @@ namespace Faculty.IntegrationTests
         /// </summary>
         public void DropTestDatabase()
         {
+            ContextAdo.Dispose();
             using (var connection = new SqlConnection(_connectionString))
             {
                 using (var command = connection.CreateCommand())
                 {
                     connection.Open();
-                    command.CommandText = "USE master" + 
-                                            $"DROP DATABASE [{TableName}];";
+                    command.CommandText = $"USE master; DROP DATABASE {TestTableName};";
                     command.ExecuteNonQuery();
                 }
             }

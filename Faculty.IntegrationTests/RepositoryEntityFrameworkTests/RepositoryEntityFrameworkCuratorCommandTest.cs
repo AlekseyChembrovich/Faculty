@@ -1,10 +1,12 @@
-﻿using Faculty.DataAccessLayer;
+﻿using System;
+using System.Linq;
+using NUnit.Framework;
+using FluentAssertions;
+using Faculty.DataAccessLayer;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
-using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
-using System.Linq;
-using FluentAssertions;
 
 namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
 {
@@ -12,87 +14,129 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
     public class RepositoryEntityFrameworkCuratorCommandTest
     {
         private IRepository<Curator> _repository;
+        private DatabaseContextEntityFramework _context;
+        private DatabaseFiller _databaseFiller;
 
         [SetUp]
         public void Setup()
         {
-            var options = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(databaseName: "Test").Options;
-            var contextEntity = new DatabaseContextEntityFramework(options);
-            _repository = new BaseRepositoryEntityFramework<Curator>(contextEntity);
+            var options = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
+            _context = new DatabaseContextEntityFramework(options);
+            _databaseFiller = new DatabaseFiller(_context);
+            _repository = new BaseRepositoryEntityFramework<Curator>(_context);
+            _databaseFiller.Fill();
         }
 
-        [TestCase(1, "Test1", "Test1", "Test1", null)]
-        public void InsertMethod_WhenInsertCuratorEntityRepositoryEntityFramework_ThenCuratorEntityInserted(int id, string surname, string name, string doublename, string phone)
+        [TearDown]
+        public void TearDown()
         {
-            // Arrange
-            var curator = new Curator { Id = id, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
-
-            // Act
-            _repository.Insert(curator);
-            var curatorFound = _repository.GetById(id);
-
-            // Assert
-            curator.Should().BeEquivalentTo(curatorFound);
+            _databaseFiller.Clear();
+            _context.Database.EnsureDeleted();
+            _context.Dispose();
         }
 
-        [TestCase(2, "Test2", "Test2", "Test2", "+375-33-557-06-67")]
-        public void UpdateMethod_WhenUpdateCuratorEntityRepositoryEntityFramework_ThenCuratorEntityUpdated(int id, string surname, string name, string doublename, string phone)
+        [TestCase("test6", "test6", "test6", "+375-33-557-06-67")]
+        public void InsertMethod_WhenInsertCuratorEntity_ThenEntityInserted(string surname, string name, string doublename, string phone)
         {
             // Arrange
-            const string newName = "Test6";
-            var curator = new Curator { Id = id, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
-            _repository.Insert(curator);
+            var curatorToInsert = new Curator { Surname = surname, Name = name, Doublename = doublename, Phone = phone };
+            var curatorsExisting = new List<Curator>
+            {
+                new() { Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-33-111-11-11" },
+                new() { Surname = "test2", Name = "test2", Doublename = "test2", Phone = "+375-33-222-22-22" },
+                new() { Surname = "test3", Name = "test3", Doublename = "test3", Phone = "+375-33-333-33-33" },
+                new() { Surname = "test4", Name = "test4", Doublename = "test4", Phone = "+375-33-444-44-44" },
+                new() { Surname = "test5", Name = "test5", Doublename = "test5", Phone = "+375-33-555-55-55" }
+            };
 
             // Act
-            curator.Name = newName;
-            _repository.Update(curator);
-            var curatorFound = _repository.GetById(id);
+            _repository.Insert(curatorToInsert);
+            curatorsExisting.Add(curatorToInsert);
+            var modifiedCuratorsFromDatabase = _repository.GetAll();
 
             // Assert
-            curator.Should().BeEquivalentTo(curatorFound);
+            curatorsExisting.Should().BeEquivalentTo(modifiedCuratorsFromDatabase, options => options.Excluding(c => c.Id).Excluding(c => c.Faculties));
         }
 
-        [TestCase(3, "Test3", "Test3", "Test3", "+375-33-557-06-67")]
-        public void DeleteMethod_WhenDeleteCuratorEntityRepositoryEntityFramework_ThenCuratorEntityDeleted(int id, string surname, string name, string doublename, string phone)
+        [Test]
+        public void UpdateMethod_WhenUpdateCuratorEntity_ThenEntityUpdated()
         {
             // Arrange
-            var curator = new Curator { Id = id, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
-            _repository.Insert(curator);
+            const int curatorExistingId = 1;
+            const string curatorNewName = "test7";
+            var curatorsModified = new List<Curator>
+            {
+                new() { Surname = "test1", Name = curatorNewName, Doublename = "test1", Phone = "+375-33-111-11-11" },
+                new() { Surname = "test2", Name = "test2", Doublename = "test2", Phone = "+375-33-222-22-22" },
+                new() { Surname = "test3", Name = "test3", Doublename = "test3", Phone = "+375-33-333-33-33" },
+                new() { Surname = "test4", Name = "test4", Doublename = "test4", Phone = "+375-33-444-44-44" },
+                new() { Surname = "test5", Name = "test5", Doublename = "test5", Phone = "+375-33-555-55-55" }
+            };
+            var curatorToChange = _repository.GetById(curatorExistingId);
 
             // Act
-            _repository.Delete(curator);
-            var curatorFound = _repository.GetById(id);
+            curatorToChange.Name = curatorNewName;
+            _repository.Update(curatorToChange);
+            var modifiedCuratorsFromDatabase = _repository.GetAll();
 
             // Assert
-            Assert.IsNull(curatorFound);
+            curatorsModified.Should().BeEquivalentTo(modifiedCuratorsFromDatabase, options => options.Excluding(c => c.Id).Excluding(c => c.Faculties));
         }
 
-        [TestCase(4, "Test4", "Test4", "Test4", "+375-33-557-06-67")]
-        public void GetAllMethod_WhenSelectCuratorsEntitiesRepositoryEntityFramework_ThenSpecializationsEntitiesSelected(int id, string surname, string name, string doublename, string phone)
+        [Test]
+        public void DeleteMethod_WhenDeleteCuratorEntity_ThenEntityDeleted()
         {
             // Arrange
-            var curator = new Curator { Id = id, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
-            _repository.Insert(curator);
+            const int curatorExistingId = 2;
+            var curatorToDelete = _repository.GetById(curatorExistingId);
+            var curatorsWithoutDeletedEntity = new List<Curator>
+            {
+                new() { Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-33-111-11-11" },
+                new() { Surname = "test3", Name = "test3", Doublename = "test3", Phone = "+375-33-333-33-33" },
+                new() { Surname = "test4", Name = "test4", Doublename = "test4", Phone = "+375-33-444-44-44" },
+                new() { Surname = "test5", Name = "test5", Doublename = "test5", Phone = "+375-33-555-55-55" }
+            };
 
             // Act
-            var listResult = _repository.GetAll().ToList();
+            _repository.Delete(curatorToDelete);
+            var modifiedCuratorsFromDatabase = _repository.GetAll().ToList();
 
             // Assert
-            Assert.IsTrue(listResult.Count > 0);
+            curatorsWithoutDeletedEntity.Should().BeEquivalentTo(modifiedCuratorsFromDatabase, options => options.Excluding(c => c.Id).Excluding(c => c.Faculties));
         }
 
-        [TestCase(5, "Test5", "Test5", "Test5", "+375-33-557-06-67")]
-        public void GetByIdMethod_WhenSelectCuratorEntityRepositoryEntityFramework_ThenSpecializationEntitySelected(int id, string surname, string name, string doublename, string phone)
+        [Test]
+        public void GetAllMethod_WhenSelectCuratorsEntities_ThenEntitiesSelected()
         {
             // Arrange
-            var curator = new Curator { Id = id, Surname = surname, Name = name, Doublename = doublename, Phone = phone };
-            _repository.Insert(curator);
+            var curatorsExisting = new List<Curator>
+            {
+                new() { Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-33-111-11-11" },
+                new() { Surname = "test2", Name = "test2", Doublename = "test2", Phone = "+375-33-222-22-22" },
+                new() { Surname = "test3", Name = "test3", Doublename = "test3", Phone = "+375-33-333-33-33" },
+                new() { Surname = "test4", Name = "test4", Doublename = "test4", Phone = "+375-33-444-44-44" },
+                new() { Surname = "test5", Name = "test5", Doublename = "test5", Phone = "+375-33-555-55-55" }
+            };
 
             // Act
-            var curatorFound = _repository.GetById(id);
+            var wholeCuratorsDataSet = _repository.GetAll().ToList();
 
             // Assert
-            curator.Should().BeEquivalentTo(curatorFound);
+            curatorsExisting.Should().BeEquivalentTo(wholeCuratorsDataSet, options => options.Excluding(c => c.Id).Excluding(c => c.Faculties));
+        }
+
+        [Test]
+        public void GetByIdMethod_WhenSelectCuratorEntity_ThenEntitySelected()
+        {
+            // Arrange
+            const int curatorExistingId = 3;
+            var curatorExisting = new Curator { Surname = "test3", Name = "test3", Doublename = "test3", Phone = "+375-33-333-33-33" };
+
+            // Act
+            var curatorFounded = _repository.GetById(curatorExistingId);
+
+            // Assert
+            curatorExisting.Should().BeEquivalentTo(curatorFounded, options => options.Excluding(c => c.Id).Excluding(c => c.Faculties));
         }
     }
 }

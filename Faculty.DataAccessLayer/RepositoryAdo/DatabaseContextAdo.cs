@@ -30,6 +30,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 {
                     _sqlConnection.Open();
                 }
+
                 return _sqlConnection;
             }
         }

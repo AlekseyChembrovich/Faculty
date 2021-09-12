@@ -38,7 +38,11 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
                 var count = _context.SaveChanges();
                 return count;
             }
-            catch (DbUpdateConcurrencyException) { }
+            catch (DbUpdateConcurrencyException)
+            {
+
+            }
+
             return 0;
         }
 
@@ -57,7 +61,11 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
                 var count = _context.SaveChanges();
                 return count;
             }
-            catch (DbUpdateConcurrencyException) { }
+            catch (DbUpdateConcurrencyException)
+            {
+
+            }
+
             return 0;
         }
 
@@ -76,7 +84,11 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
                 var count = _context.SaveChanges();
                 return count;
             }
-            catch (DbUpdateConcurrencyException) { }
+            catch (DbUpdateConcurrencyException)
+            {
+
+            }
+
             return 0;
         }
 

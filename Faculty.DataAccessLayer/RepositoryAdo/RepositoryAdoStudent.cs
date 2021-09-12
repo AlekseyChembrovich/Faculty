@@ -75,6 +75,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 var student = new Student { Id = id, Surname = surname, Name = name, Doublename = doublename };
                 students.Add(student);
             }
+
             sqlDataReader.Close();
             return students;
 
@@ -100,6 +101,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 var doublename = TryParseNullableString(sqlDataReader.GetValue(3).ToString());
                 student = new Student { Id = modelId, Surname = surname, Name = name, Doublename = doublename };
             }
+
             sqlDataReader.Close();
             return student;
 

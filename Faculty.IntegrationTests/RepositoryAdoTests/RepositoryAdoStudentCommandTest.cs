@@ -2,12 +2,12 @@ using System;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using FluentAssertions;
 using Faculty.DataAccessLayer;
+using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Microsoft.Extensions.Configuration;
 using Faculty.DataAccessLayer.RepositoryAdo;
-using FluentAssertions;
-using System.Collections.Generic;
 
 namespace Faculty.IntegrationTests.RepositoryAdoTests
 {
@@ -22,90 +22,118 @@ namespace Faculty.IntegrationTests.RepositoryAdoTests
         {
             var configuration = new ConfigurationBuilder().AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json")).Build();
             _databaseConfiguration = new DatabaseConfiguration(configuration);
-            //_databaseConfiguration.DropTestDatabase();
             _databaseConfiguration.DeployTestDatabase();
             _repository = new RepositoryAdoStudent(_databaseConfiguration.ContextAdo);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            _databaseConfiguration.DropTestDatabase();
+        }
+
         [TestCase("test6", "test6", "test6")]
-        public void InsertMethod_WhenInsertStudentEntityRepositoryAdo_ThenStudentEntityInserted(string surname, string name, string doublename)
+        public void InsertMethod_WhenInsertStudentEntity_ThenEntityInserted(string surname, string name, string doublename)
         {
             // Arrange
-            const int id = 6;
-            var student = new Student { Id = id, Surname = surname, Name = name, Doublename = doublename };
-            
-            // Act
-            _repository.Insert(student);
-            var studentInserted = _repository.GetById(id);
-
-            // Assert
-            student.Should().BeEquivalentTo(studentInserted);
-        }
-
-        [Test]
-        public void UpdateMethod_WhenUpdateStudentEntityRepositoryAdo_ThenStudentEntityUpdated()
-        {
-            // Arrange
-            const int id = 1;
-            const string newName = "test7";
-            var student = _repository.GetById(id);
-
-            // Act
-            student.Name = newName;
-            _repository.Update(student);
-            var studentChanged = _repository.GetById(id);
-
-            // Assert
-            student.Should().BeEquivalentTo(studentChanged);
-        }
-
-        [Test]
-        public void DeleteMethod_WhenDeleteStudentEntityRepositoryAdo_ThenStudentEntityDeleted()
-        {
-            // Arrange
-            const int id = 2;
-            var student = _repository.GetById(id);
-
-            // Act
-            _repository.Delete(student);
-            var studentDeleted = _repository.GetById(id);
-
-            // Assert
-            Assert.IsNull(studentDeleted);
-        }
-
-        [Test]
-        public void GetAllMethod_WhenSelectStudentsEntitiesRepositoryAdo_ThenSpecializationsEntitiesSelected()
-        {
-            // Arrange
-            _databaseConfiguration.DeployTestDatabase();
-            var students = new List<Student>()
+            var studentToInsert = new Student { Surname = surname, Name = name, Doublename = doublename };
+            var studentsExisting = new List<Student>
             {
-                new() { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1" },
-                new() { Id = 2, Surname = "test2", Name = "test2", Doublename = "test2" },
-                new() { Id = 3, Surname = "test1", Name = "test1", Doublename = "test1" },
-                new() { Id = 4, Surname = "test1", Name = "test1", Doublename = "test1" },
-                new() { Id = 5, Surname = "test5", Name = "test5", Doublename = "test5" }
+                new() { Surname = "test1", Name = "test1", Doublename = "test1" },
+                new() { Surname = "test2", Name = "test2", Doublename = "test2" },
+                new() { Surname = "test3", Name = "test3", Doublename = "test3" },
+                new() { Surname = "test4", Name = "test4", Doublename = "test4" },
+                new() { Surname = "test5", Name = "test5", Doublename = "test5" }
             };
 
             // Act
-            var studentsFinded = _repository.GetAll().ToList();
+            _repository.Insert(studentToInsert);
+            studentsExisting.Add(studentToInsert);
+            var modifiedStudentsFromDatabase = _repository.GetAll();
 
             // Assert
-            students.Should().BeEquivalentTo(studentsFinded);
+            studentsExisting.Should().BeEquivalentTo(modifiedStudentsFromDatabase, options => options.Excluding(c => c.Id).Excluding(c => c.Faculties));
         }
 
         [Test]
-        public void GetByIdMethod_WhenSelectStudentEntityRepositoryAdo_ThenSpecializationEntitySelected()
+        public void UpdateMethod_WhenUpdateStudentEntity_ThenEntityUpdated()
         {
             // Arrange
-            const int id = 1;
+            const int studentExistingId = 1;
+            const string studentNewName = "test7";
+            var studentsModified = new List<Student>
+            {
+                new() { Surname = "test1", Name = studentNewName, Doublename = "test1" },
+                new() { Surname = "test2", Name = "test2", Doublename = "test2" },
+                new() { Surname = "test3", Name = "test3", Doublename = "test3" },
+                new() { Surname = "test4", Name = "test4", Doublename = "test4" },
+                new() { Surname = "test5", Name = "test5", Doublename = "test5" }
+            };
+            var studentToChange = _repository.GetById(studentExistingId);
 
             // Act
-            var student = _repository.GetById(id);
+            studentToChange.Name = studentNewName;
+            _repository.Update(studentToChange);
+            var modifiedStudentsFromDatabase = _repository.GetAll();
 
             // Assert
-            Assert.IsTrue(student.Id == id);
+            studentsModified.Should().BeEquivalentTo(modifiedStudentsFromDatabase, options => options.Excluding(c => c.Id).Excluding(c => c.Faculties));
+        }
+
+        [Test]
+        public void DeleteMethod_WhenDeleteStudentEntity_ThenEntityDeleted()
+        {
+            // Arrange
+            const int studentExistingId = 2;
+            var studentToDelete = _repository.GetById(studentExistingId);
+            var studentsWithoutDeletedEntity = new List<Student>
+            {
+                new() { Surname = "test1", Name = "test1", Doublename = "test1" },
+                new() { Surname = "test3", Name = "test3", Doublename = "test3" },
+                new() { Surname = "test4", Name = "test4", Doublename = "test4" },
+                new() { Surname = "test5", Name = "test5", Doublename = "test5" }
+            };
+
+            // Act
+            _repository.Delete(studentToDelete);
+            var modifiedStudentsFromDatabase = _repository.GetAll().ToList();
+
+            // Assert
+            studentsWithoutDeletedEntity.Should().BeEquivalentTo(modifiedStudentsFromDatabase, options => options.Excluding(c => c.Id).Excluding(c => c.Faculties));
+        }
+
+        [Test]
+        public void GetAllMethod_WhenSelectStudentsEntities_ThenEntitiesSelected()
+        {
+            // Arrange
+            var studentsExisting = new List<Student>
+            {
+                new() { Surname = "test1", Name = "test1", Doublename = "test1" },
+                new() { Surname = "test2", Name = "test2", Doublename = "test2" },
+                new() { Surname = "test3", Name = "test3", Doublename = "test3" },
+                new() { Surname = "test4", Name = "test4", Doublename = "test4" },
+                new() { Surname = "test5", Name = "test5", Doublename = "test5" }
+            };
+
+            // Act
+            var wholeStudentsDataSet = _repository.GetAll().ToList();
+
+            // Assert
+            studentsExisting.Should().BeEquivalentTo(wholeStudentsDataSet, options => options.Excluding(c => c.Id).Excluding(c => c.Faculties));
+        }
+
+        [Test]
+        public void GetByIdMethod_WhenSelectStudentEntity_ThenEntitySelected()
+        {
+            // Arrange
+            const int curatorExistingId = 3;
+            var studentExisting = new Student { Surname = "test3", Name = "test3", Doublename = "test3" };
+
+            // Act
+            var studentFounded = _repository.GetById(curatorExistingId);
+
+            // Assert
+            studentExisting.Should().BeEquivalentTo(studentFounded, options => options.Excluding(c => c.Id).Excluding(c => c.Faculties));
         }
     }
 }

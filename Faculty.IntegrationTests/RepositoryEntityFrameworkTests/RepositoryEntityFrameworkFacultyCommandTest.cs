@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
-using Faculty.DataAccessLayer;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using FluentAssertions;
+using Faculty.DataAccessLayer;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
 namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
 {
@@ -12,127 +13,143 @@ namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
     public class RepositoryEntityFrameworkFacultyCommandTest
     {
         private IRepository<DataAccessLayer.Models.Faculty> _repository;
+        private DatabaseContextEntityFramework _context;
+        private DatabaseFiller _databaseFiller;
 
         [SetUp]
         public void Setup()
         {
-            var options = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(databaseName: "Test").Options;
-            var contextEntity = new DatabaseContextEntityFramework(options);
-            _repository = new BaseRepositoryEntityFramework<DataAccessLayer.Models.Faculty>(contextEntity);
+            var options = new DbContextOptionsBuilder<DbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
+            _context = new DatabaseContextEntityFramework(options);
+            _repository = new BaseRepositoryEntityFramework<DataAccessLayer.Models.Faculty>(_context);
+            _databaseFiller = new DatabaseFiller(_context);
+            _databaseFiller.Fill();
         }
 
-        [TestCase(1, 5, 1, 1, 1)]
-        public void InsertMethod_WhenInsertCuratorEntityRepositoryEntityFramework_ThenCuratorEntityInserted(int id, int countYear, int groupId, int studentId, int curatorId)
+        [TearDown]
+        public void TearDown()
+        {
+            _databaseFiller.Clear();
+            _context.Database.EnsureDeleted();
+            _context.Dispose();
+        }
+
+        [TestCase(4, 2, 3, 3)]
+        public void InsertMethod_WhenInsertFacultyEntity_ThenEntityInserted(int countYear, int studentId, int groupId, int curatorId)
         {
             // Arrange
-            var faculty = new DataAccessLayer.Models.Faculty
+            var facultyToInsert = new DataAccessLayer.Models.Faculty
             {
-                Id = id,
-                StartDateEducation = DateTime.Now, 
+                StartDateEducation = new DateTime(2021, 09, 01), 
                 CountYearEducation = countYear, 
-                GroupId = groupId, 
                 StudentId = studentId, 
+                GroupId = groupId, 
                 CuratorId = curatorId
+            };
+            var facultiesExisting = new List<DataAccessLayer.Models.Faculty>
+            {
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 1, GroupId = 1, CuratorId = 1 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 4, StudentId = 2, GroupId = 1, CuratorId = 1 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 3, GroupId = 2, CuratorId = 2 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 4, StudentId = 2, GroupId = 3, CuratorId = 3 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 1, GroupId = 1, CuratorId = 1 }
             };
 
             // Act
-            _repository.Insert(faculty);
-            var facultyFound = _repository.GetById(id);
+            _repository.Insert(facultyToInsert);
+            facultiesExisting.Add(facultyToInsert);
+            var modifiedFacultiesFromDatabase = _repository.GetAll();
 
             // Assert
-            faculty.Should().BeEquivalentTo(facultyFound);
+            facultiesExisting.Should().BeEquivalentTo(modifiedFacultiesFromDatabase, options => options.Excluding(c => c.Id).Excluding(c => c.Curator).Excluding(c => c.Student).Excluding(c => c.Group));
         }
 
-        [TestCase(2, 5, 2, 2, 2)]
-        public void UpdateMethod_WhenUpdateCuratorEntityRepositoryEntityFramework_ThenCuratorEntityUpdated(int id, int countYear, int groupId, int studentId, int curatorId)
+        [Test]
+        public void UpdateMethod_WhenUpdateFacultyEntity_ThenEntityUpdated()
         {
             // Arrange
-            const int newCountYear = 4;
-            var faculty = new DataAccessLayer.Models.Faculty
+            const int facultyExistingId = 1;
+            const int countYearNew = 2;
+            var facultiesModified = new List<DataAccessLayer.Models.Faculty>
             {
-                Id = id,
-                StartDateEducation = DateTime.Now,
-                CountYearEducation = countYear,
-                GroupId = groupId,
-                StudentId = studentId,
-                CuratorId = curatorId
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = countYearNew, StudentId = 1, GroupId = 1, CuratorId = 1 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 4, StudentId = 2, GroupId = 1, CuratorId = 1 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 3, GroupId = 2, CuratorId = 2 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 4, StudentId = 2, GroupId = 3, CuratorId = 3 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 1, GroupId = 1, CuratorId = 1 }
             };
-            _repository.Insert(faculty);
+            var facultyToChange = _repository.GetById(facultyExistingId);
 
             // Act
-            faculty.CountYearEducation = newCountYear;
-            _repository.Update(faculty);
-            var facultyFound = _repository.GetById(id);
+            facultyToChange.CountYearEducation = countYearNew;
+            _repository.Update(facultyToChange);
+            var modifiedFacultiesFromDatabase = _repository.GetAll();
 
             // Assert
-            faculty.Should().BeEquivalentTo(facultyFound);
+            facultiesModified.Should().BeEquivalentTo(modifiedFacultiesFromDatabase, options => options.Excluding(c => c.Id).Excluding(c => c.Curator).Excluding(c => c.Student).Excluding(c => c.Group));
         }
 
-        [TestCase(3, 5, 1, 1, 1)]
-        public void DeleteMethod_WhenDeleteCuratorEntityRepositoryEntityFramework_ThenCuratorEntityDeleted(int id, int countYear, int groupId, int studentId, int curatorId)
+        [Test]
+        public void DeleteMethod_WhenDeleteFacultyEntity_ThenEntityDeleted()
         {
             // Arrange
-            var faculty = new DataAccessLayer.Models.Faculty
+            const int facultyExistingId = 2;
+            var facultyToDelete = _repository.GetById(facultyExistingId);
+            var facultiesWithoutDeletedEntity = new List<DataAccessLayer.Models.Faculty>
             {
-                Id = id,
-                StartDateEducation = DateTime.Now,
-                CountYearEducation = countYear,
-                GroupId = groupId,
-                StudentId = studentId,
-                CuratorId = curatorId
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 1, GroupId = 1, CuratorId = 1 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 3, GroupId = 2, CuratorId = 2 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 4, StudentId = 2, GroupId = 3, CuratorId = 3 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 1, GroupId = 1, CuratorId = 1 }
             };
-            _repository.Insert(faculty);
 
             // Act
-            _repository.Delete(faculty);
-            var facultyFound = _repository.GetById(id);
+            _repository.Delete(facultyToDelete);
+            var modifiedFacultiesFromDatabase = _repository.GetAll().ToList();
 
             // Assert
-            Assert.IsNull(facultyFound);
+            facultiesWithoutDeletedEntity.Should().BeEquivalentTo(modifiedFacultiesFromDatabase, options => options.Excluding(c => c.Id).Excluding(c => c.Curator).Excluding(c => c.Student).Excluding(c => c.Group));
         }
 
-        [TestCase(4, 5, 3, 3, 1)]
-        public void GetAllMethod_WhenSelectCuratorsEntitiesRepositoryEntityFramework_ThenSpecializationsEntitiesSelected(int id, int countYear, int groupId, int studentId, int curatorId)
+        [Test]
+        public void GetAllMethod_WhenSelectFacultiesEntities_ThenEntitiesSelected()
         {
             // Arrange
-            var faculty = new DataAccessLayer.Models.Faculty
+            var facultiesExisting = new List<DataAccessLayer.Models.Faculty>
             {
-                Id = id,
-                StartDateEducation = DateTime.Now,
-                CountYearEducation = countYear,
-                GroupId = groupId,
-                StudentId = studentId,
-                CuratorId = curatorId
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 1, GroupId = 1, CuratorId = 1 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 4, StudentId = 2, GroupId = 1, CuratorId = 1 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 3, GroupId = 2, CuratorId = 2 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 4, StudentId = 2, GroupId = 3, CuratorId = 3 },
+                new() { StartDateEducation = new DateTime(2021, 09, 01), CountYearEducation = 5, StudentId = 1, GroupId = 1, CuratorId = 1 }
             };
-            _repository.Insert(faculty);
 
             // Act
-            var listResult = _repository.GetAll().ToList();
+            var wholeFacultiesDataSet = _repository.GetAll().ToList();
 
             // Assert
-            Assert.IsTrue(listResult.Count > 0);
+            facultiesExisting.Should().BeEquivalentTo(wholeFacultiesDataSet, options => options.Excluding(c => c.Id).Excluding(c => c.Curator).Excluding(c => c.Student).Excluding(c => c.Group));
         }
 
-        [TestCase(5, 5, 2, 2, 1)]
-        public void GetByIdMethod_WhenSelectCuratorEntityRepositoryEntityFramework_ThenSpecializationEntitySelected(int id, int countYear, int groupId, int studentId, int curatorId)
+        [Test]
+        public void GetByIdMethod_WhenSelectFacultyEntity_ThenEntitySelected()
         {
             // Arrange
-            var faculty = new DataAccessLayer.Models.Faculty
+            const int facultyExistingId = 3;
+            var facultyExisting = new DataAccessLayer.Models.Faculty
             {
-                Id = id,
-                StartDateEducation = DateTime.Now,
-                CountYearEducation = countYear,
-                GroupId = groupId,
-                StudentId = studentId,
-                CuratorId = curatorId
+                StartDateEducation = new DateTime(2021, 09, 01), 
+                CountYearEducation = 5, 
+                StudentId = 3, 
+                GroupId = 2, 
+                CuratorId = 2
             };
-            _repository.Insert(faculty);
 
             // Act
-            var facultyFound = _repository.GetById(id);
+            var facultyFounded = _repository.GetById(facultyExistingId);
 
             // Assert
-            faculty.Should().BeEquivalentTo(facultyFound);
+            facultyExisting.Should().BeEquivalentTo(facultyFounded, options => options.Excluding(c => c.Id).Excluding(c => c.Curator).Excluding(c => c.Student).Excluding(c => c.Group));
         }
     }
 }

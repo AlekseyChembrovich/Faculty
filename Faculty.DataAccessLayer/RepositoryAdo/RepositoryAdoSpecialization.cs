@@ -67,6 +67,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 var specialization = new Specialization { Id = id, Name = name };
                 specializations.Add(specialization);
             }
+
             sqlDataReader.Close();
             return specializations;
 
@@ -90,6 +91,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 var name = TryParseNullableString(sqlDataReader.GetValue(1).ToString());
                 specialization = new Specialization { Id = modelId, Name = name };
             }
+
             sqlDataReader.Close();
             return specialization;
 

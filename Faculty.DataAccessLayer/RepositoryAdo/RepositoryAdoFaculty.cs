@@ -88,8 +88,10 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                     GroupId = groupId,
                     CuratorId = curatorId
                 };
+
                 faculties.Add(faculty);
             }
+
             sqlDataReader.Close();
             return faculties;
 
@@ -126,6 +128,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                     CuratorId = curatorId
                 };
             }
+
             sqlDataReader.Close();
             return faculty;
 

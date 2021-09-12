@@ -72,6 +72,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 var group = new Group { Id = id, Name = name, SpecializationId = specializationId };
                 groups.Add(group);
             }
+
             sqlDataReader.Close();
             return groups;
 
@@ -97,6 +98,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 var specializationId = TryParseNullableInt(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty);
                 group = new Group { Id = modelId, Name = name, SpecializationId = specializationId };
             }
+
             sqlDataReader.Close();
             return group;
 
