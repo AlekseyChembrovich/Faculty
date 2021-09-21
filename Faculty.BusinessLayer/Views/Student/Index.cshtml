@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Faculty.DataAccessLayer.Models.Student>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Student";
+}
+
+<div class="container mb-2">
+    <div class="row">
+        @Html.ActionLink("New", "Create", "Student", null, new { @class = "nav-link btn btn-primary" })
+    </div>
+</div>
+
+<div>
+    @foreach (var item in Model)
+    {
+        <div class="card">
+            <h5 class="card-header">Student</h5>
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <span>Surname: </span>
+                            <span class="card-text" asp-for="Surname">@item.Surname</span>
+                        </div>
+                        <div class="col">
+                            <span>Name: </span>
+                            <span class="card-text" asp-for="Name">@item.Name</span>
+                        </div>
+                        <div class="col">
+                            <span>Doublename: </span>
+                            <span class="card-text" asp-for="Doublename">@item.Doublename</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="row">
+                        @Html.ActionLink("Delete", "Delete", "Student", new {id = item.Id}, new {@class = "nav-link btn btn-primary mr-2"})
+                        @Html.ActionLink("Edit", "Edit", "Student", new {id = item.Id}, new {@class = "nav-link btn btn-primary"})
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

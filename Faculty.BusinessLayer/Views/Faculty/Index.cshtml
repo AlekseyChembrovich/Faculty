@@ -1,0 +1,24 @@
+﻿@model IEnumerable<Faculty.DataAccessLayer.Models.Faculty>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Faculty";
+}
+
+<div>
+    @foreach (var item in Model)
+    {
+        <div class="card">
+            <h5 class="card-header">Featured</h5>
+            <div class="card-body">
+                <p class="card-text">@item.StartDateEducation</p>
+                <p class="card-text">@item.CountYearEducation</p>
+                <p class="card-text">@item.Group</p>
+                <p class="card-text">@item.CuratorId</p>
+                <p class="card-text">@item.StudentId</p>
+                <a href="#" class="btn btn-primary">Edit</a>
+                <a href="#" class="btn btn-primary">Delete</a>
+            </div>
+        </div>
+    }
+</div>

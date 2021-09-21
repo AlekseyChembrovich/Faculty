@@ -1,0 +1,53 @@
+﻿@model Faculty.DataAccessLayer.Models.Student
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+<h4>Student</h4>
+<hr/>
+
+<div class="row">
+    <div class="col-md-4">
+        @using (Html.BeginForm("Edit", "Student", FormMethod.Post))
+        {
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group">
+                @Html.HiddenFor(x => x.Surname)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.Surname, "Surname: ")
+                @Html.EditorFor(x => x.Surname, null, null, new { @class = "form-control" })
+                @Html.ValidationMessageFor(x => x.Surname, "Check surname.", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.Name, "Name: ")
+                @Html.EditorFor(x => x.Name, null, null, new { @class = "form-control" })
+                @Html.ValidationMessageFor(x => x.Name, "Check name.", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.Doublename, "Doublename: ")
+                @Html.EditorFor(x => x.Doublename, null, null, new { @class = "form-control" })
+                @Html.ValidationMessageFor(x => x.Doublename, "Check doublename.", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        }
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

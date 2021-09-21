@@ -1,0 +1,20 @@
+﻿@model IEnumerable<Faculty.DataAccessLayer.Models.Specialization>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Student";
+}
+
+<div>
+    @foreach (var item in Model)
+    {
+        <div class="card">
+            <h5 class="card-header">Featured</h5>
+            <div class="card-body">
+                <p class="card-text">@item.Name</p>
+                <a href="#" class="btn btn-primary">Edit</a>
+                <a href="#" class="btn btn-primary">Delete</a>
+            </div>
+        </div>
+    }
+</div>
