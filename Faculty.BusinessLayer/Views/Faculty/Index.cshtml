@@ -5,20 +5,38 @@
     ViewData["Title"] = "Faculty";
 }
 
-<div>
+<div class="container mb-3">
+    @Html.ActionLink("New", "Create", "Faculty", null, new { @class = "btn btn-primary" })
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">StartDateEducation</th>
+        <th scope="col">CountYearEducation</th>
+        <th scope="col">Group</th>
+        <th scope="col">Curator</th>
+        <th scope="col">Student</th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
     @foreach (var item in Model)
     {
-        <div class="card">
-            <h5 class="card-header">Featured</h5>
-            <div class="card-body">
-                <p class="card-text">@item.StartDateEducation</p>
-                <p class="card-text">@item.CountYearEducation</p>
-                <p class="card-text">@item.Group</p>
-                <p class="card-text">@item.CuratorId</p>
-                <p class="card-text">@item.StudentId</p>
-                <a href="#" class="btn btn-primary">Edit</a>
-                <a href="#" class="btn btn-primary">Delete</a>
-            </div>
-        </div>
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.StartDateEducation.ToString("yyyy-MM-dd")</td>
+            <td>@item.CountYearEducation</td>
+            <td>@item.Group.Name</td>
+            <td>@item.Curator.Surname</td>
+            <td>@item.Student.Surname</td>
+            <td>
+                @Html.ActionLink("Delete", "Delete", "Faculty", new { id = item.Id }, new { @class = "btn btn-primary mr-2" })
+                @Html.ActionLink("Edit", "Edit", "Faculty", new { id = item.Id }, new { @class = "btn btn-primary" })
+            </td>
+        </tr>
     }
-</div>
+    </tbody>
+</table>
+

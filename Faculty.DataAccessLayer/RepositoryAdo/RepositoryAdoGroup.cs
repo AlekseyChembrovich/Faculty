@@ -26,7 +26,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
             command.CommandText = "INSERT INTO dbo.Groups (dbo.Groups.Name, dbo.Groups.SpecializationId) " +
                                   "VALUES (@name, @specializationId);";
             command.Parameters.AddWithValue("@name", entity.Name is null ? DBNull.Value : entity.Name);
-            command.Parameters.AddWithValue("@specializationId", entity.SpecializationId is null ? DBNull.Value : entity.SpecializationId);
+            command.Parameters.AddWithValue("@specializationId", entity.SpecializationId);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
             command.CommandText = "UPDATE dbo.Groups SET dbo.Groups.Name = @name, " +
                                   "dbo.Groups.SpecializationId = @specializationId WHERE dbo.Groups.Id = @id;";
             command.Parameters.AddWithValue("@name", entity.Name is null ? DBNull.Value : entity.Name);
-            command.Parameters.AddWithValue("@specializationId", entity.SpecializationId is null ? DBNull.Value : entity.SpecializationId);
+            command.Parameters.AddWithValue("@specializationId", entity.SpecializationId);
             command.Parameters.AddWithValue("@id", entity.Id);
         }
 
@@ -69,7 +69,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 int.TryParse(sqlDataReader.GetValue(0)?.ToString(), out var id);
                 var name = TryParseNullableString(sqlDataReader.GetValue(1).ToString());
                 var specializationId = TryParseNullableInt(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty);
-                var group = new Group { Id = id, Name = name, SpecializationId = specializationId };
+                var group = new Group { Id = id, Name = name, SpecializationId = specializationId ?? 0 };
                 groups.Add(group);
             }
 
@@ -96,7 +96,7 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
                 int.TryParse(sqlDataReader.GetValue(0)?.ToString(), out var modelId);
                 var name = TryParseNullableString(sqlDataReader.GetValue(1).ToString());
                 var specializationId = TryParseNullableInt(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty);
-                group = new Group { Id = modelId, Name = name, SpecializationId = specializationId };
+                group = new Group { Id = modelId, Name = name, SpecializationId = specializationId ?? 0 };
             }
 
             sqlDataReader.Close();

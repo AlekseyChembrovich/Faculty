@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Faculty.DataAccessLayer.Models
 {
@@ -10,32 +11,39 @@ namespace Faculty.DataAccessLayer.Models
         /// <summary>
         /// Unique identificator curator.
         /// </summary>
+        [Key]
+        [Required]
         public int Id { get; set; }
 
         /// <summary>
         /// Date start education student. 
         /// </summary>
-        public DateTime? StartDateEducation { get; set; }
+        [Required]
+        public DateTime StartDateEducation { get; set; }
 
         /// <summary>
         /// Count year education student.
         /// </summary>
-        public int? CountYearEducation { get; set; }
+        [Required]
+        public int CountYearEducation { get; set; }
 
         /// <summary>
         /// Foreign key for student entity.
         /// </summary>
-        public int? StudentId { get; set; }
+        [Required]
+        public int StudentId { get; set; }
 
         /// <summary>
         /// Foreign key for group entity.
         /// </summary>
-        public int? GroupId { get; set; }
+        [Required]
+        public int GroupId { get; set; }
 
         /// <summary>
         /// Foreign key for curator entity.
         /// </summary>
-        public int? CuratorId { get; set; }
+        [Required]
+        public int CuratorId { get; set; }
 
         /// <summary>
         /// Entity curator.

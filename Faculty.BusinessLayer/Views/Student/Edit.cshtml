@@ -11,36 +11,33 @@
 
 <div class="row">
     <div class="col-md-4">
-        @using (Html.BeginForm("Edit", "Student", FormMethod.Post))
-        {
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
+        <form asp-action="Edit" asp-controller="Student" method="post">
             <div class="form-group">
-                @Html.HiddenFor(x => x.Surname)
+                <input asp-for="Id" type="hidden"/>
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(x => x.Surname, "Surname: ")
-                @Html.EditorFor(x => x.Surname, null, null, new { @class = "form-control" })
-                @Html.ValidationMessageFor(x => x.Surname, "Check surname.", new { @class = "text-danger" })
+                <label asp-for="Surname">Surname: </label>
+                <input type="text" asp-for="Surname" class="form-control"/>
+                <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(x => x.Name, "Name: ")
-                @Html.EditorFor(x => x.Name, null, null, new { @class = "form-control" })
-                @Html.ValidationMessageFor(x => x.Name, "Check name.", new { @class = "text-danger" })
+                <label asp-for="Name">Name: </label>
+                <input type="text" asp-for="Name" class="form-control"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(x => x.Doublename, "Doublename: ")
-                @Html.EditorFor(x => x.Doublename, null, null, new { @class = "form-control" })
-                @Html.ValidationMessageFor(x => x.Doublename, "Check doublename.", new { @class = "text-danger" })
+                <label asp-for="Doublename">Doublename: </label>
+                <input type="text" asp-for="Doublename" class="form-control"/>
+                <span asp-validation-for="Doublename" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary"/>
             </div>
-        }
+        </form>
     </div>
 </div>
 

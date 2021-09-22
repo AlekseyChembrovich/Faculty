@@ -5,19 +5,35 @@
     ViewData["Title"] = "Student";
 }
 
-<div>
-    @foreach (var item in Model)
-    {
-        <div class="card">
-            <h5 class="card-header">Featured</h5>
-            <div class="card-body">
-                <p class="card-text">@item.Surname</p>
-                <p class="card-text">@item.Name</p>
-                <p class="card-text">@item.Doublename</p>
-                <p class="card-text">@item.Phone</p>
-                <a href="#" class="btn btn-primary">Edit</a>
-                <a href="#" class="btn btn-primary">Delete</a>
-            </div>
-        </div>
-    }
+<div class="container mb-3">
+    @Html.ActionLink("New", "Create", "Curator", null, new { @class = "btn btn-primary" })
 </div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Surname</th>
+            <th scope="col">Name</th>
+            <th scope="col">Doublename</th>
+            <th scope="col">Phone</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Surname</td>
+                <td>@item.Name</td>
+                <td>@item.Doublename</td>
+                <td>@item.Phone</td>
+                <td>
+                    @Html.ActionLink("Delete", "Delete", "Curator", new { id = item.Id }, new { @class = "btn btn-primary mr-2" })
+                    @Html.ActionLink("Edit", "Edit", "Curator", new { id = item.Id }, new { @class = "btn btn-primary" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

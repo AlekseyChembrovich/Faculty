@@ -2,20 +2,34 @@
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Student";
+    ViewData["Title"] = "Index";
 }
 
-<div>
-    @foreach (var item in Model)
-    {
-        <div class="card">
-            <h5 class="card-header">Featured</h5>
-            <div class="card-body">
-                <p class="card-text">@item.Name</p>
-                <p class="card-text">@item.Specialization</p>
-                <a href="#" class="btn btn-primary">Edit</a>
-                <a href="#" class="btn btn-primary">Delete</a>
-            </div>
-        </div>
-    }
+<div class="container mb-3">
+    @Html.ActionLink("New", "Create", "Group", null, new { @class = "btn btn-primary" })
 </div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Name</th>
+            <th scope="col">Specialization</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td>@item.Specialization.Name</td>
+                <td>
+                    @Html.ActionLink("Delete", "Delete", "Group", new { id = item.Id }, new { @class = "btn btn-primary mr-2" })
+                    @Html.ActionLink("Edit", "Edit", "Group", new { id = item.Id }, new { @class = "btn btn-primary" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

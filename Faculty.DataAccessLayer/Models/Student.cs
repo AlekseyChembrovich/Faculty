@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Faculty.DataAccessLayer.Models
 {
@@ -10,21 +11,29 @@ namespace Faculty.DataAccessLayer.Models
         /// <summary>
         /// Unique identificator specialization.
         /// </summary>
+        [Key]
+        [Required]
         public int Id { get; set; }
 
         /// <summary>
         /// Surname student.
         /// </summary>
+        [Required]
+        [StringLength(50)]
         public string Surname { get; set; }
 
         /// <summary>
         /// Name student.
         /// </summary>
+        [Required]
+        [StringLength(50)]
         public string Name { get; set; }
 
         /// <summary>
         /// Doublename student.
         /// </summary>
+        [Required]
+        [StringLength(50)]
         public string Doublename { get; set; }
 
         /// <summary>

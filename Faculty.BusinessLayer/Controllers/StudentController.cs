@@ -51,15 +51,8 @@ namespace Faculty.BusinessLayer.Controllers
         [HttpPost]
         public IActionResult Edit(Student student)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(student);
-            }
-            else
-            {
-                _repository.Update(student);
-                return RedirectToAction("Index");
-            }
+            _repository.Update(student);
+            return RedirectToAction("Index");
         }
     }
 }
