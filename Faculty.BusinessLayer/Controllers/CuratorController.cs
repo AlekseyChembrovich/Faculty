@@ -1,5 +1,6 @@
 ﻿using Faculty.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
@@ -9,7 +10,7 @@ namespace Faculty.BusinessLayer.Controllers
     {
         private readonly IRepository<Curator> _repository;
 
-        public CuratorController(DatabaseContextEntityFramework context)
+        public CuratorController(DbContext context)
         {
             _repository = new BaseRepositoryEntityFramework<Curator>(context);
         }

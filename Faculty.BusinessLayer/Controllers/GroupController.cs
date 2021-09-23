@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Faculty.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
@@ -9,63 +10,61 @@ namespace Faculty.BusinessLayer.Controllers
 {
     public class GroupController : Controller
     {
-        private readonly IRepository<Group> _repository;
-        private readonly DatabaseContextEntityFramework _context;
+        private readonly IRepository<Group> _repositoryGroup;
+        private readonly IRepository<Specialization> _repositorySpecialization;
 
-        public GroupController(DatabaseContextEntityFramework context)
+        public GroupController(DbContext context)
         {
-            _repository = new BaseRepositoryEntityFramework<Group>(context);
-            _context = context;
+            _repositoryGroup = new BaseRepositoryEntityFramework<Group>(context);
+            _repositorySpecialization = new BaseRepositoryEntityFramework<Specialization>(context);
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var groups = _repository.GetAll().ToList();
-            IRepository<Specialization> repositorySpecialization = new BaseRepositoryEntityFramework<Specialization>(_context);
+            var groups = _repositoryGroup.GetAll().ToList();
             foreach (var group in groups)
             {
-                group.Specialization = repositorySpecialization.GetById(group.SpecializationId);
+                group.Specialization = _repositorySpecialization.GetById(group.SpecializationId);
             }
+
             return View(groups);
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            IRepository<Specialization> repositorySpecialization = new BaseRepositoryEntityFramework<Specialization>(_context);
-            ViewBag.Groups = new SelectList(repositorySpecialization.GetAll(), "Id", "Name");
+            ViewBag.Groups = new SelectList(_repositorySpecialization.GetAll(), "Id", "Name");
             return View();
         }
 
         [HttpPost]
         public IActionResult Create(Group group)
         {
-            _repository.Insert(group);
+            _repositoryGroup.Insert(group);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var groupToDelete = _repository.GetById(id);
-            _repository.Delete(groupToDelete);
+            var groupToDelete = _repositoryGroup.GetById(id);
+            _repositoryGroup.Delete(groupToDelete);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            IRepository<Specialization> repositorySpecialization = new BaseRepositoryEntityFramework<Specialization>(_context);
-            ViewBag.Groups = new SelectList(repositorySpecialization.GetAll(), "Id", "Name");
-            var groupToEdit = _repository.GetById(id);
+            ViewBag.Groups = new SelectList(_repositorySpecialization.GetAll(), "Id", "Name");
+            var groupToEdit = _repositoryGroup.GetById(id);
             return View(groupToEdit);
         }
 
         [HttpPost]
         public IActionResult Edit(Group group)
         {
-            _repository.Update(group);
+            _repositoryGroup.Update(group);
             return RedirectToAction("Index");
         }
     }

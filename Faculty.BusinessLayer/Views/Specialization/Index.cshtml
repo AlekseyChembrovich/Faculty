@@ -1,8 +1,8 @@
-﻿@model IEnumerable<Faculty.DataAccessLayer.Models.Specialization>
+﻿@model IList<Faculty.DataAccessLayer.Models.Specialization>
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Specialization - List";
 }
 
 <div class="container mb-3">
@@ -12,20 +12,20 @@
 <table class="table">
     <thead>
         <tr>
-            <th scope="col">Id</th>
+            <th scope="col">Number</th>
             <th scope="col">Name</th>
             <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @for (var i = 0; i < Model.Count; i++)
         {
             <tr>
-                <td>@item.Id</td>
-                <td>@item.Name</td>
+                <td>@(i + 1)</td>
+                <td>@Model[i].Name</td>
                 <td>
-                    @Html.ActionLink("Delete", "Delete", "Specialization", new { id = item.Id }, new { @class = "btn btn-primary mr-2" })
-                    @Html.ActionLink("Edit", "Edit", "Specialization", new { id = item.Id }, new { @class = "btn btn-primary" })
+                    @Html.ActionLink("Delete", "Delete", "Specialization", new { id = Model[i].Id }, new { @class = "btn btn-primary mr-2" })
+                    @Html.ActionLink("Edit", "Edit", "Specialization", new { id = Model[i].Id }, new { @class = "btn btn-primary" })
                 </td>
             </tr>
         }

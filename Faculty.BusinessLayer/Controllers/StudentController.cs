@@ -1,5 +1,6 @@
 ﻿using Faculty.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
@@ -9,7 +10,7 @@ namespace Faculty.BusinessLayer.Controllers
     {
         private readonly IRepository<Student> _repository;
 
-        public StudentController(DatabaseContextEntityFramework context)
+        public StudentController(DbContext context)
         {
             _repository = new BaseRepositoryEntityFramework<Student>(context);
         }
