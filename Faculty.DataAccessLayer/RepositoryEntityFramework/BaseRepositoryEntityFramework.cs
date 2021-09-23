@@ -13,7 +13,7 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         /// <summary>
         /// Private field to store the database context for executing operations.
         /// </summary>
-        private readonly DbContext _context;
+        protected readonly DbContext Context;
 
         /// <summary>
         /// Constructor to initialize the database context.
@@ -21,7 +21,7 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         /// <param name="context">Database context.</param>
         public BaseRepositoryEntityFramework(DbContext context)
         {
-            _context = context;
+            Context = context;
         }
 
         /// <summary>
@@ -32,10 +32,10 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         public int Insert(T entity)
         {
             if (entity is null) return 0;
-            _context.Set<T>().Add(entity);
+            Context.Set<T>().Add(entity);
             try
             {
-                var count = _context.SaveChanges();
+                var count = Context.SaveChanges();
                 return count;
             }
             catch (DbUpdateConcurrencyException)
@@ -54,11 +54,11 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         public int Update(T entity)
         {
             if (entity is null) return 0;
-            _context.Set<T>().Attach(entity);
-            _context.Set<T>().Update(entity);
+            Context.Set<T>().Attach(entity);
+            Context.Set<T>().Update(entity);
             try
             {
-                var count = _context.SaveChanges();
+                var count = Context.SaveChanges();
                 return count;
             }
             catch (DbUpdateConcurrencyException)
@@ -77,11 +77,11 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         public int Delete(T entity)
         {
             if (entity is null) return 0;
-            _context.Set<T>().Attach(entity);
-            _context.Set<T>().Remove(entity);
+            Context.Set<T>().Attach(entity);
+            Context.Set<T>().Remove(entity);
             try
             {
-                var count = _context.SaveChanges();
+                var count = Context.SaveChanges();
                 return count;
             }
             catch (DbUpdateConcurrencyException)
@@ -98,7 +98,7 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         /// <returns>Lots of Entity objects returned.</returns>
         public IEnumerable<T> GetAll() 
         {
-            return _context.Set<T>().ToList();
+            return Context.Set<T>().ToList();
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         /// <returns>Entity object.</returns>
         public T GetById(int id)
         {
-            return _context.Set<T>().Find(id);
+            return Context.Set<T>().Find(id);
         }
     }
 }
