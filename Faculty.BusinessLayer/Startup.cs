@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
+using Faculty.BusinessLayer.Services.Extensions;
 
 namespace Faculty.BusinessLayer
 {
@@ -20,7 +19,7 @@ namespace Faculty.BusinessLayer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddTransient<DbContext, DatabaseContextEntityFramework>();
+            services.AddRepositories();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

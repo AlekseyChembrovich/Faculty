@@ -1,24 +1,23 @@
-﻿using Faculty.DataAccessLayer;
+﻿using System.Linq;
+using Faculty.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
 namespace Faculty.BusinessLayer.Controllers
 {
     public class StudentController : Controller
     {
-        private readonly IRepository<Student> _repository;
+        private readonly IRepository<Student> _repositoryStudent;
 
-        public StudentController(DbContext context)
+        public StudentController(IRepository<Student> repositoryStudent)
         {
-            _repository = new BaseRepositoryEntityFramework<Student>(context);
+            _repositoryStudent = repositoryStudent;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            return View(_repository.GetAll());
+            return View(_repositoryStudent.GetAll().ToList());
         }
 
         [HttpGet]
@@ -30,29 +29,29 @@ namespace Faculty.BusinessLayer.Controllers
         [HttpPost]
         public IActionResult Create(Student student)
         {
-            _repository.Insert(student);
+            _repositoryStudent.Insert(student);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var studentToDelete = _repository.GetById(id);
-            _repository.Delete(studentToDelete);
+            var studentToDelete = _repositoryStudent.GetById(id);
+            _repositoryStudent.Delete(studentToDelete);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var studentToEdit = _repository.GetById(id);
+            var studentToEdit = _repositoryStudent.GetById(id);
             return View(studentToEdit);
         }
 
         [HttpPost]
         public IActionResult Edit(Student student)
         {
-            _repository.Update(student);
+            _repositoryStudent.Update(student);
             return RedirectToAction("Index");
         }
     }

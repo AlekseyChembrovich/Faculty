@@ -1,10 +1,8 @@
 ﻿using System.Linq;
 using Faculty.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
 namespace Faculty.BusinessLayer.Controllers
 {
@@ -13,10 +11,10 @@ namespace Faculty.BusinessLayer.Controllers
         private readonly IRepository<Group> _repositoryGroup;
         private readonly IRepository<Specialization> _repositorySpecialization;
 
-        public GroupController(DbContext context)
+        public GroupController(IRepository<Group> repositoryGroup, IRepository<Specialization> repositorySpecialization)
         {
-            _repositoryGroup = new BaseRepositoryEntityFramework<Group>(context);
-            _repositorySpecialization = new BaseRepositoryEntityFramework<Specialization>(context);
+            _repositoryGroup = repositoryGroup;
+            _repositorySpecialization = repositorySpecialization;
         }
 
         [HttpGet]

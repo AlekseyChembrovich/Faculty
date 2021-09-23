@@ -1,10 +1,8 @@
 ﻿using System.Linq;
 using Faculty.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
 namespace Faculty.BusinessLayer.Controllers
 {
@@ -16,12 +14,13 @@ namespace Faculty.BusinessLayer.Controllers
         private readonly IRepository<Curator> _repositoryCurator;
         private readonly IRepository<Group> _repositoryGroup;
 
-        public FacultyController(DbContext context)
+        public FacultyController(IRepository<DataAccessLayer.Models.Faculty> repositoryFaculty, IRepository<Student> repositoryStudent, 
+                                 IRepository<Curator> repositoryCurator, IRepository<Group> repositoryGroup)
         {
-            _repositoryFaculty = new BaseRepositoryEntityFramework<DataAccessLayer.Models.Faculty>(context);
-            _repositoryStudent = new BaseRepositoryEntityFramework<Student>(context);
-            _repositoryCurator = new BaseRepositoryEntityFramework<Curator>(context);
-            _repositoryGroup = new BaseRepositoryEntityFramework<Group>(context);
+            _repositoryFaculty = repositoryFaculty;
+            _repositoryStudent = repositoryStudent;
+            _repositoryCurator = repositoryCurator;
+            _repositoryGroup = repositoryGroup;
         }
 
         [HttpGet]

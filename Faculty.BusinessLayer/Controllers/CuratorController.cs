@@ -1,24 +1,23 @@
-﻿using Faculty.DataAccessLayer;
+﻿using System.Linq;
+using Faculty.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
 namespace Faculty.BusinessLayer.Controllers
 {
     public class CuratorController : Controller
     {
-        private readonly IRepository<Curator> _repository;
+        private readonly IRepository<Curator> _repositoryCurator;
 
-        public CuratorController(DbContext context)
+        public CuratorController(IRepository<Curator> repositoryCurator)
         {
-            _repository = new BaseRepositoryEntityFramework<Curator>(context);
+            _repositoryCurator = repositoryCurator;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            return View(_repository.GetAll());
+            return View(_repositoryCurator.GetAll().ToList());
         }
 
         [HttpGet]
@@ -30,29 +29,29 @@ namespace Faculty.BusinessLayer.Controllers
         [HttpPost]
         public IActionResult Create(Curator curator)
         {
-            _repository.Insert(curator);
+            _repositoryCurator.Insert(curator);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var curatorToDelete = _repository.GetById(id);
-            _repository.Delete(curatorToDelete);
+            var curatorToDelete = _repositoryCurator.GetById(id);
+            _repositoryCurator.Delete(curatorToDelete);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var curatorToEdit = _repository.GetById(id);
+            var curatorToEdit = _repositoryCurator.GetById(id);
             return View(curatorToEdit);
         }
 
         [HttpPost]
         public IActionResult Edit(Curator curator)
         {
-            _repository.Update(curator);
+            _repositoryCurator.Update(curator);
             return RedirectToAction("Index");
         }
     }
