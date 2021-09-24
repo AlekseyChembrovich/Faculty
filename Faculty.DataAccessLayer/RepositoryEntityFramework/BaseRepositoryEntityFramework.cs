@@ -54,6 +54,7 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         public int Update(T entity)
         {
             if (entity is null) return 0;
+            Context.Entry(entity).State = EntityState.Detached;
             Context.Set<T>().Attach(entity);
             Context.Set<T>().Update(entity);
             try
@@ -98,7 +99,7 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         /// <returns>Lots of Entity objects returned.</returns>
         public IEnumerable<T> GetAll() 
         {
-            return Context.Set<T>().ToList();
+            return Context.Set<T>().AsNoTracking().ToList();
         }
 
         /// <summary>
@@ -108,7 +109,9 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         /// <returns>Entity object.</returns>
         public T GetById(int id)
         {
-            return Context.Set<T>().Find(id);
+            var entity = Context.Set<T>().Find(id);
+            Context.Entry(entity).State = EntityState.Detached;
+            return entity;
         }
     }
 }

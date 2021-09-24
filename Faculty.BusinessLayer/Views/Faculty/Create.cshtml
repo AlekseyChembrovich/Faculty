@@ -6,49 +6,49 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
-<h4>Faculty</h4>
+<h1>@_localizer["CreateCaption"].Value</h1>
+<h4>@_localizer["FacultyCaption"].Value</h4>
 <hr/>
 
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create" asp-controller="Faculty">
             <div class="form-group">
-                <label asp-for="StartDateEducation"></label>
+                <label asp-for="StartDateEducation">@_localizer["LabelStartDateEducation"].Value</label>
                 <input asp-for="StartDateEducation" asp-format="{0:dd/MM/yyyy}" class="form-control" />
                 <span asp-validation-for="StartDateEducation" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="CountYearEducation"></label>
+                <label asp-for="CountYearEducation">@_localizer["LabelCountYearEducation"].Value</label>
                 <input asp-for="CountYearEducation" class="form-control" />
                 <span asp-validation-for="CountYearEducation" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="StudentId"></label>
+                <label asp-for="StudentId">@_localizer["SelectStudent"].Value</label>
                 <select asp-for="StudentId" asp-items="@ViewBag.Students" class="custom-select"></select>
             </div>
             
             <div class="form-group">
-                <label asp-for="CuratorId"></label>
+                <label asp-for="CuratorId">@_localizer["SelectCurator"].Value</label>
                 <select asp-for="CuratorId" asp-items="@ViewBag.Curators" class="custom-select"></select>
             </div>
             
             <div class="form-group">
-                <label asp-for="GroupId"></label>
+                <label asp-for="GroupId">@_localizer["SelectGroup"].Value</label>
                 <select asp-for="GroupId" asp-items="@ViewBag.Groups" class="custom-select"></select>
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="@_localizer["BtnCreate"].Value" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">@_localizer["LinkBackToList"].Value</a>
 </div>
 
 @section Scripts {

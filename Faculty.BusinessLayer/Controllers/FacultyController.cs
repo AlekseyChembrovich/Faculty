@@ -3,37 +3,30 @@ using Faculty.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.DataAccessLayer.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
 namespace Faculty.BusinessLayer.Controllers
 {
     [Controller]
     public class FacultyController : Controller
     {
-        private readonly IRepository<DataAccessLayer.Models.Faculty> _repositoryFaculty;
+        private readonly IRepositoryFaculty _repositoryFaculty;
+        private readonly IRepositoryGroup _repositoryGroup;
         private readonly IRepository<Student> _repositoryStudent;
         private readonly IRepository<Curator> _repositoryCurator;
-        private readonly IRepository<Group> _repositoryGroup;
 
-        public FacultyController(IRepository<DataAccessLayer.Models.Faculty> repositoryFaculty, IRepository<Student> repositoryStudent, 
-                                 IRepository<Curator> repositoryCurator, IRepository<Group> repositoryGroup)
+        public FacultyController(IRepositoryFaculty repositoryFaculty, IRepositoryGroup repositoryGroup, IRepository<Student> repositoryStudent, IRepository<Curator> repositoryCurator)
         {
             _repositoryFaculty = repositoryFaculty;
+            _repositoryGroup = repositoryGroup;
             _repositoryStudent = repositoryStudent;
             _repositoryCurator = repositoryCurator;
-            _repositoryGroup = repositoryGroup;
         }
 
         [HttpGet]
         public IActionResult Index(string valueFilter = null)
         {
-            var faculties = _repositoryFaculty.GetAll().ToList();
-            foreach (var faculty in faculties)
-            {
-                faculty.Student = _repositoryStudent.GetById(faculty.StudentId);
-                faculty.Curator = _repositoryCurator.GetById(faculty.CuratorId);
-                faculty.Group = _repositoryGroup.GetById(faculty.GroupId);
-            }
-
+            var faculties = _repositoryFaculty.GetAllIncludeForeignKey().ToList();
             var facultiesFilter = valueFilter != null ? faculties.Where(x => x.CountYearEducation.ToString().Contains(valueFilter)).ToList() : faculties;
             return View(facultiesFilter);
         }

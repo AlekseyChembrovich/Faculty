@@ -11,11 +11,11 @@ namespace Faculty.BusinessLayer.Services.Extensions
         public static void AddRepositories(this IServiceCollection services)
         {
             DbContext context = new DatabaseContextEntityFramework();
-            services.AddSingleton<IRepository<Student>>(x => new BaseRepositoryEntityFramework<Student>(context));
-            services.AddSingleton<IRepository<Curator>>(x => new BaseRepositoryEntityFramework<Curator>(context));
-            services.AddSingleton<IRepository<Specialization>>(x => new BaseRepositoryEntityFramework<Specialization>(context));
-            services.AddSingleton<IRepository<Group>>(x => new BaseRepositoryEntityFramework<Group>(context));
-            services.AddSingleton<IRepository<DataAccessLayer.Models.Faculty>>(x => new BaseRepositoryEntityFramework<DataAccessLayer.Models.Faculty>(context));
+            services.AddScoped<IRepository<Student>>(x => new BaseRepositoryEntityFramework<Student>(context));
+            services.AddScoped<IRepository<Curator>>(x => new BaseRepositoryEntityFramework<Curator>(context));
+            services.AddScoped<IRepository<Specialization>>(x => new BaseRepositoryEntityFramework<Specialization>(context));
+            services.AddScoped<IRepositoryGroup>(x => new RepositoryEntityFrameworkGroup(context));
+            services.AddScoped<IRepositoryFaculty>(x => new RepositoryEntityFrameworkFaculty(context));
         }
     }
 }

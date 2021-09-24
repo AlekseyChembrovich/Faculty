@@ -3,15 +3,16 @@ using Faculty.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.DataAccessLayer.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
 namespace Faculty.BusinessLayer.Controllers
 {
     public class GroupController : Controller
     {
-        private readonly IRepository<Group> _repositoryGroup;
+        private readonly IRepositoryGroup _repositoryGroup;
         private readonly IRepository<Specialization> _repositorySpecialization;
 
-        public GroupController(IRepository<Group> repositoryGroup, IRepository<Specialization> repositorySpecialization)
+        public GroupController(IRepositoryGroup repositoryGroup, IRepository<Specialization> repositorySpecialization)
         {
             _repositoryGroup = repositoryGroup;
             _repositorySpecialization = repositorySpecialization;
@@ -20,12 +21,7 @@ namespace Faculty.BusinessLayer.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var groups = _repositoryGroup.GetAll().ToList();
-            foreach (var group in groups)
-            {
-                group.Specialization = _repositorySpecialization.GetById(group.SpecializationId);
-            }
-
+            var groups = _repositoryGroup.GetAllIncludeForeignKey().ToList();
             return View(groups);
         }
 
