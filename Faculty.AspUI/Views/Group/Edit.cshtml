@@ -1,4 +1,4 @@
-﻿@model Faculty.DataAccessLayer.Models.Group
+﻿@model Faculty.BusinessLayer.ModelsDTO.GroupDTO
 
 @{
     ViewData["Title"] = "Group - Edit";
@@ -24,7 +24,7 @@
 
             <div class="form-group">
                 <label asp-for="SpecializationId"></label>
-                <select asp-for="SpecializationId" asp-items="ViewBag.Groups" class="custom-select"></select>
+                <select asp-for="SpecializationId" asp-items="@(new SelectList(ViewBag.ViewModelGroup.Specializations, "Id", "Name"))" class="custom-select"></select>
             </div>
 
             <div class="form-group">

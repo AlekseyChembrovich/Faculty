@@ -1,64 +1,57 @@
-﻿using System.Linq;
-using Faculty.DataAccessLayer;
-using Microsoft.AspNetCore.Mvc;
-using Faculty.DataAccessLayer.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
+﻿using Microsoft.AspNetCore.Mvc;
+using Faculty.BusinessLayer.ModelsDTO;
+using Faculty.BusinessLayer.Interfaces;
 
-namespace Faculty.BusinessLayer.Controllers
+namespace Faculty.AspUI.Controllers
 {
     public class GroupController : Controller
     {
-        private readonly IRepositoryGroup _repositoryGroup;
-        private readonly IRepository<Specialization> _repositorySpecialization;
+        private readonly IGroupService _groupService;
 
-        public GroupController(IRepositoryGroup repositoryGroup, IRepository<Specialization> repositorySpecialization)
+        public GroupController(IGroupService groupService)
         {
-            _repositoryGroup = repositoryGroup;
-            _repositorySpecialization = repositorySpecialization;
+            _groupService = groupService;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var groups = _repositoryGroup.GetAllIncludeForeignKey().ToList();
-            return View(groups);
+            return View(_groupService.GetList());
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Groups = new SelectList(_repositorySpecialization.GetAll(), "Id", "Name");
+            ViewBag.ViewModelGroup = _groupService.CreateViewModelGroup();
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(Group group)
+        public IActionResult Create(GroupDTO model)
         {
-            _repositoryGroup.Insert(group);
+            _groupService.Create(model);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var groupToDelete = _repositoryGroup.GetById(id);
-            _repositoryGroup.Delete(groupToDelete);
+            _groupService.Delete(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            ViewBag.Groups = new SelectList(_repositorySpecialization.GetAll(), "Id", "Name");
-            var groupToEdit = _repositoryGroup.GetById(id);
-            return View(groupToEdit);
+            ViewBag.ViewModelGroup = _groupService.CreateViewModelGroup();
+            var model = _groupService.GetModel(id);
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(Group group)
+        public IActionResult Edit(GroupDTO group)
         {
-            _repositoryGroup.Update(group);
+            _groupService.Edit(group);
             return RedirectToAction("Index");
         }
     }

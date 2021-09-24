@@ -1,23 +1,22 @@
-﻿using System.Linq;
-using Faculty.DataAccessLayer;
-using Microsoft.AspNetCore.Mvc;
-using Faculty.DataAccessLayer.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Faculty.BusinessLayer.ModelsDTO;
+using Faculty.BusinessLayer.Interfaces;
 
-namespace Faculty.BusinessLayer.Controllers
+namespace Faculty.AspUI.Controllers
 {
     public class StudentController : Controller
     {
-        private readonly IRepository<Student> _repositoryStudent;
+        private readonly IStudentService _studentService;
 
-        public StudentController(IRepository<Student> repositoryStudent)
+        public StudentController(IStudentService studentService)
         {
-            _repositoryStudent = repositoryStudent;
+            _studentService = studentService;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            return View(_repositoryStudent.GetAll().ToList());
+            return View(_studentService.GetList());
         }
 
         [HttpGet]
@@ -27,31 +26,30 @@ namespace Faculty.BusinessLayer.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Student student)
+        public IActionResult Create(StudentDTO model)
         {
-            _repositoryStudent.Insert(student);
+            _studentService.Create(model);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var studentToDelete = _repositoryStudent.GetById(id);
-            _repositoryStudent.Delete(studentToDelete);
+            _studentService.Delete(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var studentToEdit = _repositoryStudent.GetById(id);
-            return View(studentToEdit);
+            var model = _studentService.GetModel(id);
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(Student student)
+        public IActionResult Edit(StudentDTO model)
         {
-            _repositoryStudent.Update(student);
+            _studentService.Edit(model);
             return RedirectToAction("Index");
         }
     }

@@ -1,23 +1,22 @@
-﻿using System.Linq;
-using Faculty.DataAccessLayer;
-using Microsoft.AspNetCore.Mvc;
-using Faculty.DataAccessLayer.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Faculty.BusinessLayer.ModelsDTO;
+using Faculty.BusinessLayer.Interfaces;
 
-namespace Faculty.BusinessLayer.Controllers
+namespace Faculty.AspUI.Controllers
 {
     public class SpecializationController : Controller
     {
-        private readonly IRepository<Specialization> _repositorySpecialization;
+        private readonly ISpecializationService _specializationService;
 
-        public SpecializationController(IRepository<Specialization> repositorySpecialization)
+        public SpecializationController(ISpecializationService specializationService)
         {
-            _repositorySpecialization = repositorySpecialization;
+            _specializationService = specializationService;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            return View(_repositorySpecialization.GetAll().ToList());
+            return View(_specializationService.GetList());
         }
 
         [HttpGet]
@@ -27,31 +26,30 @@ namespace Faculty.BusinessLayer.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Specialization specialization)
+        public IActionResult Create(SpecializationDTO model)
         {
-            _repositorySpecialization.Insert(specialization);
+            _specializationService.Create(model);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var specializationToDelete = _repositorySpecialization.GetById(id);
-            _repositorySpecialization.Delete(specializationToDelete);
+            _specializationService.Delete(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var specializationToEdit = _repositorySpecialization.GetById(id);
-            return View(specializationToEdit);
+            var model = _specializationService.GetModel(id);
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(Specialization specialization)
+        public IActionResult Edit(SpecializationDTO model)
         {
-            _repositorySpecialization.Update(specialization);
+            _specializationService.Edit(model);
             return RedirectToAction("Index");
         }
     }

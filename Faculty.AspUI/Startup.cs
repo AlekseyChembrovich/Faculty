@@ -1,14 +1,19 @@
 using System.Globalization;
+using Faculty.DataAccessLayer;
+using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Faculty.DataAccessLayer.Models;
+using Faculty.BusinessLayer.Services;
+using Faculty.BusinessLayer.Interfaces;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
+using Faculty.AspUI.Middleware.Implementation;
 using Microsoft.Extensions.DependencyInjection;
-using Faculty.BusinessLayer.Services.Extensions;
-using Faculty.BusinessLayer.Middleware.Implementation;
+using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
-namespace Faculty.BusinessLayer
+namespace Faculty.AspUI
 {
     public class Startup
     {
@@ -21,9 +26,7 @@ namespace Faculty.BusinessLayer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<DatabaseContextEntityFramework>(option => option.UseSqlServer(Configuration.GetConnectionString("ConnectionString")));
             services.AddControllersWithViews().AddDataAnnotationsLocalization().AddViewLocalization(); ;
-            services.AddRepositories();
             var cultures = new[]
             {
                 new CultureInfo("en"),
@@ -38,6 +41,21 @@ namespace Faculty.BusinessLayer
             });
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            var connectionString = Configuration.GetSection("ConnectionString").GetValue(typeof(string), "ConStr").ToString();
+            services.AddDbContext<DatabaseContextEntityFramework>(option => option.UseSqlServer(connectionString));
+            
+            services.AddScoped<IRepository<Student>, BaseRepositoryEntityFramework<Student>>();
+            services.AddScoped<IRepository<Curator>, BaseRepositoryEntityFramework<Curator>>();
+            services.AddScoped<IRepository<Specialization>, BaseRepositoryEntityFramework<Specialization>>();
+            services.AddScoped<IRepositoryGroup, RepositoryEntityFrameworkGroup>();
+            services.AddScoped<IRepositoryFaculty, RepositoryEntityFrameworkFaculty>();
+
+            services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<ICuratorService, CuratorService>();
+            services.AddScoped<ISpecializationService, SpecializationService>();
+            services.AddScoped<IGroupService, GroupService>();
+            services.AddScoped<IFacultyService, FacultyService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -53,7 +71,7 @@ namespace Faculty.BusinessLayer
             app.UseRequestLocalization();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(null, "{controller=Student}/{action=Index}");
+                endpoints.MapControllerRoute(null, "{controller=Faculty}/{action=Index}");
             });
         }
     }

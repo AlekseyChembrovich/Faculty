@@ -1,23 +1,22 @@
-﻿using System.Linq;
-using Faculty.DataAccessLayer;
-using Microsoft.AspNetCore.Mvc;
-using Faculty.DataAccessLayer.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Faculty.BusinessLayer.ModelsDTO;
+using Faculty.BusinessLayer.Interfaces;
 
-namespace Faculty.BusinessLayer.Controllers
+namespace Faculty.AspUI.Controllers
 {
     public class CuratorController : Controller
     {
-        private readonly IRepository<Curator> _repositoryCurator;
+        private readonly ICuratorService _curatorService;
 
-        public CuratorController(IRepository<Curator> repositoryCurator)
+        public CuratorController(ICuratorService curatorService)
         {
-            _repositoryCurator = repositoryCurator;
+            _curatorService = curatorService;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            return View(_repositoryCurator.GetAll().ToList());
+            return View(_curatorService.GetList());
         }
 
         [HttpGet]
@@ -27,31 +26,30 @@ namespace Faculty.BusinessLayer.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Curator curator)
+        public IActionResult Create(CuratorDTO model)
         {
-            _repositoryCurator.Insert(curator);
+            _curatorService.Create(model);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var curatorToDelete = _repositoryCurator.GetById(id);
-            _repositoryCurator.Delete(curatorToDelete);
+            _curatorService.Delete(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var curatorToEdit = _repositoryCurator.GetById(id);
-            return View(curatorToEdit);
+            var model = _curatorService.GetModel(id);
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(Curator curator)
+        public IActionResult Edit(CuratorDTO model)
         {
-            _repositoryCurator.Update(curator);
+            _curatorService.Edit(model);
             return RedirectToAction("Index");
         }
     }

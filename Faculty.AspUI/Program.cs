@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Faculty.BusinessLayer
+namespace Faculty.AspUI
 {
     public class Program
     {

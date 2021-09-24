@@ -1,4 +1,4 @@
-﻿@model Faculty.DataAccessLayer.Models.Faculty
+﻿@model Faculty.BusinessLayer.ModelsDTO.FacultyDTO
 
 @{
     ViewData["Title"] = "Faculty - Edit";
@@ -30,17 +30,17 @@
 
             <div class="form-group">
                 <label asp-for="StudentId">@_localizer["SelectStudent"].Value</label>
-                <select asp-for="StudentId" asp-items="ViewBag.Students" class="custom-select"></select>
+                <select asp-for="StudentId" asp-items="@(new SelectList(ViewBag.ViewModelFaculty.Students, "Id", "Surname"))" class="custom-select"></select>
             </div>
 
             <div class="form-group">
                 <label asp-for="CuratorId">@_localizer["SelectCurator"].Value</label>
-                <select asp-for="CuratorId" asp-items="ViewBag.Curators" class="custom-select"></select>
+                <select asp-for="CuratorId" asp-items="@(new SelectList(ViewBag.ViewModelFaculty.Curators, "Id", "Surname"))" class="custom-select"></select>
             </div>
 
             <div class="form-group">
                 <label asp-for="GroupId">@_localizer["SelectGroup"].Value</label>
-                <select asp-for="GroupId" asp-items="ViewBag.Groups" class="custom-select"></select>
+                <select asp-for="GroupId" asp-items="@(new SelectList(ViewBag.ViewModelFaculty.Groups, "Id", "Name"))" class="custom-select"></select>
             </div>
 
             <div class="form-group">

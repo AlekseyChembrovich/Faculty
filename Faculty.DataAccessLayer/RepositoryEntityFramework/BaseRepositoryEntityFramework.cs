@@ -13,13 +13,13 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         /// <summary>
         /// Private field to store the database context for executing operations.
         /// </summary>
-        protected readonly DbContext Context;
+        protected readonly DatabaseContextEntityFramework Context;
 
         /// <summary>
         /// Constructor to initialize the database context.
         /// </summary>
         /// <param name="context">Database context.</param>
-        public BaseRepositoryEntityFramework(DbContext context)
+        public BaseRepositoryEntityFramework(DatabaseContextEntityFramework context)
         {
             Context = context;
         }

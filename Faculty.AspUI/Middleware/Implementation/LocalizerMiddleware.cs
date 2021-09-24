@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Faculty.BusinessLayer.Middleware.Implementation
+namespace Faculty.AspUI.Middleware.Implementation
 {
     public class LocalizerMiddleware
     {
