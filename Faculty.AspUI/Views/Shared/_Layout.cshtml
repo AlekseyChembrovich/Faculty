@@ -1,7 +1,17 @@
 ﻿@{
-    var requestContext = Context.Features.Get<IRequestCultureFeature>();
+    CultureInfo cultureContext = default;
+    var nameCulture = Context.Request.Cookies["culture"];
+    if (string.IsNullOrEmpty(nameCulture) == false)
+    {
+        cultureContext = new CultureInfo(nameCulture);
+    }
+    else
+    {
+        var requestContext = Context.Features.Get<IRequestCultureFeature>();
+        cultureContext = requestContext.RequestCulture.Culture;
+    }
     var cultureItems = _localizationOptions.Value.SupportedUICultures.ToList();
-    var selectList = new SelectList(cultureItems, "Name", "NativeName", requestContext.RequestCulture.Culture);
+    var selectList = new SelectList(cultureItems, "Name", "NativeName", cultureContext);
 }
 
 <!DOCTYPE html>

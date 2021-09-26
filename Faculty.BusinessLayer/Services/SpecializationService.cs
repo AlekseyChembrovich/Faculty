@@ -3,12 +3,12 @@ using System.Linq;
 using Faculty.DataAccessLayer;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
+using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.ModelsDTO;
 
 namespace Faculty.BusinessLayer.Services
 {
-    public class SpecializationService : ISpecializationService
+    public class SpecializationService : ISpecializationOperations
     {
         private readonly IRepository<Specialization> _repositorySpecialization;
 
@@ -17,30 +17,24 @@ namespace Faculty.BusinessLayer.Services
             _repositorySpecialization = repositorySpecialization;
         }
 
-        public SpecializationDTO GetModel(int id)
+        public SpecializationDto GetModel(int id)
         {
             var model = _repositorySpecialization.GetById(id);
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Specialization, SpecializationDTO>());
-            var mapper = new Mapper(configuration);
-            var modelDTO = mapper.Map<SpecializationDTO>(model);
-            return modelDTO;
+            Mapper.Initialize(cfg => cfg.CreateMap<Specialization, SpecializationDto>());
+            return Mapper.Map<Specialization, SpecializationDto>(model);
         }
 
-        public List<SpecializationDTO> GetList()
+        public List<SpecializationDto> GetList()
         {
             var models = _repositorySpecialization.GetAll().ToList();
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Specialization, SpecializationDTO>());
-            var mapper = new Mapper(configuration);
-            var modelsDTO = mapper.Map<List<SpecializationDTO>>(models);
-            return modelsDTO;
+            Mapper.Initialize(cfg => cfg.CreateMap<Specialization, SpecializationDto>());
+            return Mapper.Map<List<Specialization>, List<SpecializationDto>>(models); ;
         }
 
-        public void Create(SpecializationDTO modelDTO)
+        public void Create(SpecializationDto modelDto)
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<SpecializationDTO, Specialization>());
-            var mapper = new Mapper(configuration);
-            var model = mapper.Map<Specialization>(modelDTO);
-            _repositorySpecialization.Insert(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<SpecializationDto, Specialization>());
+            _repositorySpecialization.Insert(Mapper.Map<SpecializationDto, Specialization>(modelDto));
         }
 
         public void Delete(int id)
@@ -49,12 +43,10 @@ namespace Faculty.BusinessLayer.Services
             _repositorySpecialization.Delete(model);
         }
 
-        public void Edit(SpecializationDTO modelDTO)
+        public void Edit(SpecializationDto modelDto)
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<SpecializationDTO, Specialization>());
-            var mapper = new Mapper(configuration);
-            var model = mapper.Map<Specialization>(modelDTO);
-            _repositorySpecialization.Update(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<SpecializationDto, Specialization>());
+            _repositorySpecialization.Update(Mapper.Map<SpecializationDto, Specialization>(modelDto));
         }
     }
 }

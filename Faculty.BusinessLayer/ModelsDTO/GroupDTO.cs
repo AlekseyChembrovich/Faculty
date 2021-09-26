@@ -1,49 +1,28 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-
-namespace Faculty.BusinessLayer.ModelsDTO
+﻿namespace Faculty.BusinessLayer.ModelsDto
 {
     /// <summary>
     /// Entity Group.
     /// </summary>
-    public class GroupDTO
+    public class GroupDto
     {
         /// <summary>
-        /// Unique identificator group.
+        /// Unique identificator curator.
         /// </summary>
-        [Key]
-        [Required]
         public int Id { get; set; }
 
         /// <summary>
         /// Name group.
         /// </summary>
-        [Required]
-        [StringLength(50)]
         public string Name { get; set; }
-
-        /// <summary>
-        /// Foreign key for specialization entity.
-        /// </summary>
-        [Required]
-        public int SpecializationId { get; set; }
 
         /// <summary>
         /// Entity specialization.
         /// </summary>
-        public SpecializationDTO Specialization { get; set; }
+        public string SpecializationName { get; set; }
 
         /// <summary>
-        /// Faculties group.
+        /// Foreign key for specialization entity.
         /// </summary>
-        public ICollection<FacultyDTO> Faculties { get; set; }
-
-        /// <summary>
-        /// Constructor for init Faculties of this Group.
-        /// </summary>
-        public GroupDTO()
-        {
-            Faculties = new HashSet<FacultyDTO>();
-        }
+        public int SpecializationId { get; set; }
     }
 }

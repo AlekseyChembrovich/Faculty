@@ -3,6 +3,7 @@ using Faculty.DataAccessLayer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
@@ -51,14 +52,14 @@ namespace Faculty.AspUI
             services.AddScoped<IRepositoryGroup, RepositoryEntityFrameworkGroup>();
             services.AddScoped<IRepositoryFaculty, RepositoryEntityFrameworkFaculty>();
 
-            services.AddScoped<IStudentService, StudentService>();
-            services.AddScoped<ICuratorService, CuratorService>();
-            services.AddScoped<ISpecializationService, SpecializationService>();
-            services.AddScoped<IGroupService, GroupService>();
-            services.AddScoped<IFacultyService, FacultyService>();
+            services.AddScoped<IStudentOperations, StudentService>();
+            services.AddScoped<ICuratorOperations, CuratorService>();
+            services.AddScoped<ISpecializationOperations, SpecializationService>();
+            services.AddScoped<IGroupOperations, GroupService>();
+            services.AddScoped<IFacultyOperations, FacultyService>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RequestLocalizationOptions> localizationOptions)
         {
             if (env.IsDevelopment())
             {
@@ -68,10 +69,11 @@ namespace Faculty.AspUI
             app.UseStaticFiles();
             app.UseRouting();
             app.UseMiddleware<LocalizerMiddleware>();
-            app.UseRequestLocalization();
+
+            app.UseRequestLocalization(localizationOptions.Value);
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(null, "{controller=Faculty}/{action=Index}");
+                endpoints.MapControllerRoute(null, "{controller=Curator}/{action=Index}");
             });
         }
     }

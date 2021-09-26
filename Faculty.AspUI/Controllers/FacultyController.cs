@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Faculty.BusinessLayer.ModelsDTO;
+using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
 
 namespace Faculty.AspUI.Controllers
@@ -8,9 +8,9 @@ namespace Faculty.AspUI.Controllers
     [Controller]
     public class FacultyController : Controller
     {
-        private readonly IFacultyService _facultyService;
+        private readonly IFacultyOperations _facultyService;
 
-        public FacultyController(IFacultyService facultyService)
+        public FacultyController(IFacultyOperations facultyService)
         {
             _facultyService = facultyService;
         }
@@ -31,7 +31,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(FacultyDTO model)
+        public IActionResult Create(FacultyDto model)
         {
             _facultyService.Create(model);
             return RedirectToAction("Index");
@@ -53,7 +53,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(FacultyDTO model)
+        public IActionResult Edit(FacultyDto model)
         {
             _facultyService.Edit(model);
             return RedirectToAction("Index");

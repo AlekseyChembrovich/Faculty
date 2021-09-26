@@ -3,12 +3,12 @@ using System.Linq;
 using Faculty.DataAccessLayer;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
+using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.ModelsDTO;
 
 namespace Faculty.BusinessLayer.Services
 {
-    public class CuratorService : ICuratorService
+    public class CuratorService : ICuratorOperations
     {
         private readonly IRepository<Curator> _repositoryCurator;
 
@@ -17,30 +17,24 @@ namespace Faculty.BusinessLayer.Services
             _repositoryCurator = repositoryCurator;
         }
 
-        public CuratorDTO GetModel(int id)
+        public CuratorDto GetModel(int id)
         {
             var model = _repositoryCurator.GetById(id);
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Curator, CuratorDTO>());
-            var mapper = new Mapper(configuration);
-            var modelDTO = mapper.Map<CuratorDTO>(model);
-            return modelDTO;
+            Mapper.Initialize(cfg => cfg.CreateMap<Curator, CuratorDto>());
+            return Mapper.Map<Curator, CuratorDto>(model);
         }
 
-        public List<CuratorDTO> GetList()
+        public List<CuratorDto> GetList()
         {
             var models = _repositoryCurator.GetAll().ToList();
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Curator, CuratorDTO>());
-            var mapper = new Mapper(configuration);
-            var modelsDTO = mapper.Map<List<CuratorDTO>>(models);
-            return modelsDTO;
+            Mapper.Initialize(cfg => cfg.CreateMap<Curator, CuratorDto>());
+            return Mapper.Map<List<Curator>, List<CuratorDto>>(models); ;
         }
 
-        public void Create(CuratorDTO modelDTO)
+        public void Create(CuratorDto modelDto)
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<CuratorDTO, Curator>());
-            var mapper = new Mapper(configuration);
-            var model = mapper.Map<Curator>(modelDTO);
-            _repositoryCurator.Insert(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<CuratorDto, Curator>());
+            _repositoryCurator.Insert(Mapper.Map<CuratorDto, Curator>(modelDto));
         }
 
         public void Delete(int id)
@@ -49,12 +43,10 @@ namespace Faculty.BusinessLayer.Services
             _repositoryCurator.Delete(model);
         }
 
-        public void Edit(CuratorDTO modelDTO)
+        public void Edit(CuratorDto modelDto)
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<CuratorDTO, Curator>());
-            var mapper = new Mapper(configuration);
-            var model = mapper.Map<Curator>(modelDTO);
-            _repositoryCurator.Update(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<CuratorDto, Curator>());
+            _repositoryCurator.Update(Mapper.Map<CuratorDto, Curator>(modelDto));
         }
     }
 }

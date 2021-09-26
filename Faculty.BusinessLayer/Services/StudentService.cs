@@ -3,12 +3,12 @@ using System.Linq;
 using Faculty.DataAccessLayer;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
+using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.ModelsDTO;
 
 namespace Faculty.BusinessLayer.Services
 {
-    public class StudentService : IStudentService
+    public class StudentService : IStudentOperations
     {
         private readonly IRepository<Student> _repositoryStudent;
 
@@ -17,30 +17,24 @@ namespace Faculty.BusinessLayer.Services
             _repositoryStudent = repositoryStudent;
         }
 
-        public StudentDTO GetModel(int id)
+        public StudentDto GetModel(int id)
         {
             var model = _repositoryStudent.GetById(id);
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Student, StudentDTO>());
-            var mapper = new Mapper(configuration);
-            var modelDTO = mapper.Map<StudentDTO>(model);
-            return modelDTO;
+            Mapper.Initialize(cfg => cfg.CreateMap<Student, StudentDto>());
+            return Mapper.Map<Student, StudentDto>(model);
         }
 
-        public List<StudentDTO> GetList()
+        public List<StudentDto> GetList()
         {
             var models = _repositoryStudent.GetAll().ToList();
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Student, StudentDTO>());
-            var mapper = new Mapper(configuration);
-            var modelsDTO = mapper.Map<List<StudentDTO>>(models);
-            return modelsDTO;
+            Mapper.Initialize(cfg => cfg.CreateMap<Student, StudentDto>());
+            return Mapper.Map<List<Student>, List<StudentDto>>(models); ;
         }
 
-        public void Create(StudentDTO modelDTO)
+        public void Create(StudentDto modelDto)
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<StudentDTO, Student>());
-            var mapper = new Mapper(configuration);
-            var model = mapper.Map<Student>(modelDTO);
-            _repositoryStudent.Insert(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<StudentDto, Student>());
+            _repositoryStudent.Insert(Mapper.Map<StudentDto, Student>(modelDto));
         }
 
         public void Delete(int id)
@@ -49,12 +43,10 @@ namespace Faculty.BusinessLayer.Services
             _repositoryStudent.Delete(model);
         }
 
-        public void Edit(StudentDTO modelDTO)
+        public void Edit(StudentDto modelDto)
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<StudentDTO, Student>());
-            var mapper = new Mapper(configuration);
-            var model = mapper.Map<Student>(modelDTO);
-            _repositoryStudent.Update(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<StudentDto, Student>());
+            _repositoryStudent.Update(Mapper.Map<StudentDto, Student>(modelDto));
         }
     }
 }

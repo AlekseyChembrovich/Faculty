@@ -117,25 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BtnCreate" xml:space="preserve">
-    <value>Создать</value>
+  <data name="BtnSave" xml:space="preserve">
+    <value>Сохранить</value>
   </data>
-  <data name="CreateCaption" xml:space="preserve">
-    <value>Создание</value>
+  <data name="EditCaption" xml:space="preserve">
+    <value>Изменение</value>
   </data>
-  <data name="LabeDoublename" xml:space="preserve">
+  <data name="LabelDoublename" xml:space="preserve">
     <value>Отчество: </value>
+  </data>
+  <data name="LabelName" xml:space="preserve">
+    <value>Имя: </value>
   </data>
   <data name="LabelSurname" xml:space="preserve">
     <value>Фамилия: </value>
-  </data>
-  <data name="LabeName" xml:space="preserve">
-    <value>Имя: </value>
   </data>
   <data name="LinkBackToList" xml:space="preserve">
     <value>Вернуться к списку</value>
   </data>
   <data name="StudentCaption" xml:space="preserve">
-    <value>Студенты</value>
+    <value>Студент</value>
   </data>
 </root>

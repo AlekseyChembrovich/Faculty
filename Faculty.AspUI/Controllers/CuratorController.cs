@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Faculty.BusinessLayer.ModelsDTO;
+using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
 
 namespace Faculty.AspUI.Controllers
 {
     public class CuratorController : Controller
     {
-        private readonly ICuratorService _curatorService;
+        private readonly ICuratorOperations _curatorService;
 
-        public CuratorController(ICuratorService curatorService)
+        public CuratorController(ICuratorOperations curatorService)
         {
             _curatorService = curatorService;
         }
@@ -26,7 +26,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CuratorDTO model)
+        public IActionResult Create(CuratorDto model)
         {
             _curatorService.Create(model);
             return RedirectToAction("Index");
@@ -47,7 +47,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(CuratorDTO model)
+        public IActionResult Edit(CuratorDto model)
         {
             _curatorService.Edit(model);
             return RedirectToAction("Index");

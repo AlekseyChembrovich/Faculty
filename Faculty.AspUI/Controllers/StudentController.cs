@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Faculty.BusinessLayer.ModelsDTO;
+using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
 
 namespace Faculty.AspUI.Controllers
 {
     public class StudentController : Controller
     {
-        private readonly IStudentService _studentService;
+        private readonly IStudentOperations _studentService;
 
-        public StudentController(IStudentService studentService)
+        public StudentController(IStudentOperations studentService)
         {
             _studentService = studentService;
         }
@@ -26,7 +26,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(StudentDTO model)
+        public IActionResult Create(StudentDto model)
         {
             _studentService.Create(model);
             return RedirectToAction("Index");
@@ -47,7 +47,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(StudentDTO model)
+        public IActionResult Edit(StudentDto model)
         {
             _studentService.Edit(model);
             return RedirectToAction("Index");

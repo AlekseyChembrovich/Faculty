@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Faculty.BusinessLayer.ModelsDTO;
+using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
 
 namespace Faculty.AspUI.Controllers
 {
     public class SpecializationController : Controller
     {
-        private readonly ISpecializationService _specializationService;
+        private readonly ISpecializationOperations _specializationService;
 
-        public SpecializationController(ISpecializationService specializationService)
+        public SpecializationController(ISpecializationOperations specializationService)
         {
             _specializationService = specializationService;
         }
@@ -26,7 +26,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(SpecializationDTO model)
+        public IActionResult Create(SpecializationDto model)
         {
             _specializationService.Create(model);
             return RedirectToAction("Index");
@@ -47,7 +47,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(SpecializationDTO model)
+        public IActionResult Edit(SpecializationDto model)
         {
             _specializationService.Edit(model);
             return RedirectToAction("Index");

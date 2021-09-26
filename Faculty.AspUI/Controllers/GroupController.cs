@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Faculty.BusinessLayer.ModelsDTO;
+using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
 
 namespace Faculty.AspUI.Controllers
 {
     public class GroupController : Controller
     {
-        private readonly IGroupService _groupService;
+        private readonly IGroupOperations _groupService;
 
-        public GroupController(IGroupService groupService)
+        public GroupController(IGroupOperations groupService)
         {
             _groupService = groupService;
         }
@@ -27,7 +27,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(GroupDTO model)
+        public IActionResult Create(GroupDto model)
         {
             _groupService.Create(model);
             return RedirectToAction("Index");
@@ -49,7 +49,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(GroupDTO group)
+        public IActionResult Edit(GroupDto group)
         {
             _groupService.Edit(group);
             return RedirectToAction("Index");

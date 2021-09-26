@@ -3,14 +3,14 @@ using System.Linq;
 using Faculty.DataAccessLayer;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
+using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.BusinessLayer.ModelsBusiness;
-using Faculty.BusinessLayer.ModelsDTO;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
 namespace Faculty.BusinessLayer.Services
 {
-    public class GroupService : IGroupService
+    public class GroupService : IGroupOperations
     {
         private readonly IRepositoryGroup _repositoryGroup;
         private readonly IRepository<Specialization> _repositorySpecialization;
@@ -21,34 +21,28 @@ namespace Faculty.BusinessLayer.Services
             _repositorySpecialization = repositorySpecialization;
         }
 
-        public GroupDTO GetModel(int id)
+        public GroupDto GetModel(int id)
         {
             var model = _repositoryGroup.GetById(id);
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Group, GroupDTO>());
-            var mapper = new Mapper(configuration);
-            var modelDTO = mapper.Map<GroupDTO>(model);
-            return modelDTO;
+            Mapper.Initialize(cfg => cfg.CreateMap<Group, GroupDto>());
+            return Mapper.Map<Group, GroupDto>(model);
         }
 
-        public List<GroupDTO> GetList()
+        public List<GroupDto> GetList()
         {
             var models = _repositoryGroup.GetAllIncludeForeignKey().ToList();
-            var configuration = new MapperConfiguration(cfg =>
+            Mapper.Initialize(cfg =>
             {
-                cfg.CreateMap<Group, GroupDTO>();
-                cfg.CreateMap<Specialization, SpecializationDTO>();
+                cfg.CreateMap<Group, GroupDto>()
+                    .ForMember("SpecializationName", opt => opt.MapFrom(src => src.Specialization.Name));
             });
-            var mapper = new Mapper(configuration);
-            var modelsDTO = mapper.Map<List<GroupDTO>>(models);
-            return modelsDTO;
+            return Mapper.Map<List<Group>, List<GroupDto>>(models);
         }
 
-        public void Create(GroupDTO modelDTO)
+        public void Create(GroupDto modelDto)
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<GroupDTO, Group>());
-            var mapper = new Mapper(configuration);
-            var model = mapper.Map<Group>(modelDTO);
-            _repositoryGroup.Insert(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<GroupDto, Group>());
+            _repositoryGroup.Insert(Mapper.Map<GroupDto, Group>(modelDto));
         }
 
         public void Delete(int id)
@@ -57,21 +51,19 @@ namespace Faculty.BusinessLayer.Services
             _repositoryGroup.Delete(model);
         }
 
-        public void Edit(GroupDTO modelDTO)
+        public void Edit(GroupDto modelDto)
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<GroupDTO, Group>());
-            var mapper = new Mapper(configuration);
-            var model = mapper.Map<Group>(modelDTO);
-            _repositoryGroup.Update(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<GroupDto, Group>());
+            _repositoryGroup.Update(Mapper.Map<GroupDto, Group>(modelDto));
         }
 
-        public ViewModelGroup CreateViewModelGroup()
+        public ModelElementGroup CreateViewModelGroup()
         {
             var models = _repositorySpecialization.GetAll().ToList();
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Specialization, SpecializationDTO>());
-            var mapper = new Mapper(configuration);
-            var modelsDTO = mapper.Map<List<SpecializationDTO>>(models);
-            return new ViewModelGroup(modelsDTO);
+
+            Mapper.Initialize(cfg => cfg.CreateMap<Specialization, SpecializationDto>());
+            var modelsDto = Mapper.Map<List<Specialization>, List<SpecializationDto>>(models);
+            return new ModelElementGroup(modelsDto);
         }
     }
 }

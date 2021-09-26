@@ -5,12 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ModelsBusiness\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="10.1.1" />
-    <PackageReference Include="Ninject" Version="3.3.4" />
+    <PackageReference Include="AutoMapper" Version="4.2.1" />
   </ItemGroup>
 
   <ItemGroup>
