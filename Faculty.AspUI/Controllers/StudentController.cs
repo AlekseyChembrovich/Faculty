@@ -26,7 +26,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(StudentDto model)
+        public IActionResult Create(CreateStudentDto model)
         {
             _studentService.Create(model);
             return RedirectToAction("Index");
@@ -47,7 +47,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(StudentDto model)
+        public IActionResult Edit(EditStudentDto model)
         {
             _studentService.Edit(model);
             return RedirectToAction("Index");

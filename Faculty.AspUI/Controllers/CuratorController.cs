@@ -26,7 +26,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CuratorDto model)
+        public IActionResult Create(CreateCuratorDto model)
         {
             _curatorService.Create(model);
             return RedirectToAction("Index");
@@ -47,7 +47,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(CuratorDto model)
+        public IActionResult Edit(EditCuratorDto model)
         {
             _curatorService.Edit(model);
             return RedirectToAction("Index");

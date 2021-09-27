@@ -17,24 +17,17 @@ namespace Faculty.BusinessLayer.Services
             _repositoryStudent = repositoryStudent;
         }
 
-        public StudentDto GetModel(int id)
-        {
-            var model = _repositoryStudent.GetById(id);
-            Mapper.Initialize(cfg => cfg.CreateMap<Student, StudentDto>());
-            return Mapper.Map<Student, StudentDto>(model);
-        }
-
-        public List<StudentDto> GetList()
+        public List<DisplayStudentDto> GetList()
         {
             var models = _repositoryStudent.GetAll().ToList();
-            Mapper.Initialize(cfg => cfg.CreateMap<Student, StudentDto>());
-            return Mapper.Map<List<Student>, List<StudentDto>>(models); ;
+            Mapper.Initialize(cfg => cfg.CreateMap<Student, DisplayStudentDto>());
+            return Mapper.Map<List<Student>, List<DisplayStudentDto>>(models); ;
         }
 
-        public void Create(StudentDto modelDto)
+        public void Create(CreateStudentDto modelDto)
         {
-            Mapper.Initialize(cfg => cfg.CreateMap<StudentDto, Student>());
-            _repositoryStudent.Insert(Mapper.Map<StudentDto, Student>(modelDto));
+            Mapper.Initialize(cfg => cfg.CreateMap<CreateStudentDto, Student>());
+            _repositoryStudent.Insert(Mapper.Map<CreateStudentDto, Student>(modelDto));
         }
 
         public void Delete(int id)
@@ -43,10 +36,17 @@ namespace Faculty.BusinessLayer.Services
             _repositoryStudent.Delete(model);
         }
 
-        public void Edit(StudentDto modelDto)
+        public EditStudentDto GetModel(int id)
         {
-            Mapper.Initialize(cfg => cfg.CreateMap<StudentDto, Student>());
-            _repositoryStudent.Update(Mapper.Map<StudentDto, Student>(modelDto));
+            var model = _repositoryStudent.GetById(id);
+            Mapper.Initialize(cfg => cfg.CreateMap<Student, EditStudentDto>());
+            return Mapper.Map<Student, EditStudentDto>(model);
+        }
+
+        public void Edit(EditStudentDto modelDto)
+        {
+            Mapper.Initialize(cfg => cfg.CreateMap<EditStudentDto, Student>());
+            _repositoryStudent.Update(Mapper.Map<EditStudentDto, Student>(modelDto));
         }
     }
 }

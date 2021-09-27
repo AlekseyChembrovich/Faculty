@@ -26,7 +26,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(SpecializationDto model)
+        public IActionResult Create(CreateSpecializationDto model)
         {
             _specializationService.Create(model);
             return RedirectToAction("Index");
@@ -47,7 +47,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(SpecializationDto model)
+        public IActionResult Edit(EditSpecializationDto model)
         {
             _specializationService.Edit(model);
             return RedirectToAction("Index");

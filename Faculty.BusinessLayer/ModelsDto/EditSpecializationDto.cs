@@ -3,7 +3,7 @@
     /// <summary>
     /// Entity Specialization.
     /// </summary>
-    public class SpecializationDto
+    public class EditSpecializationDto
     {
         /// <summary>
         /// Unique identificator curator.

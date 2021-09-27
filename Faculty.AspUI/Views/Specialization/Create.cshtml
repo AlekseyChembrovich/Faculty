@@ -1,4 +1,4 @@
-﻿@model Faculty.BusinessLayer.ModelsDto.SpecializationDto
+﻿@model Faculty.BusinessLayer.ModelsDto.CreateSpecializationDto
 
 @{
     ViewData["Title"] = "Specialization - Create";
@@ -14,7 +14,13 @@
         <form asp-action="Create" asp-controller="Specialization">
             <div class="form-group">
                 <label asp-for="Name">@_localizer["LabelName"].Value</label>
-                <input asp-for="Name" class="form-control" />
+                <input 
+                    asp-for="Name" 
+                    data-val="true" 
+                    data-val-required="@_localizer["NameRequired"].Value" 
+                    data-val-length-max="50"
+                    data-val-length="@_localizer["NameLength"].Value"
+                    class="form-control"/>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 

@@ -27,7 +27,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(GroupDto model)
+        public IActionResult Create(CreateGroupDto model)
         {
             _groupService.Create(model);
             return RedirectToAction("Index");
@@ -49,7 +49,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(GroupDto group)
+        public IActionResult Edit(EditGroupDto group)
         {
             _groupService.Edit(group);
             return RedirectToAction("Index");

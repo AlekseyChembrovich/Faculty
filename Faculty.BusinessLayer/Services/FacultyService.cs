@@ -25,30 +25,23 @@ namespace Faculty.BusinessLayer.Services
             _repositoryCurator = repositoryCurator;
         }
 
-        public FacultyDto GetModel(int id)
-        {
-            var model = _repositoryFaculty.GetById(id);
-            Mapper.Initialize(cfg => cfg.CreateMap<DataAccessLayer.Models.Faculty, FacultyDto>());
-            return Mapper.Map<DataAccessLayer.Models.Faculty, FacultyDto>(model);
-        }
-
-        public List<FacultyDto> GetList()
+        public List<DisplayFacultyDto> GetList()
         {
             var models = _repositoryFaculty.GetAllIncludeForeignKey().ToList();
             Mapper.Initialize(cfg =>
             {
-                cfg.CreateMap<DataAccessLayer.Models.Faculty, FacultyDto>()
+                cfg.CreateMap<DataAccessLayer.Models.Faculty, DisplayFacultyDto>()
                     .ForMember("CuratorSurname", opt => opt.MapFrom(src => src.Curator.Surname))
                     .ForMember("StudentSurname", opt => opt.MapFrom(src => src.Student.Surname))
                     .ForMember("GroupName", opt => opt.MapFrom(src => src.Group.Name));
             });
-            return Mapper.Map<List<DataAccessLayer.Models.Faculty>, List<FacultyDto>>(models);
+            return Mapper.Map<List<DataAccessLayer.Models.Faculty>, List<DisplayFacultyDto>>(models);
         }
 
-        public void Create(FacultyDto modelDto)
+        public void Create(CreateFacultyDto modelDto)
         {
-            Mapper.Initialize(cfg => cfg.CreateMap<FacultyDto, DataAccessLayer.Models.Faculty>());
-            _repositoryFaculty.Insert(Mapper.Map<FacultyDto, DataAccessLayer.Models.Faculty>(modelDto));
+            Mapper.Initialize(cfg => cfg.CreateMap<CreateFacultyDto, DataAccessLayer.Models.Faculty>());
+            _repositoryFaculty.Insert(Mapper.Map<CreateFacultyDto, DataAccessLayer.Models.Faculty>(modelDto));
         }
 
         public void Delete(int id)
@@ -57,23 +50,30 @@ namespace Faculty.BusinessLayer.Services
             _repositoryFaculty.Delete(model);
         }
 
-        public void Edit(FacultyDto modelDto)
+        public EditFacultyDto GetModel(int id)
         {
-            Mapper.Initialize(cfg => cfg.CreateMap<FacultyDto, DataAccessLayer.Models.Faculty>());
-            _repositoryFaculty.Update(Mapper.Map<FacultyDto, DataAccessLayer.Models.Faculty>(modelDto));
+            var model = _repositoryFaculty.GetById(id);
+            Mapper.Initialize(cfg => cfg.CreateMap<DataAccessLayer.Models.Faculty, EditFacultyDto>());
+            return Mapper.Map<DataAccessLayer.Models.Faculty, EditFacultyDto>(model);
+        }
+
+        public void Edit(EditFacultyDto modelDto)
+        {
+            Mapper.Initialize(cfg => cfg.CreateMap<EditFacultyDto, DataAccessLayer.Models.Faculty>());
+            _repositoryFaculty.Update(Mapper.Map<EditFacultyDto, DataAccessLayer.Models.Faculty>(modelDto));
         }
 
         public ModelElementFaculty CreateViewModelFaculty()
         {
             var modelsStudent = _repositoryStudent.GetAll().ToList();
-            Mapper.Initialize(cfg => cfg.CreateMap<Student, StudentDto>());
-            var modelsStudentDto = Mapper.Map<List<Student>, List<StudentDto>>(modelsStudent);
+            Mapper.Initialize(cfg => cfg.CreateMap<Student, DisplayStudentDto>());
+            var modelsStudentDto = Mapper.Map<List<Student>, List<DisplayStudentDto>>(modelsStudent);
             var modelsCurator = _repositoryCurator.GetAll().ToList();
-            Mapper.Initialize(cfg => cfg.CreateMap<Curator, CuratorDto>());
-            var modelsCuratorDto = Mapper.Map<List<Curator>, List<CuratorDto>>(modelsCurator);
+            Mapper.Initialize(cfg => cfg.CreateMap<Curator, DisplayCuratorDto>());
+            var modelsCuratorDto = Mapper.Map<List<Curator>, List<DisplayCuratorDto>>(modelsCurator);
             var modelsGroup = _repositoryGroup.GetAll().ToList();
-            Mapper.Initialize(cfg => cfg.CreateMap<Group, GroupDto>());
-            var modelsGroupDto = Mapper.Map<List<Group>, List<GroupDto>>(modelsGroup);
+            Mapper.Initialize(cfg => cfg.CreateMap<Group, DisplayGroupDto>());
+            var modelsGroupDto = Mapper.Map<List<Group>, List<DisplayGroupDto>>(modelsGroup);
             return new ModelElementFaculty(modelsStudentDto, modelsCuratorDto, modelsGroupDto);
         }
     }

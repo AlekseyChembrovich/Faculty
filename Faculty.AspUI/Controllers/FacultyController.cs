@@ -31,7 +31,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(FacultyDto model)
+        public IActionResult Create(CreateFacultyDto model)
         {
             _facultyService.Create(model);
             return RedirectToAction("Index");
@@ -53,7 +53,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(FacultyDto model)
+        public IActionResult Edit(EditFacultyDto model)
         {
             _facultyService.Edit(model);
             return RedirectToAction("Index");

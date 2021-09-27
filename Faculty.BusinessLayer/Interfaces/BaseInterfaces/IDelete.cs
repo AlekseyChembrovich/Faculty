@@ -1,6 +1,6 @@
 ﻿namespace Faculty.BusinessLayer.Interfaces.BaseInterfaces
 {
-    public interface IDelete<T> where T : class, new()
+    public interface IDelete
     {
         void Delete(int id);
     }

@@ -27,7 +27,7 @@ namespace Faculty.AspUI
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews().AddDataAnnotationsLocalization().AddViewLocalization(); ;
+            services.AddControllersWithViews().AddDataAnnotationsLocalization().AddViewLocalization();
             var cultures = new[]
             {
                 new CultureInfo("en"),
@@ -73,7 +73,7 @@ namespace Faculty.AspUI
             app.UseRequestLocalization(localizationOptions.Value);
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(null, "{controller=Curator}/{action=Index}");
+                endpoints.MapControllerRoute(null, "{controller=Faculty}/{action=Index}");
             });
         }
     }

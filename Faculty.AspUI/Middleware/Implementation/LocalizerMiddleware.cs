@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 
 namespace Faculty.AspUI.Middleware.Implementation
 {
@@ -19,9 +20,13 @@ namespace Faculty.AspUI.Middleware.Implementation
             var culture = context.Request.Query["culture"].ToString();
             if (!string.IsNullOrWhiteSpace(culture))
             {
+                context.Items["culture"] = culture;
                 var cultureInfo = new CultureInfo(culture);
-                context.Response.Cookies.Append("culture", cultureInfo.Name,
-                    new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
+                context.Response.Cookies.Append(
+                    CookieRequestCultureProvider.DefaultCookieName,
+                    CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(cultureInfo)),
+                    new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+                    );
             }
             await _next.Invoke(context);
         }

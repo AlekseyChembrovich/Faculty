@@ -4,7 +4,7 @@ using Faculty.BusinessLayer.Interfaces.BaseInterfaces;
 
 namespace Faculty.BusinessLayer.Interfaces
 {
-    public interface IFacultyOperations : IDisplay<FacultyDto>, ICreate<FacultyDto>, IDelete<FacultyDto>, IEdit<FacultyDto>
+    public interface IFacultyOperations : IDisplay<DisplayFacultyDto>, ICreate<CreateFacultyDto>, IDelete, IEdit<EditFacultyDto>
     {
         ModelElementFaculty CreateViewModelFaculty();
     }

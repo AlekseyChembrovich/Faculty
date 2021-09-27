@@ -1,9 +1,9 @@
 ﻿namespace Faculty.BusinessLayer.ModelsDto
 {
     /// <summary>
-    /// Entity Student.
+    /// Entity Group.
     /// </summary>
-    public class StudentDto
+    public class EditGroupDto
     {
         /// <summary>
         /// Unique identificator curator.
@@ -11,18 +11,13 @@
         public int Id { get; set; }
 
         /// <summary>
-        /// Surname student.
-        /// </summary>
-        public string Surname { get; set; }
-
-        /// <summary>
-        /// Name student.
+        /// Name group.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Doublename student.
+        /// Foreign key for specialization entity.
         /// </summary>
-        public string Doublename { get; set; }
+        public int SpecializationId { get; set; }
     }
 }

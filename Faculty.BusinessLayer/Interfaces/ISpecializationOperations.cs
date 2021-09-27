@@ -3,7 +3,7 @@ using Faculty.BusinessLayer.Interfaces.BaseInterfaces;
 
 namespace Faculty.BusinessLayer.Interfaces
 {
-    public interface ISpecializationOperations : IDisplay<SpecializationDto>, ICreate<SpecializationDto>, IDelete<SpecializationDto>, IEdit<SpecializationDto>
+    public interface ISpecializationOperations : IDisplay<DisplaySpecializationDto>, ICreate<CreateSpecializationDto>, IDelete, IEdit<EditSpecializationDto>
     {
     }
 }

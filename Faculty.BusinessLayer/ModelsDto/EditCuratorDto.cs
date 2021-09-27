@@ -1,9 +1,11 @@
-﻿namespace Faculty.BusinessLayer.ModelsDto
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Faculty.BusinessLayer.ModelsDto
 {
     /// <summary>
     /// Entity Curator.
     /// </summary>
-    public class CuratorDto
+    public class EditCuratorDto
     {
         /// <summary>
         /// Unique identificator curator.
@@ -28,6 +30,7 @@
         /// <summary>
         /// Phone curator.
         /// </summary>
+        [Phone]
         public string Phone { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using Faculty.BusinessLayer.Interfaces.BaseInterfaces;
 
 namespace Faculty.BusinessLayer.Interfaces
 {
-    public interface IGroupOperations : IDisplay<GroupDto>, ICreate<GroupDto>, IDelete<GroupDto>, IEdit<GroupDto>
+    public interface IGroupOperations : IDisplay<DisplayGroupDto>, ICreate<CreateGroupDto>, IDelete, IEdit<EditGroupDto>
     {
         ModelElementGroup CreateViewModelGroup();
     }

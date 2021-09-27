@@ -5,11 +5,11 @@ namespace Faculty.BusinessLayer.ModelsBusiness
 {
     public class ModelElementFaculty
     {
-        public List<StudentDto> Students;
-        public List<CuratorDto> Curators;
-        public List<GroupDto> Groups;
+        public List<DisplayStudentDto> Students;
+        public List<DisplayCuratorDto> Curators;
+        public List<DisplayGroupDto> Groups;
 
-        public ModelElementFaculty(List<StudentDto> students, List<CuratorDto> curator, List<GroupDto> groups)
+        public ModelElementFaculty(List<DisplayStudentDto> students, List<DisplayCuratorDto> curator, List<DisplayGroupDto> groups)
         {
             Students = students;
             Curators = curator;

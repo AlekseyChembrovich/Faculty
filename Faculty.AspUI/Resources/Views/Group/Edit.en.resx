@@ -135,4 +135,13 @@
   <data name="LinkBackToList" xml:space="preserve">
     <value>Back to list</value>
   </data>
+  <data name="NameLength" xml:space="preserve">
+    <value>The name must be no more than 50 characters.</value>
+  </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>Name is required.</value>
+  </data>
+  <data name="SpecializationRequired" xml:space="preserve">
+    <value>Specialization is required.</value>
+  </data>
 </root>

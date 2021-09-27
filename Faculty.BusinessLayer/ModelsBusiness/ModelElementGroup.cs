@@ -5,9 +5,9 @@ namespace Faculty.BusinessLayer.ModelsBusiness
 {
     public class ModelElementGroup
     {
-        public List<SpecializationDto> Specializations;
+        public List<DisplaySpecializationDto> Specializations;
 
-        public ModelElementGroup(List<SpecializationDto> specializations)
+        public ModelElementGroup(List<DisplaySpecializationDto> specializations)
         {
             Specializations = specializations;
         }

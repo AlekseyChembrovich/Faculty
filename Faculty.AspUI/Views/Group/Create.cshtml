@@ -1,4 +1,4 @@
-﻿@model Faculty.BusinessLayer.ModelsDto.GroupDto
+﻿@model Faculty.BusinessLayer.ModelsDto.CreateGroupDto
 
 @{
     ViewData["Title"] = "Group - Create";
@@ -14,12 +14,20 @@
         <form asp-action="Create" asp-controller="Group">
             <div class="form-group">
                 <label asp-for="Name">@_localizer["LabelName"].Value</label>
-                <input asp-for="Name" class="form-control" />
+                <input asp-for="Name"
+                       data-val="true"
+                       data-val-required="@_localizer["NameRequired"].Value"
+                       data-val-length-max="50"
+                       data-val-length="@_localizer["NameLength"].Value"
+                       class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="SpecializationId">@_localizer["LabelSpecialization"].Value</label>
+                <label 
+                    asp-for="SpecializationId" 
+                    data-val="true"
+                    data-val-required="@_localizer["SpecializationRequired"].Value">@_localizer["LabelSpecialization"].Value</label>
                 <select asp-for="SpecializationId" asp-items="@(new SelectList(ViewBag.ViewModelGroup.Specializations, "Id", "Name"))" class="custom-select"></select>
             </div>
 

@@ -3,10 +3,10 @@
     /// <summary>
     /// Entity Group.
     /// </summary>
-    public class GroupDto
+    public class DisplayGroupDto
     {
         /// <summary>
-        /// Unique identificator curator.
+        /// Unique identificator group.
         /// </summary>
         public int Id { get; set; }
 
@@ -19,10 +19,5 @@
         /// Entity specialization.
         /// </summary>
         public string SpecializationName { get; set; }
-
-        /// <summary>
-        /// Foreign key for specialization entity.
-        /// </summary>
-        public int SpecializationId { get; set; }
     }
 }
