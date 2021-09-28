@@ -3,7 +3,6 @@ using System.Linq;
 using Faculty.DataAccessLayer;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
-using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.BusinessLayer.ModelsDto.SpecializationDto;
 
@@ -18,17 +17,19 @@ namespace Faculty.BusinessLayer.Services
             _repositorySpecialization = repositorySpecialization;
         }
 
-        public List<DisplaySpecializationDto> GetList()
+        public IEnumerable<DisplaySpecializationDto> GetList()
         {
             var models = _repositorySpecialization.GetAll().ToList();
-            Mapper.Initialize(cfg => cfg.CreateMap<Specialization, DisplaySpecializationDto>());
-            return Mapper.Map<List<Specialization>, List<DisplaySpecializationDto>>(models); ;
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            var mapper = new Mapper(mapperConfiguration);
+            return mapper.Map<IEnumerable<Specialization>, IEnumerable<DisplaySpecializationDto>>(models); ;
         }
 
         public void Create(CreateSpecializationDto modelDto)
         {
-            Mapper.Initialize(cfg => cfg.CreateMap<CreateSpecializationDto, Specialization>());
-            _repositorySpecialization.Insert(Mapper.Map<CreateSpecializationDto, Specialization>(modelDto));
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            var mapper = new Mapper(mapperConfiguration);
+            _repositorySpecialization.Insert(mapper.Map<CreateSpecializationDto, Specialization>(modelDto));
         }
 
         public void Delete(int id)
@@ -40,14 +41,16 @@ namespace Faculty.BusinessLayer.Services
         public EditSpecializationDto GetModel(int id)
         {
             var model = _repositorySpecialization.GetById(id);
-            Mapper.Initialize(cfg => cfg.CreateMap<Specialization, EditSpecializationDto>());
-            return Mapper.Map<Specialization, EditSpecializationDto>(model);
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            var mapper = new Mapper(mapperConfiguration);
+            return mapper.Map<Specialization, EditSpecializationDto>(model);
         }
 
         public void Edit(EditSpecializationDto modelDto)
         {
-            Mapper.Initialize(cfg => cfg.CreateMap<EditSpecializationDto, Specialization>());
-            _repositorySpecialization.Update(Mapper.Map<EditSpecializationDto, Specialization>(modelDto));
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            var mapper = new Mapper(mapperConfiguration);
+            _repositorySpecialization.Update(mapper.Map<EditSpecializationDto, Specialization>(modelDto));
         }
     }
 }

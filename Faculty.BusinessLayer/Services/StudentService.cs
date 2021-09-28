@@ -3,7 +3,6 @@ using System.Linq;
 using Faculty.DataAccessLayer;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
-using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.BusinessLayer.ModelsDto.StudentDto;
 
@@ -18,17 +17,19 @@ namespace Faculty.BusinessLayer.Services
             _repositoryStudent = repositoryStudent;
         }
 
-        public List<DisplayStudentDto> GetList()
+        public IEnumerable<DisplayStudentDto> GetList()
         {
             var models = _repositoryStudent.GetAll().ToList();
-            Mapper.Initialize(cfg => cfg.CreateMap<Student, DisplayStudentDto>());
-            return Mapper.Map<List<Student>, List<DisplayStudentDto>>(models); ;
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            var mapper = new Mapper(mapperConfiguration);
+            return mapper.Map<IEnumerable<Student>, IEnumerable<DisplayStudentDto>>(models);
         }
 
         public void Create(CreateStudentDto modelDto)
         {
-            Mapper.Initialize(cfg => cfg.CreateMap<CreateStudentDto, Student>());
-            _repositoryStudent.Insert(Mapper.Map<CreateStudentDto, Student>(modelDto));
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            var mapper = new Mapper(mapperConfiguration);
+            _repositoryStudent.Insert(mapper.Map<CreateStudentDto, Student>(modelDto));
         }
 
         public void Delete(int id)
@@ -40,14 +41,16 @@ namespace Faculty.BusinessLayer.Services
         public EditStudentDto GetModel(int id)
         {
             var model = _repositoryStudent.GetById(id);
-            Mapper.Initialize(cfg => cfg.CreateMap<Student, EditStudentDto>());
-            return Mapper.Map<Student, EditStudentDto>(model);
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            var mapper = new Mapper(mapperConfiguration);
+            return mapper.Map<Student, EditStudentDto>(model);
         }
 
         public void Edit(EditStudentDto modelDto)
         {
-            Mapper.Initialize(cfg => cfg.CreateMap<EditStudentDto, Student>());
-            _repositoryStudent.Update(Mapper.Map<EditStudentDto, Student>(modelDto));
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            var mapper = new Mapper(mapperConfiguration);
+            _repositoryStudent.Update(mapper.Map<EditStudentDto, Student>(modelDto));
         }
     }
 }

@@ -4,6 +4,6 @@ namespace Faculty.BusinessLayer.Interfaces.BaseInterfaces
 {
     public interface IDisplay<T> where T: class, new()
     {
-        List<T> GetList();
+        IEnumerable<T> GetList();
     }
 }
