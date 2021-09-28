@@ -1,4 +1,4 @@
-﻿namespace Faculty.BusinessLayer.ModelsDto
+﻿namespace Faculty.BusinessLayer.ModelsDto.SpecializationDto
 {
     /// <summary>
     /// Entity Specialization.

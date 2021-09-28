@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using AutoMapper;
+using System.Linq;
+using Faculty.AspUI.Models;
 using Microsoft.AspNetCore.Mvc;
-using Faculty.BusinessLayer.ModelsDto;
+using System.Collections.Generic;
 using Faculty.BusinessLayer.Interfaces;
+using Faculty.BusinessLayer.ModelsDto.FacultyDto;
 
 namespace Faculty.AspUI.Controllers
 {
@@ -16,11 +19,13 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string valueFilter = null)
+        public IActionResult Index(int? valueFilter = null)
         {
-            var faculties = _facultyService.GetList();
-            var facultiesFilter = valueFilter != null ? faculties.Where(x => x.CountYearEducation.ToString().Contains(valueFilter)).ToList() : faculties;
-            return View(facultiesFilter);
+            var modelsDto = _facultyService.GetList();
+            Mapper.Initialize(cfg => cfg.CreateMap<DisplayFacultyDto, FacultyDisplay>());
+            var models = Mapper.Map<IEnumerable<DisplayFacultyDto>, IEnumerable<FacultyDisplay>>(modelsDto);
+            var modelsFilter = valueFilter != null ? models.ToList().Where(x => x.CountYearEducation == valueFilter.Value).ToList() : models.ToList();
+            return View(modelsFilter);
         }
 
         [HttpGet]
@@ -31,31 +36,43 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateFacultyDto model)
-        {
-            _facultyService.Create(model);
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public IActionResult Delete(int id)
-        {
-            _facultyService.Delete(id);
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public IActionResult Edit(int id)
+        public IActionResult Create(FacultyModify model)
         {
             ViewBag.ViewModelFaculty = _facultyService.CreateViewModelFaculty();
-            var model = _facultyService.GetModel(id);
+            if (ModelState.IsValid == false) return View(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<FacultyModify, CreateFacultyDto>());
+            var createCurator = Mapper.Map<FacultyModify, CreateFacultyDto>(model);
+            _facultyService.Create(createCurator);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            if (id is not null) _facultyService.Delete(id.Value);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int? id)
+        {
+            EditFacultyDto modelDto = default;
+            if (id is not null) modelDto = _facultyService.GetModel(id.Value);
+            if (modelDto is null) return RedirectToAction("Index");
+            Mapper.Initialize(cfg => cfg.CreateMap<EditFacultyDto, FacultyModify>());
+            var model = Mapper.Map<EditFacultyDto, FacultyModify>(modelDto);
+            ViewBag.ViewModelFaculty = _facultyService.CreateViewModelFaculty();
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(EditFacultyDto model)
+        public IActionResult Edit(FacultyModify model)
         {
-            _facultyService.Edit(model);
+            ViewBag.ViewModelFaculty = _facultyService.CreateViewModelFaculty();
+            if (ModelState.IsValid == false) return View(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<FacultyModify, EditFacultyDto>());
+            var modelDto = Mapper.Map<FacultyModify, EditFacultyDto>(model);
+            _facultyService.Edit(modelDto);
             return RedirectToAction("Index");
         }
     }

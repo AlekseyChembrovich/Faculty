@@ -120,12 +120,6 @@
   <data name="BtnSave" xml:space="preserve">
     <value>Сохранить</value>
   </data>
-  <data name="DoublenameLength" xml:space="preserve">
-    <value>Длина отчества должна быть не более 50 символов.</value>
-  </data>
-  <data name="DoublenameRequired" xml:space="preserve">
-    <value>Отчество обязательно.</value>
-  </data>
   <data name="EditCaption" xml:space="preserve">
     <value>Изменение</value>
   </data>
@@ -141,19 +135,7 @@
   <data name="LinkBackToList" xml:space="preserve">
     <value>Вернуться к списку</value>
   </data>
-  <data name="NameLength" xml:space="preserve">
-    <value>Длина имени должна быть не более 50 символов.</value>
-  </data>
-  <data name="NameRequired" xml:space="preserve">
-    <value>Имя обязательно.</value>
-  </data>
   <data name="StudentCaption" xml:space="preserve">
     <value>Студент</value>
-  </data>
-  <data name="SurnameLength" xml:space="preserve">
-    <value>Длина фамилии должна быть не более 50 символов.</value>
-  </data>
-  <data name="SurnameRequired" xml:space="preserve">
-    <value>Фамилия обязательна.</value>
   </data>
 </root>

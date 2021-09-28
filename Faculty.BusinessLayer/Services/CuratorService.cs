@@ -3,8 +3,8 @@ using System.Linq;
 using Faculty.DataAccessLayer;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
-using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
+using Faculty.BusinessLayer.ModelsDto.CuratorDto;
 
 namespace Faculty.BusinessLayer.Services
 {
@@ -21,7 +21,7 @@ namespace Faculty.BusinessLayer.Services
         {
             var models = _repositoryCurator.GetAll().ToList();
             Mapper.Initialize(cfg => cfg.CreateMap<Curator, DisplayCuratorDto>());
-            return Mapper.Map<List<Curator>, List<DisplayCuratorDto>>(models); ;
+            return Mapper.Map<List<Curator>, List<DisplayCuratorDto>>(models);
         }
 
         public void Create(CreateCuratorDto modelDto)

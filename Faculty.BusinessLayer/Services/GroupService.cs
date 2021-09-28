@@ -6,6 +6,8 @@ using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.BusinessLayer.ModelsBusiness;
+using Faculty.BusinessLayer.ModelsDto.GroupDto;
+using Faculty.BusinessLayer.ModelsDto.SpecializationDto;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
 namespace Faculty.BusinessLayer.Services

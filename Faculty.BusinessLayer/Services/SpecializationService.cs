@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.Interfaces;
+using Faculty.BusinessLayer.ModelsDto.SpecializationDto;
 
 namespace Faculty.BusinessLayer.Services
 {

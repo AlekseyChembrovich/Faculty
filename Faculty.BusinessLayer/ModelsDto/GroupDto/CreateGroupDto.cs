@@ -1,15 +1,10 @@
-﻿namespace Faculty.BusinessLayer.ModelsDto
+﻿namespace Faculty.BusinessLayer.ModelsDto.GroupDto
 {
     /// <summary>
     /// Entity Group.
     /// </summary>
-    public class EditGroupDto
+    public class CreateGroupDto
     {
-        /// <summary>
-        /// Unique identificator curator.
-        /// </summary>
-        public int Id { get; set; }
-
         /// <summary>
         /// Name group.
         /// </summary>

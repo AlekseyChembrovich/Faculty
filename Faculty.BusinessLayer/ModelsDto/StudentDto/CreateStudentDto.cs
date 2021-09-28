@@ -1,15 +1,10 @@
-﻿namespace Faculty.BusinessLayer.ModelsDto
+﻿namespace Faculty.BusinessLayer.ModelsDto.StudentDto
 {
     /// <summary>
     /// Entity Student.
     /// </summary>
-    public class DisplayStudentDto
+    public class CreateStudentDto
     {
-        /// <summary>
-        /// Unique identificator specialization.
-        /// </summary>
-        public int Id { get; set; }
-
         /// <summary>
         /// Surname student.
         /// </summary>

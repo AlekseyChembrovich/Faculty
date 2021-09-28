@@ -123,12 +123,6 @@
   <data name="CreateCaption" xml:space="preserve">
     <value>Create</value>
   </data>
-  <data name="DoublenameLength" xml:space="preserve">
-    <value>The doublename must be no more than 50 characters.</value>
-  </data>
-  <data name="DoublenameRequired" xml:space="preserve">
-    <value>Doublename is required.</value>
-  </data>
   <data name="LabelDoublename" xml:space="preserve">
     <value>Doublename: </value>
   </data>
@@ -141,19 +135,7 @@
   <data name="LinkBackToList" xml:space="preserve">
     <value>Back to list</value>
   </data>
-  <data name="NameLength" xml:space="preserve">
-    <value>The name must be no more than 50 characters.</value>
-  </data>
-  <data name="NameRequired" xml:space="preserve">
-    <value>Name is required.</value>
-  </data>
   <data name="StudentCaption" xml:space="preserve">
     <value>Student</value>
-  </data>
-  <data name="SurnameLength" xml:space="preserve">
-    <value>The surname must be no more than 50 characters.</value>
-  </data>
-  <data name="SurnameRequired" xml:space="preserve">
-    <value>Surname is required.</value>
   </data>
 </root>

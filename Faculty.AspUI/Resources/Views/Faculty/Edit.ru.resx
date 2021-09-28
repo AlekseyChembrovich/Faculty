@@ -120,23 +120,11 @@
   <data name="BtnSave" xml:space="preserve">
     <value>Сохранить</value>
   </data>
-  <data name="CountYearEducationRange" xml:space="preserve">
-    <value>Count year education is in between 3 and 5.</value>
-  </data>
-  <data name="CountYearEducationRequired" xml:space="preserve">
-    <value>Count year education is required.</value>
-  </data>
-  <data name="CuratorRequired" xml:space="preserve">
-    <value>Curator surname is required.</value>
-  </data>
   <data name="EditCaption" xml:space="preserve">
     <value>Изменение</value>
   </data>
   <data name="FacultyCaption" xml:space="preserve">
     <value>Факультет</value>
-  </data>
-  <data name="GroupRequired" xml:space="preserve">
-    <value>Group name is required.</value>
   </data>
   <data name="LabelCountYearEducation" xml:space="preserve">
     <value>Количество лет обучения: </value>
@@ -155,11 +143,5 @@
   </data>
   <data name="SelectStudent" xml:space="preserve">
     <value>Выберите студента: </value>
-  </data>
-  <data name="StartDateEducationRequired" xml:space="preserve">
-    <value>Start date education is required.</value>
-  </data>
-  <data name="StudentRequired" xml:space="preserve">
-    <value>Student surname is required.</value>
   </data>
 </root>

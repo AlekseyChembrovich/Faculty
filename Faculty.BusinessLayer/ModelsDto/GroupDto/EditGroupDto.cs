@@ -1,12 +1,12 @@
-﻿namespace Faculty.BusinessLayer.ModelsDto
+﻿namespace Faculty.BusinessLayer.ModelsDto.GroupDto
 {
     /// <summary>
     /// Entity Group.
     /// </summary>
-    public class DisplayGroupDto
+    public class EditGroupDto
     {
         /// <summary>
-        /// Unique identificator group.
+        /// Unique identificator curator.
         /// </summary>
         public int Id { get; set; }
 
@@ -16,8 +16,8 @@
         public string Name { get; set; }
 
         /// <summary>
-        /// Entity specialization.
+        /// Foreign key for specialization entity.
         /// </summary>
-        public string SpecializationName { get; set; }
+        public int SpecializationId { get; set; }
     }
 }

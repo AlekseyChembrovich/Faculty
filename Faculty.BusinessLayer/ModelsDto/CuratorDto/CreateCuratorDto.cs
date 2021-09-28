@@ -1,23 +1,28 @@
-﻿namespace Faculty.BusinessLayer.ModelsDto
+﻿namespace Faculty.BusinessLayer.ModelsDto.CuratorDto
 {
     /// <summary>
-    /// Entity Student.
+    /// Entity Curator.
     /// </summary>
-    public class CreateStudentDto
+    public class CreateCuratorDto
     {
         /// <summary>
-        /// Surname student.
+        /// Surname curator.
         /// </summary>
         public string Surname { get; set; }
 
         /// <summary>
-        /// Name student.
+        /// Name curator.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Doublename student.
+        /// Doublename curator.
         /// </summary>
         public string Doublename { get; set; }
+
+        /// <summary>
+        /// Phone curator.
+        /// </summary>
+        public string Phone { get; set; }
     }
 }

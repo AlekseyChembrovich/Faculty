@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using Faculty.BusinessLayer.ModelsDto;
+using Faculty.BusinessLayer.ModelsDto.CuratorDto;
+using Faculty.BusinessLayer.ModelsDto.GroupDto;
+using Faculty.BusinessLayer.ModelsDto.StudentDto;
 
 namespace Faculty.BusinessLayer.ModelsBusiness
 {

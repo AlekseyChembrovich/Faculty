@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Faculty.BusinessLayer.ModelsDto;
+﻿using AutoMapper;
+using System.Linq;
+using Faculty.AspUI.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using Faculty.BusinessLayer.Interfaces;
+using Faculty.BusinessLayer.ModelsDto.GroupDto;
 
 namespace Faculty.AspUI.Controllers
 {
@@ -16,7 +20,10 @@ namespace Faculty.AspUI.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View(_groupService.GetList());
+            var modelsDto = _groupService.GetList();
+            Mapper.Initialize(cfg => cfg.CreateMap<DisplayGroupDto, GroupDisplay>());
+            var models = Mapper.Map<IEnumerable<DisplayGroupDto>, IEnumerable<GroupDisplay>>(modelsDto);
+            return View(models.ToList());
         }
 
         [HttpGet]
@@ -27,31 +34,43 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateGroupDto model)
-        {
-            _groupService.Create(model);
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public IActionResult Delete(int id)
-        {
-            _groupService.Delete(id);
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public IActionResult Edit(int id)
+        public IActionResult Create(GroupModify model)
         {
             ViewBag.ViewModelGroup = _groupService.CreateViewModelGroup();
-            var model = _groupService.GetModel(id);
+            if (ModelState.IsValid == false) return View(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<GroupModify, CreateGroupDto>());
+            var createCurator = Mapper.Map<GroupModify, CreateGroupDto>(model);
+            _groupService.Create(createCurator);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            if (id is not null) _groupService.Delete(id.Value);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int? id)
+        {
+            EditGroupDto modelDto = default;
+            if (id is not null) modelDto = _groupService.GetModel(id.Value);
+            if (modelDto is null) return RedirectToAction("Index");
+            Mapper.Initialize(cfg => cfg.CreateMap<EditGroupDto, GroupModify>());
+            var model = Mapper.Map<EditGroupDto, GroupModify>(modelDto);
+            ViewBag.ViewModelGroup = _groupService.CreateViewModelGroup();
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(EditGroupDto group)
+        public IActionResult Edit(GroupModify model)
         {
-            _groupService.Edit(group);
+            ViewBag.ViewModelGroup = _groupService.CreateViewModelGroup();
+            if (ModelState.IsValid == false) return View(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<GroupModify, EditGroupDto>());
+            var modelDto = Mapper.Map<GroupModify, EditGroupDto>(model);
+            _groupService.Edit(modelDto);
             return RedirectToAction("Index");
         }
     }

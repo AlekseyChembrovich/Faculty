@@ -1,12 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Faculty.BusinessLayer.ModelsDto
+﻿namespace Faculty.AspUI.Models
 {
     /// <summary>
     /// Entity Curator.
     /// </summary>
-    public class CreateCuratorDto
+    public class CuratorDisplay
     {
+        /// <summary>
+        /// Unique identificator curator.
+        /// </summary>
+        public int Id { get; set; }
+
         /// <summary>
         /// Surname curator.
         /// </summary>
@@ -25,7 +28,6 @@ namespace Faculty.BusinessLayer.ModelsDto
         /// <summary>
         /// Phone curator.
         /// </summary>
-        [Phone]
         public string Phone { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Faculty.BusinessLayer.ModelsDto;
+using Faculty.BusinessLayer.ModelsDto.SpecializationDto;
 
 namespace Faculty.BusinessLayer.ModelsBusiness
 {

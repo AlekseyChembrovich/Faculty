@@ -1,12 +1,12 @@
-﻿namespace Faculty.BusinessLayer.ModelsDto
+﻿namespace Faculty.AspUI.Models
 {
     /// <summary>
     /// Entity Student.
     /// </summary>
-    public class EditStudentDto
+    public class StudentDisplay
     {
         /// <summary>
-        /// Unique identificator curator.
+        /// Unique identificator student.
         /// </summary>
         public int Id { get; set; }
 

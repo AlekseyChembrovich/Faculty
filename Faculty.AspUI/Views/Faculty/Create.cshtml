@@ -1,4 +1,4 @@
-﻿@model Faculty.BusinessLayer.ModelsDto.CreateFacultyDto
+﻿@model Faculty.AspUI.Models.FacultyModify
 
 @{
     ViewData["Title"] = "Faculty - Create";
@@ -14,25 +14,13 @@
         <form asp-action="Create" asp-controller="Faculty">
             <div class="form-group">
                 <label asp-for="StartDateEducation">@_localizer["LabelStartDateEducation"].Value</label>
-                <input 
-                    asp-for="StartDateEducation" 
-                    asp-format="{0:dd/MM/yyyy}" 
-                    data-val="true" 
-                    data-val-required="@_localizer["StartDateEducationRequired"].Value" 
-                    class="form-control"/>
+                <input asp-for="StartDateEducation" type="date" asp-format="{0:dd/MM/yyyy}" class="form-control"/>
                 <span asp-validation-for="StartDateEducation" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="CountYearEducation">@_localizer["LabelCountYearEducation"].Value</label>
-                <input 
-                    asp-for="CountYearEducation" 
-                    data-val="true" 
-                    data-val-required="@_localizer["CountYearEducationRequired"].Value" 
-                    data-val-range-min="3" 
-                    data-val-range-max="5"
-                    data-val-range="@_localizer["CountYearEducationRange"].Value"
-                    class="form-control" />
+                <input asp-for="CountYearEducation" class="form-control" />
                 <span asp-validation-for="CountYearEducation" class="text-danger"></span>
             </div>
 
@@ -61,7 +49,3 @@
 <div>
     <a asp-action="Index">@_localizer["LinkBackToList"].Value</a>
 </div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

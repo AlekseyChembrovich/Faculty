@@ -1,4 +1,4 @@
-﻿@model Faculty.BusinessLayer.ModelsDto.EditSpecializationDto
+﻿@model Faculty.AspUI.Models.SpecializationModify
 
 @{
     ViewData["Title"] = "Specialization - Edit";
@@ -18,12 +18,7 @@
 
             <div class="form-group">
                 <label asp-for="Name">@_localizer["LabelName"].Value</label>
-                <input asp-for="Name"
-                       data-val="true"
-                       data-val-required="@_localizer["NameRequired"].Value"
-                       class="form-control"
-                       data-val-length-max="50"
-                       data-val-length="@_localizer["NameLength"].Value" />
+                <input asp-for="Name" class="form-control"/>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
@@ -37,7 +32,3 @@
 <div>
     <a asp-action="Index">@_localizer["LinkBackToList"].Value</a>
 </div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

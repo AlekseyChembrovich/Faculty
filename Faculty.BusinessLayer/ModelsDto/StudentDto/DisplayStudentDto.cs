@@ -1,35 +1,28 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Faculty.BusinessLayer.ModelsDto
+﻿namespace Faculty.BusinessLayer.ModelsDto.StudentDto
 {
     /// <summary>
-    /// Entity Curator.
+    /// Entity Student.
     /// </summary>
-    public class DisplayCuratorDto
+    public class DisplayStudentDto
     {
         /// <summary>
-        /// Unique identificator curator.
+        /// Unique identificator specialization.
         /// </summary>
         public int Id { get; set; }
 
         /// <summary>
-        /// Surname curator.
+        /// Surname student.
         /// </summary>
         public string Surname { get; set; }
 
         /// <summary>
-        /// Name curator.
+        /// Name student.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Doublename curator.
+        /// Doublename student.
         /// </summary>
         public string Doublename { get; set; }
-
-        /// <summary>
-        /// Phone curator.
-        /// </summary>
-        public string Phone { get; set; }
     }
 }

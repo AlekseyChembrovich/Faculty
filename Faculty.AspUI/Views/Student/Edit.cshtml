@@ -1,4 +1,4 @@
-﻿@model Faculty.BusinessLayer.ModelsDto.EditStudentDto
+﻿@model Faculty.AspUI.Models.StudentModify
 
 @{
     ViewData["Title"] = "Student - Edit";
@@ -18,37 +18,19 @@
 
             <div class="form-group">
                 <label asp-for="Surname">@_localizer["LabelSurname"].Value</label>
-                <input type="text"
-                       asp-for="Surname"
-                       data-val="true"
-                       data-val-required="@_localizer["SurnameRequired"].Value"
-                       data-val-length-max="50"
-                       data-val-length="@_localizer["SurnameLength"].Value"
-                       class="form-control" />
+                <input type="text" asp-for="Surname" class="form-control" />
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="Name">@_localizer["LabelName"].Value</label>
-                <input type="text"
-                       asp-for="Name"
-                       data-val="true"
-                       data-val-required="@_localizer["NameRequired"].Value"
-                       data-val-length-max="50"
-                       data-val-length="@_localizer["NameLength"].Value"
-                       class="form-control" />
+                <input type="text" asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="Doublename">@_localizer["LabelDoublename"].Value</label>
-                <input type="text"
-                       asp-for="Doublename"
-                       data-val="true"
-                       data-val-required="@_localizer["DoublenameRequired"].Value"
-                       data-val-length-max="50"
-                       data-val-length="@_localizer["DoublenameLength"].Value"
-                       class="form-control" />
+                <input type="text" asp-for="Doublename" class="form-control" />
                 <span asp-validation-for="Doublename" class="text-danger"></span>
             </div>
 
@@ -62,7 +44,3 @@
 <div>
     <a asp-action="Index">@_localizer["LinkBackToList"].Value</a>
 </div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

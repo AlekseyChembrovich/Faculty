@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Faculty.BusinessLayer.ModelsDto;
+﻿using AutoMapper;
+using System.Linq;
+using Faculty.AspUI.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using Faculty.BusinessLayer.Interfaces;
+using Faculty.BusinessLayer.ModelsDto.StudentDto;
 
 namespace Faculty.AspUI.Controllers
 {
@@ -16,7 +20,10 @@ namespace Faculty.AspUI.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View(_studentService.GetList());
+            var modelsDto = _studentService.GetList();
+            Mapper.Initialize(cfg => cfg.CreateMap<DisplayStudentDto, StudentDisplay>());
+            var models = Mapper.Map<IEnumerable<DisplayStudentDto>, IEnumerable<StudentDisplay>>(modelsDto);
+            return View(models.ToList());
         }
 
         [HttpGet]
@@ -26,30 +33,40 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateStudentDto model)
+        public IActionResult Create(StudentModify model)
         {
-            _studentService.Create(model);
+            if (ModelState.IsValid == false) return View(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<StudentModify, CreateStudentDto>());
+            var createCurator = Mapper.Map<StudentModify, CreateStudentDto>(model);
+            _studentService.Create(createCurator);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int? id)
         {
-            _studentService.Delete(id);
+            if (id is not null) _studentService.Delete(id.Value);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public IActionResult Edit(int? id)
         {
-            var model = _studentService.GetModel(id);
+            EditStudentDto modelDto = default;
+            if (id is not null) modelDto = _studentService.GetModel(id.Value);
+            if (modelDto is null) return RedirectToAction("Index");
+            Mapper.Initialize(cfg => cfg.CreateMap<EditStudentDto, StudentModify>());
+            var model = Mapper.Map<EditStudentDto, StudentModify>(modelDto);
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(EditStudentDto model)
+        public IActionResult Edit(StudentModify model)
         {
-            _studentService.Edit(model);
+            if (ModelState.IsValid == false) return View(model);
+            Mapper.Initialize(cfg => cfg.CreateMap<StudentModify, EditStudentDto>());
+            var modelDto = Mapper.Map<StudentModify, EditStudentDto>(model);
+            _studentService.Edit(modelDto);
             return RedirectToAction("Index");
         }
     }

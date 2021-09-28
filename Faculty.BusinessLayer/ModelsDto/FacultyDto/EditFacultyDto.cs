@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Faculty.BusinessLayer.ModelsDto
+namespace Faculty.BusinessLayer.ModelsDto.FacultyDto
 {
     /// <summary>
     /// Entity Faculty.
     /// </summary>
-    public class DisplayFacultyDto
+    public class EditFacultyDto
     {
         /// <summary>
         /// Unique identificator curator.
@@ -23,18 +23,18 @@ namespace Faculty.BusinessLayer.ModelsDto
         public int CountYearEducation { get; set; }
 
         /// <summary>
-        /// Entity curator.
+        /// Foreign key for student entity.
         /// </summary>
-        public string CuratorSurname { get; set; }
+        public int StudentId { get; set; }
 
         /// <summary>
-        /// Entity group.
+        /// Foreign key for group entity.
         /// </summary>
-        public string GroupName { get; set; }
+        public int GroupId { get; set; }
 
         /// <summary>
-        /// Entity student.
+        /// Foreign key for curator entity.
         /// </summary>
-        public string StudentSurname { get; set; }
+        public int CuratorId { get; set; }
     }
 }

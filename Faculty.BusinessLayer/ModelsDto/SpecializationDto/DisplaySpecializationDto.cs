@@ -1,12 +1,12 @@
-﻿namespace Faculty.BusinessLayer.ModelsDto
+﻿namespace Faculty.BusinessLayer.ModelsDto.SpecializationDto
 {
     /// <summary>
     /// Entity Specialization.
     /// </summary>
-    public class EditSpecializationDto
+    public class DisplaySpecializationDto
     {
         /// <summary>
-        /// Unique identificator curator.
+        /// Unique identificator specialization.
         /// </summary>
         public int Id { get; set; }
 

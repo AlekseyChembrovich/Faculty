@@ -1,6 +1,7 @@
 ﻿using Faculty.BusinessLayer.ModelsDto;
 using Faculty.BusinessLayer.ModelsBusiness;
 using Faculty.BusinessLayer.Interfaces.BaseInterfaces;
+using Faculty.BusinessLayer.ModelsDto.FacultyDto;
 
 namespace Faculty.BusinessLayer.Interfaces
 {

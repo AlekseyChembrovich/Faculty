@@ -1,12 +1,17 @@
 ﻿using System;
 
-namespace Faculty.BusinessLayer.ModelsDto
+namespace Faculty.BusinessLayer.ModelsDto.FacultyDto
 {
     /// <summary>
     /// Entity Faculty.
     /// </summary>
-    public class CreateFacultyDto
+    public class DisplayFacultyDto
     {
+        /// <summary>
+        /// Unique identificator curator.
+        /// </summary>
+        public int Id { get; set; }
+
         /// <summary>
         /// Date start education student. 
         /// </summary>
@@ -18,18 +23,18 @@ namespace Faculty.BusinessLayer.ModelsDto
         public int CountYearEducation { get; set; }
 
         /// <summary>
-        /// Foreign key for student entity.
+        /// Entity curator.
         /// </summary>
-        public int StudentId { get; set; }
+        public string CuratorSurname { get; set; }
 
         /// <summary>
-        /// Foreign key for group entity.
+        /// Entity group.
         /// </summary>
-        public int GroupId { get; set; }
+        public string GroupName { get; set; }
 
         /// <summary>
-        /// Foreign key for curator entity.
+        /// Entity student.
         /// </summary>
-        public int CuratorId { get; set; }
+        public string StudentSurname { get; set; }
     }
 }
