@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
+using Faculty.DataAccessLayer.Repository.EntityFramework;
 
 namespace Faculty.IntegrationTests
 {

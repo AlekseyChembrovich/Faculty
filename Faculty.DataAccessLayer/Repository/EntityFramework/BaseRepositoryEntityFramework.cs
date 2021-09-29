@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace Faculty.DataAccessLayer.RepositoryEntityFramework
+namespace Faculty.DataAccessLayer.Repository.EntityFramework
 {
     /// <summary>
     /// Implementing the repository pattern (Entity Framework).

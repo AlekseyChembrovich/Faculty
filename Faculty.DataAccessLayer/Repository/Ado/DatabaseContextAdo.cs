@@ -2,7 +2,7 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 
-namespace Faculty.DataAccessLayer.RepositoryAdo
+namespace Faculty.DataAccessLayer.Repository.Ado
 {
     /// <summary>
     /// Database connection context.

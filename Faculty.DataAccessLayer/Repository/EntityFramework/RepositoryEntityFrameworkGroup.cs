@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
-using Faculty.DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
+using Faculty.DataAccessLayer.Models;
+using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
-namespace Faculty.DataAccessLayer.RepositoryEntityFramework
+namespace Faculty.DataAccessLayer.Repository.EntityFramework
 {
     public class RepositoryEntityFrameworkGroup : BaseRepositoryEntityFramework<Group>, IRepositoryGroup
     {

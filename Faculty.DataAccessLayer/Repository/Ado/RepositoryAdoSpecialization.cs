@@ -1,32 +1,30 @@
 ﻿using System;
+using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
-using Microsoft.Data.SqlClient;
 
-namespace Faculty.DataAccessLayer.RepositoryAdo
+namespace Faculty.DataAccessLayer.Repository.Ado
 {
     /// <summary>
-    /// Implementation of the repository pattern for the Group data model.
+    /// Implementation of the repository pattern for the Specialization data model.
     /// </summary>
-    public class RepositoryAdoGroup : BaseRepositoryAdo<Group>
+    public class RepositoryAdoSpecialization : BaseRepositoryAdo<Specialization>
     {
         /// <summary>
         /// Connection context initialization constructor.
         /// </summary>
         /// <param name="context">Database connection.</param>
-        public RepositoryAdoGroup(DatabaseContextAdo context) : base(context) { }
+        public RepositoryAdoSpecialization(DatabaseContextAdo context) : base(context) { }
 
         /// <summary>
         /// Method for setting the add request parameters.
         /// </summary>
         /// <param name="entity">Entity object.</param>
         /// <param name="command">Object SqlCommand.</param>
-        protected override void SetParametersInsertCommand(Group entity, SqlCommand command)
+        protected override void SetParametersInsertCommand(Specialization entity, SqlCommand command)
         {
-            command.CommandText = "INSERT INTO dbo.Groups (dbo.Groups.Name, dbo.Groups.SpecializationId) " +
-                                  "VALUES (@name, @specializationId);";
+            command.CommandText = "INSERT INTO dbo.Specializations (dbo.Specializations.Name) VALUES (@name);";
             command.Parameters.AddWithValue("@name", entity.Name is null ? DBNull.Value : entity.Name);
-            command.Parameters.AddWithValue("@specializationId", entity.SpecializationId);
         }
 
         /// <summary>
@@ -34,12 +32,10 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
         /// </summary>
         /// <param name="entity">Entity object.</param>
         /// <param name="command">Object SqlCommand.</param>
-        protected override void SetParametersUpdateCommand(Group entity, SqlCommand command)
+        protected override void SetParametersUpdateCommand(Specialization entity, SqlCommand command)
         {
-            command.CommandText = "UPDATE dbo.Groups SET dbo.Groups.Name = @name, " +
-                                  "dbo.Groups.SpecializationId = @specializationId WHERE dbo.Groups.Id = @id;";
+            command.CommandText = "UPDATE dbo.Specializations SET dbo.Specializations.Name = @name WHERE dbo.Specializations.Id = @id;";
             command.Parameters.AddWithValue("@name", entity.Name is null ? DBNull.Value : entity.Name);
-            command.Parameters.AddWithValue("@specializationId", entity.SpecializationId);
             command.Parameters.AddWithValue("@id", entity.Id);
         }
 
@@ -48,9 +44,9 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
         /// </summary>
         /// <param name="entity">Entity object.</param>
         /// <param name="command">Object SqlCommand.</param>
-        protected override void SetParametersDeleteCommand(Group entity, SqlCommand command)
+        protected override void SetParametersDeleteCommand(Specialization entity, SqlCommand command)
         {
-            command.CommandText = "DELETE FROM dbo.Groups WHERE dbo.Groups.Id = @id;";
+            command.CommandText = "DELETE FROM dbo.Specializations WHERE dbo.Specializations.Id = @id;";
             command.Parameters.AddWithValue("@id", entity.Id);
         }
 
@@ -59,24 +55,22 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
         /// </summary>
         /// <param name="command">Object SqlCommand.</param>
         /// <returns>List of Entity objects.</returns>
-        protected override List<Group> SetParametersSelectCommandModels(SqlCommand command)
+        protected override List<Specialization> SetParametersSelectCommandModels(SqlCommand command)
         {
-            command.CommandText = "SELECT * FROM dbo.Groups;";
+            command.CommandText = "SELECT * FROM dbo.Specializations;";
             var sqlDataReader = command.ExecuteReader();
-            var groups = new List<Group>();
+            var specializations = new List<Specialization>();
             while (sqlDataReader.Read())
             {
                 int.TryParse(sqlDataReader.GetValue(0)?.ToString(), out var id);
                 var name = TryParseNullableString(sqlDataReader.GetValue(1).ToString());
-                var specializationId = TryParseNullableInt(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty);
-                var group = new Group { Id = id, Name = name, SpecializationId = specializationId ?? 0 };
-                groups.Add(group);
+                var specialization = new Specialization { Id = id, Name = name };
+                specializations.Add(specialization);
             }
 
             sqlDataReader.Close();
-            return groups;
+            return specializations;
 
-            int? TryParseNullableInt(string value) => int.TryParse(value, out var outValue) ? (int?)outValue : null;
             string? TryParseNullableString(object value) => value.ToString() == "" ? null : value.ToString();
         }
 
@@ -85,24 +79,22 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
         /// </summary>
         /// <param name="id">Unique identificator model.</param>
         /// <returns>Entity object.</returns>
-        protected override Group SetParametersSelectCommandModel(int id, SqlCommand command)
+        protected override Specialization SetParametersSelectCommandModel(int id, SqlCommand command)
         {
-            command.CommandText = "SELECT * FROM dbo.Groups WHERE dbo.Groups.Id = @id;";
+            command.CommandText = "SELECT * FROM dbo.Specializations WHERE dbo.Specializations.Id = @id;";
             command.Parameters.AddWithValue("@id", id);
             var sqlDataReader = command.ExecuteReader();
-            Group group = null;
+            Specialization specialization = null;
             while (sqlDataReader.Read())
             {
                 int.TryParse(sqlDataReader.GetValue(0)?.ToString(), out var modelId);
                 var name = TryParseNullableString(sqlDataReader.GetValue(1).ToString());
-                var specializationId = TryParseNullableInt(sqlDataReader.GetValue(2)?.ToString() ?? string.Empty);
-                group = new Group { Id = modelId, Name = name, SpecializationId = specializationId ?? 0 };
+                specialization = new Specialization { Id = modelId, Name = name };
             }
 
             sqlDataReader.Close();
-            return group;
+            return specialization;
 
-            int? TryParseNullableInt(string value) => int.TryParse(value, out var outValue) ? (int?)outValue : null;
             string? TryParseNullableString(object value) => value.ToString() == "" ? null : value.ToString();
         }
     }

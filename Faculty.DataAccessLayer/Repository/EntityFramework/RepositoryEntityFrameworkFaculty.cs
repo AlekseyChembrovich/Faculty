@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
-namespace Faculty.DataAccessLayer.RepositoryEntityFramework
+namespace Faculty.DataAccessLayer.Repository.EntityFramework
 {
     public class RepositoryEntityFrameworkFaculty : BaseRepositoryEntityFramework<Models.Faculty>, IRepositoryFaculty
     {
