@@ -3,7 +3,7 @@ using System.IO;
 using Microsoft.SqlServer.Dac;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using Faculty.DataAccessLayer.RepositoryAdo;
+using Faculty.DataAccessLayer.Repository.Ado;
 
 namespace Faculty.IntegrationTests
 {

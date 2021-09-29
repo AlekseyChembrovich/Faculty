@@ -1,9 +1,9 @@
 ﻿using System;
+using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
-using Microsoft.Data.SqlClient;
 
-namespace Faculty.DataAccessLayer.RepositoryAdo
+namespace Faculty.DataAccessLayer.Repository.Ado
 {
     /// <summary>
     /// Implementation of the repository pattern for the Group data model.

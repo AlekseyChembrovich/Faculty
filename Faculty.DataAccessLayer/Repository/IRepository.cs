@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Faculty.DataAccessLayer
+namespace Faculty.DataAccessLayer.Repository
 {
     /// <summary>
     /// Interface representing an abstraction for implementing the repository pattern.

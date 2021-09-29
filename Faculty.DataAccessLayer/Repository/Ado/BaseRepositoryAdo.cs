@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
+using System.Collections.Generic;
 
-namespace Faculty.DataAccessLayer.RepositoryAdo
+namespace Faculty.DataAccessLayer.Repository.Ado
 {
     /// <summary>
     /// Implementing the repository pattern (Ado).

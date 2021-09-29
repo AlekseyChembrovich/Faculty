@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Faculty.DataAccessLayer.RepositoryEntityFramework
+namespace Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces
 {
     public interface IRepositoryFaculty : IRepository<Models.Faculty>
     {

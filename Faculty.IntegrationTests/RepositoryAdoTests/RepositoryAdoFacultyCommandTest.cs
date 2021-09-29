@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
-using Faculty.DataAccessLayer;
 using System.Collections.Generic;
+using Faculty.DataAccessLayer.Repository;
 using Microsoft.Extensions.Configuration;
-using Faculty.DataAccessLayer.RepositoryAdo;
+using Faculty.DataAccessLayer.Repository.Ado;
 
 namespace Faculty.IntegrationTests.RepositoryAdoTests
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 
-namespace Faculty.DataAccessLayer.RepositoryEntityFramework
+namespace Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces
 {
     public interface IRepositoryGroup : IRepository<Group>
     {
