@@ -1,28 +1,29 @@
 ﻿using AutoMapper;
 using System.Linq;
-using Faculty.AspUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.ModelsDto.SpecializationDto;
+using Faculty.AspUI.ViewModels.Specialization;
+using Faculty.BusinessLayer.Dto.Specialization;
 
 namespace Faculty.AspUI.Controllers
 {
     public class SpecializationController : Controller
     {
-        private readonly ISpecializationOperations _specializationService;
+        private readonly ISpecializationService _specializationService;
+        private readonly IMapper _mapper;
 
-        public SpecializationController(ISpecializationOperations specializationService)
+        public SpecializationController(ISpecializationService specializationService, IMapper mapper)
         {
             _specializationService = specializationService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var modelsDto = _specializationService.GetList();
-            Mapper.Initialize(cfg => cfg.CreateMap<DisplaySpecializationDto, SpecializationDisplay>());
-            var models = Mapper.Map<IEnumerable<DisplaySpecializationDto>, IEnumerable<SpecializationDisplay>>(modelsDto);
+            var modelsDto = _specializationService.GetAll();
+            var models = _mapper.Map<IEnumerable<SpecializationDisplayModifyDto>, IEnumerable<SpecializationDisplayModify>>(modelsDto);
             return View(models.ToList());
         }
 
@@ -33,39 +34,35 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(SpecializationModify model)
+        public IActionResult Create(SpecializationAdd model)
         {
             if (ModelState.IsValid == false) return View(model);
-            Mapper.Initialize(cfg => cfg.CreateMap<SpecializationModify, CreateSpecializationDto>());
-            var createCurator = Mapper.Map<SpecializationModify, CreateSpecializationDto>(model);
+            var createCurator = _mapper.Map<SpecializationAdd, SpecializationAddDto>(model);
             _specializationService.Create(createCurator);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            if (id is not null) _specializationService.Delete(id.Value);
+            _specializationService.Delete(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            EditSpecializationDto modelDto = default;
-            if (id is not null) modelDto = _specializationService.GetModel(id.Value);
+            var modelDto = _specializationService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            Mapper.Initialize(cfg => cfg.CreateMap<EditSpecializationDto, SpecializationModify>());
-            var model = Mapper.Map<EditSpecializationDto, SpecializationModify>(modelDto);
+            var model = _mapper.Map<SpecializationDisplayModifyDto, SpecializationDisplayModify>(modelDto);
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(SpecializationModify model)
+        public IActionResult Edit(SpecializationDisplayModify model)
         {
             if (ModelState.IsValid == false) return View(model);
-            Mapper.Initialize(cfg => cfg.CreateMap<SpecializationModify, EditSpecializationDto>());
-            var modelDto = Mapper.Map<SpecializationModify, EditSpecializationDto>(model);
+            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(model);
             _specializationService.Edit(modelDto);
             return RedirectToAction("Index");
         }

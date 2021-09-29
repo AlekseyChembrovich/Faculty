@@ -1,4 +1,4 @@
-﻿@model Faculty.AspUI.Models.GroupModify
+﻿@model Faculty.AspUI.ViewModels.Group.GroupAdd
 
 @{
     ViewData["Title"] = "Group - Create";
@@ -20,7 +20,7 @@
 
             <div class="form-group">
                 <label asp-for="SpecializationId">@_localizer["LabelSpecialization"].Value</label>
-                <select asp-for="SpecializationId" asp-items="@(new SelectList(ViewBag.ViewModelGroup.Specializations, "Id", "Name"))" class="custom-select"></select>
+                <select asp-for="SpecializationId" asp-items="@(new SelectList(ViewBag.Specializations, "Id", "Name"))" class="custom-select"></select>
             </div>
 
             <div class="form-group">

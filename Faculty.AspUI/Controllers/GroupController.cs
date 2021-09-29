@@ -1,77 +1,81 @@
 ﻿using AutoMapper;
 using System.Linq;
-using Faculty.AspUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Faculty.AspUI.ViewModels.Group;
+using Faculty.BusinessLayer.Dto.Group;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.ModelsDto.GroupDto;
 
 namespace Faculty.AspUI.Controllers
 {
     public class GroupController : Controller
     {
-        private readonly IGroupOperations _groupService;
+        private readonly IGroupService _groupService;
+        private readonly ISpecializationService _specializationService;
+        private readonly IMapper _mapper;
 
-        public GroupController(IGroupOperations groupService)
+        public GroupController(IGroupService groupService, ISpecializationService specializationService, IMapper mapper)
         {
             _groupService = groupService;
+            _specializationService = specializationService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var modelsDto = _groupService.GetList();
-            Mapper.Initialize(cfg => cfg.CreateMap<DisplayGroupDto, GroupDisplay>());
-            var models = Mapper.Map<IEnumerable<DisplayGroupDto>, IEnumerable<GroupDisplay>>(modelsDto);
+            var modelsDto = _groupService.GetAll();
+            var models = _mapper.Map<IEnumerable<GroupDisplayDto>, IEnumerable<GroupDisplay>>(modelsDto);
             return View(models.ToList());
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.ViewModelGroup = _groupService.CreateViewModelGroup();
+            FillViewBag();
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(GroupModify model)
+        public IActionResult Create(GroupAdd model)
         {
-            ViewBag.ViewModelGroup = _groupService.CreateViewModelGroup();
+            FillViewBag();
             if (ModelState.IsValid == false) return View(model);
-            Mapper.Initialize(cfg => cfg.CreateMap<GroupModify, CreateGroupDto>());
-            var createCurator = Mapper.Map<GroupModify, CreateGroupDto>(model);
+            var createCurator = _mapper.Map<GroupAdd, GroupAddDto>(model);
             _groupService.Create(createCurator);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            if (id is not null) _groupService.Delete(id.Value);
+            _groupService.Delete(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            EditGroupDto modelDto = default;
-            if (id is not null) modelDto = _groupService.GetModel(id.Value);
+            var modelDto = _groupService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            Mapper.Initialize(cfg => cfg.CreateMap<EditGroupDto, GroupModify>());
-            var model = Mapper.Map<EditGroupDto, GroupModify>(modelDto);
-            ViewBag.ViewModelGroup = _groupService.CreateViewModelGroup();
+            var model = _mapper.Map<GroupModifyDto, GroupModify>(modelDto);
+            FillViewBag();
             return View(model);
         }
 
         [HttpPost]
         public IActionResult Edit(GroupModify model)
         {
-            ViewBag.ViewModelGroup = _groupService.CreateViewModelGroup();
+            FillViewBag();
             if (ModelState.IsValid == false) return View(model);
-            Mapper.Initialize(cfg => cfg.CreateMap<GroupModify, EditGroupDto>());
-            var modelDto = Mapper.Map<GroupModify, EditGroupDto>(model);
+            var modelDto = _mapper.Map<GroupModify, GroupModifyDto>(model);
             _groupService.Edit(modelDto);
             return RedirectToAction("Index");
+        }
+
+        public void FillViewBag()
+        {
+            ViewBag.Specializations = _specializationService.GetAll();
         }
     }
 }

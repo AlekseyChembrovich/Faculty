@@ -1,40 +1,34 @@
 ﻿using AutoMapper;
-using System.Linq;
-using Faculty.DataAccessLayer;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
+using Faculty.BusinessLayer.Dto.Group;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.ModelsBusiness;
-using Faculty.BusinessLayer.ModelsDto.GroupDto;
-using Faculty.BusinessLayer.ModelsDto.SpecializationDto;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
 
 namespace Faculty.BusinessLayer.Services
 {
-    public class GroupService : IGroupOperations
+    public class GroupService : IGroupService
     {
         private readonly IRepositoryGroup _repositoryGroup;
-        private readonly IRepository<Specialization> _repositorySpecialization;
 
-        public GroupService(IRepositoryGroup repositoryGroup, IRepository<Specialization> repositorySpecialization)
+        public GroupService(IRepositoryGroup repositoryGroup)
         {
             _repositoryGroup = repositoryGroup;
-            _repositorySpecialization = repositorySpecialization;
         }
 
-        public IEnumerable<DisplayGroupDto> GetList()
+        public IEnumerable<GroupDisplayDto> GetAll()
         {
             var models = _repositoryGroup.GetAllIncludeForeignKey();
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<IEnumerable<Group>, IEnumerable<DisplayGroupDto>>(models);
+            return mapper.Map<IEnumerable<Group>, IEnumerable<GroupDisplayDto>>(models);
         }
 
-        public void Create(CreateGroupDto modelDto)
+        public void Create(GroupAddDto modelDto)
         {
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            _repositoryGroup.Insert(mapper.Map<CreateGroupDto, Group>(modelDto));
+            _repositoryGroup.Insert(mapper.Map<GroupAddDto, Group>(modelDto));
         }
 
         public void Delete(int id)
@@ -43,28 +37,19 @@ namespace Faculty.BusinessLayer.Services
             _repositoryGroup.Delete(model);
         }
 
-        public EditGroupDto GetModel(int id)
+        public GroupModifyDto GetById(int id)
         {
             var model = _repositoryGroup.GetById(id);
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<Group, EditGroupDto>(model);
+            return mapper.Map<Group, GroupModifyDto>(model);
         }
 
-        public void Edit(EditGroupDto modelDto)
+        public void Edit(GroupModifyDto modelDto)
         {
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            _repositoryGroup.Update(mapper.Map<EditGroupDto, Group>(modelDto));
-        }
-
-        public ModelElementGroup CreateViewModelGroup()
-        {
-            var models = _repositorySpecialization.GetAll().ToList();
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            var modelsDto = mapper.Map<List<Specialization>, List<DisplaySpecializationDto>>(models);
-            return new ModelElementGroup(modelsDto);
+            _repositoryGroup.Update(mapper.Map<GroupModifyDto, Group>(modelDto));
         }
     }
 }

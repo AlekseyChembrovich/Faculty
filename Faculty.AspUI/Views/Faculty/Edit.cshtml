@@ -1,4 +1,4 @@
-﻿@model Faculty.AspUI.Models.FacultyModify
+﻿@model Faculty.AspUI.ViewModels.Faculty.FacultyModify
 
 @{
     ViewData["Title"] = "Faculty - Edit";
@@ -18,7 +18,7 @@
 
             <div class="form-group">
                 <label asp-for="StartDateEducation">@_localizer["LabelStartDateEducation"].Value</label>
-                <input asp-for="StartDateEducation" type="date" value="@Model.StartDateEducation?.ToString("yyyy-MM-dd")" asp-format="{0:dd/MM/yyyy}" class="form-control" />
+                <input asp-for="StartDateEducation" type="date" value="@Model.StartDateEducation.ToString("yyyy-MM-dd")" asp-format="{0:dd/MM/yyyy}" class="form-control" />
                 <span asp-validation-for="StartDateEducation" class="text-danger"></span>
             </div>
 
@@ -30,17 +30,17 @@
 
             <div class="form-group">
                 <label asp-for="StudentId">@_localizer["SelectStudent"].Value</label>
-                <select asp-for="StudentId" asp-items="@(new SelectList(ViewBag.ViewModelFaculty.Students, "Id", "Surname"))" data-val="true" data-val-required="@_localizer["StudentRequired"].Value" class="custom-select"></select>
+                <select asp-for="StudentId" asp-items="@(new SelectList(ViewBag.Students, "Id", "Surname"))" data-val="true" data-val-required="@_localizer["StudentRequired"].Value" class="custom-select"></select>
             </div>
 
             <div class="form-group">
                 <label asp-for="CuratorId">@_localizer["SelectCurator"].Value</label>
-                <select asp-for="CuratorId" asp-items="@(new SelectList(ViewBag.ViewModelFaculty.Curators, "Id", "Surname"))" data-val="true" data-val-required="@_localizer["CuratorRequired"].Value" class="custom-select"></select>
+                <select asp-for="CuratorId" asp-items="@(new SelectList(ViewBag.Curators, "Id", "Surname"))" data-val="true" data-val-required="@_localizer["CuratorRequired"].Value" class="custom-select"></select>
             </div>
 
             <div class="form-group">
                 <label asp-for="GroupId">@_localizer["SelectGroup"].Value</label>
-                <select asp-for="GroupId" asp-items="@(new SelectList(ViewBag.ViewModelFaculty.Groups, "Id", "Name"))" data-val="true" data-val-required="@_localizer["GroupRequired"].Value" class="custom-select"></select>
+                <select asp-for="GroupId" asp-items="@(new SelectList(ViewBag.Groups, "Id", "Name"))" data-val="true" data-val-required="@_localizer["GroupRequired"].Value" class="custom-select"></select>
             </div>
 
             <div class="form-group">

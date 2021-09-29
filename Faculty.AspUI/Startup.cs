@@ -1,3 +1,4 @@
+using AutoMapper;
 using System.Globalization;
 using Faculty.DataAccessLayer;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Faculty.AspUI.Middleware.Implementation;
 using Microsoft.Extensions.DependencyInjection;
 using Faculty.DataAccessLayer.RepositoryEntityFramework;
+using IConfigurationProvider = AutoMapper.IConfigurationProvider;
 
 namespace Faculty.AspUI
 {
@@ -45,18 +47,20 @@ namespace Faculty.AspUI
 
             var connectionString = Configuration.GetSection("ConnectionString").GetValue(typeof(string), "ConStr").ToString();
             services.AddDbContext<DatabaseContextEntityFramework>(option => option.UseSqlServer(connectionString));
-            
+            services.AddSingleton<IConfigurationProvider>(x => new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile())));
+            services.AddSingleton<IMapper, Mapper>();
+
             services.AddScoped<IRepository<Student>, BaseRepositoryEntityFramework<Student>>();
             services.AddScoped<IRepository<Curator>, BaseRepositoryEntityFramework<Curator>>();
             services.AddScoped<IRepository<Specialization>, BaseRepositoryEntityFramework<Specialization>>();
             services.AddScoped<IRepositoryGroup, RepositoryEntityFrameworkGroup>();
             services.AddScoped<IRepositoryFaculty, RepositoryEntityFrameworkFaculty>();
 
-            services.AddScoped<IStudentOperations, StudentService>();
-            services.AddScoped<ICuratorOperations, CuratorService>();
-            services.AddScoped<ISpecializationOperations, SpecializationService>();
-            services.AddScoped<IGroupOperations, GroupService>();
-            services.AddScoped<IFacultyOperations, FacultyService>();
+            services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<ICuratorService, CuratorService>();
+            services.AddScoped<ISpecializationService, SpecializationService>();
+            services.AddScoped<IGroupService, GroupService>();
+            services.AddScoped<IFacultyService, FacultyService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RequestLocalizationOptions> localizationOptions)

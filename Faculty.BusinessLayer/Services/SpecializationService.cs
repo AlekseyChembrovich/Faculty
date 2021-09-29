@@ -4,11 +4,11 @@ using Faculty.DataAccessLayer;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.ModelsDto.SpecializationDto;
+using Faculty.BusinessLayer.Dto.Specialization;
 
 namespace Faculty.BusinessLayer.Services
 {
-    public class SpecializationService : ISpecializationOperations
+    public class SpecializationService : ISpecializationService
     {
         private readonly IRepository<Specialization> _repositorySpecialization;
 
@@ -17,19 +17,19 @@ namespace Faculty.BusinessLayer.Services
             _repositorySpecialization = repositorySpecialization;
         }
 
-        public IEnumerable<DisplaySpecializationDto> GetList()
+        public IEnumerable<SpecializationDisplayModifyDto> GetAll()
         {
             var models = _repositorySpecialization.GetAll().ToList();
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<IEnumerable<Specialization>, IEnumerable<DisplaySpecializationDto>>(models); ;
+            return mapper.Map<IEnumerable<Specialization>, IEnumerable<SpecializationDisplayModifyDto>>(models); ;
         }
 
-        public void Create(CreateSpecializationDto modelDto)
+        public void Create(SpecializationAddDto modelDto)
         {
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            _repositorySpecialization.Insert(mapper.Map<CreateSpecializationDto, Specialization>(modelDto));
+            _repositorySpecialization.Insert(mapper.Map<SpecializationAddDto, Specialization>(modelDto));
         }
 
         public void Delete(int id)
@@ -38,19 +38,19 @@ namespace Faculty.BusinessLayer.Services
             _repositorySpecialization.Delete(model);
         }
 
-        public EditSpecializationDto GetModel(int id)
+        public SpecializationDisplayModifyDto GetById(int id)
         {
             var model = _repositorySpecialization.GetById(id);
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<Specialization, EditSpecializationDto>(model);
+            return mapper.Map<Specialization, SpecializationDisplayModifyDto>(model);
         }
 
-        public void Edit(EditSpecializationDto modelDto)
+        public void Edit(SpecializationDisplayModifyDto modelDto)
         {
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            _repositorySpecialization.Update(mapper.Map<EditSpecializationDto, Specialization>(modelDto));
+            _repositorySpecialization.Update(mapper.Map<SpecializationDisplayModifyDto, Specialization>(modelDto));
         }
     }
 }

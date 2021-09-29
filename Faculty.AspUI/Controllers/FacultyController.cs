@@ -1,29 +1,36 @@
 ﻿using AutoMapper;
 using System.Linq;
-using Faculty.AspUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.ModelsDto.FacultyDto;
+using Faculty.AspUI.ViewModels.Faculty;
+using Faculty.BusinessLayer.Dto.Faculty;
 
 namespace Faculty.AspUI.Controllers
 {
     [Controller]
     public class FacultyController : Controller
     {
-        private readonly IFacultyOperations _facultyService;
+        private readonly IFacultyService _facultyService;
+        private readonly IGroupService _groupService;
+        private readonly IStudentService _studentService;
+        private readonly ICuratorService _curatorService;
+        private readonly IMapper _mapper;
 
-        public FacultyController(IFacultyOperations facultyService)
+        public FacultyController(IFacultyService facultyService, IGroupService groupService, IStudentService studentService, ICuratorService curatorService, IMapper mapper)
         {
             _facultyService = facultyService;
+            _groupService = groupService;
+            _studentService = studentService;
+            _curatorService = curatorService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public IActionResult Index(int? valueFilter = null)
         {
-            var modelsDto = _facultyService.GetList();
-            Mapper.Initialize(cfg => cfg.CreateMap<DisplayFacultyDto, FacultyDisplay>());
-            var models = Mapper.Map<IEnumerable<DisplayFacultyDto>, IEnumerable<FacultyDisplay>>(modelsDto);
+            var modelsDto = _facultyService.GetAll();
+            var models = _mapper.Map<IEnumerable<FacultyDisplayDto>, IEnumerable<FacultyDisplay>>(modelsDto);
             var modelsFilter = valueFilter != null ? models.ToList().Where(x => x.CountYearEducation == valueFilter.Value).ToList() : models.ToList();
             return View(modelsFilter);
         }
@@ -31,49 +38,52 @@ namespace Faculty.AspUI.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.ViewModelFaculty = _facultyService.CreateViewModelFaculty();
+            FillViewBag();
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(FacultyModify model)
+        public IActionResult Create(FacultyAdd model)
         {
-            ViewBag.ViewModelFaculty = _facultyService.CreateViewModelFaculty();
+            FillViewBag();
             if (ModelState.IsValid == false) return View(model);
-            Mapper.Initialize(cfg => cfg.CreateMap<FacultyModify, CreateFacultyDto>());
-            var createCurator = Mapper.Map<FacultyModify, CreateFacultyDto>(model);
+            var createCurator = _mapper.Map<FacultyAdd, FacultyAddDto>(model);
             _facultyService.Create(createCurator);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            if (id is not null) _facultyService.Delete(id.Value);
+            _facultyService.Delete(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            EditFacultyDto modelDto = default;
-            if (id is not null) modelDto = _facultyService.GetModel(id.Value);
+            var modelDto = _facultyService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            Mapper.Initialize(cfg => cfg.CreateMap<EditFacultyDto, FacultyModify>());
-            var model = Mapper.Map<EditFacultyDto, FacultyModify>(modelDto);
-            ViewBag.ViewModelFaculty = _facultyService.CreateViewModelFaculty();
+            var model = _mapper.Map<FacultyModifyDto, FacultyModify>(modelDto);
+            FillViewBag();
             return View(model);
         }
 
         [HttpPost]
         public IActionResult Edit(FacultyModify model)
         {
-            ViewBag.ViewModelFaculty = _facultyService.CreateViewModelFaculty();
+            FillViewBag();
             if (ModelState.IsValid == false) return View(model);
-            Mapper.Initialize(cfg => cfg.CreateMap<FacultyModify, EditFacultyDto>());
-            var modelDto = Mapper.Map<FacultyModify, EditFacultyDto>(model);
+            var modelDto = _mapper.Map<FacultyModify, FacultyModifyDto>(model);
             _facultyService.Edit(modelDto);
             return RedirectToAction("Index");
+        }
+
+        public void FillViewBag()
+        {
+            ViewBag.Groups = _groupService.GetAll();
+            ViewBag.Students = _studentService.GetAll();
+            ViewBag.Curators = _curatorService.GetAll();
         }
     }
 }

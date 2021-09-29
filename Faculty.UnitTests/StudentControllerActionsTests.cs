@@ -3,19 +3,27 @@ using Xunit;
 using AutoMapper;
 using System.Linq;
 using FluentAssertions;
-using Faculty.AspUI.Models;
 using Faculty.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
-using Faculty.BusinessLayer.ModelsDto.StudentDto;
+using Faculty.AspUI.ViewModels.Student;
+using Faculty.BusinessLayer.Dto.Student;
 
 namespace Faculty.UnitTests
 {
     public class StudentControllerActionsTests
     {
+        private readonly IMapper _mapper;
+
+        public StudentControllerActionsTests()
+        {
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            _mapper = new Mapper(mapperConfiguration);
+        }
+
         [Fact]
         public void IndexMethod_ReturnsViewResult_WithListOfDisplayModelsDisplay()
         {
@@ -23,14 +31,14 @@ namespace Faculty.UnitTests
             var mockRepository = new Mock<IRepository<Student>>();
             mockRepository.Setup(repository => repository.GetAll()).Returns(GetTestModels()).Verifiable();
             var modelService = new StudentService(mockRepository.Object);
-            var modelController = new StudentController(modelService);
+            var modelController = new StudentController(modelService, _mapper);
 
             // Act
             var result = modelController.Index();
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            var models = Assert.IsAssignableFrom<IEnumerable<StudentDisplay>>(viewResult.ViewData.Model);
+            var models = Assert.IsAssignableFrom<IEnumerable<StudentDisplayModify>>(viewResult.ViewData.Model);
             Assert.Equal(3, models.Count());
             mockRepository.Verify(r => r.GetAll());
         }
@@ -69,18 +77,16 @@ namespace Faculty.UnitTests
         public void CreateMethod_CallInsertMethodRepository_RedirectToIndexMethodWith_ForCorrectModel()
         {
             // Arrange
-            var modelModify = new StudentModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1" };
-            Mapper.Initialize(cfg => cfg.CreateMap<StudentModify, CreateStudentDto>());
-            var modelDto = Mapper.Map<StudentModify, CreateStudentDto>(modelModify);
-            Mapper.Initialize(cfg => cfg.CreateMap<CreateStudentDto, Student>());
-            var model = Mapper.Map<CreateStudentDto, Student>(modelDto);
+            var modelAdd = new StudentAdd { Surname = "test1", Name = "test1", Doublename = "test1" };
+            var modelDto = _mapper.Map<StudentAdd, StudentAddDto>(modelAdd);
+            var model = _mapper.Map<StudentAddDto, Student>(modelDto);
             var mockRepository = new Mock<IRepository<Student>>();
             mockRepository.Setup(repository => repository.Insert(model)).Verifiable();
             var modelService = new StudentService(mockRepository.Object);
-            var modelController = new StudentController(modelService);
+            var modelController = new StudentController(modelService, _mapper);
 
             // Act
-            var result = modelController.Create(modelModify);
+            var result = modelController.Create(modelAdd);
 
             // Assert
             var redirectToAction = Assert.IsType<RedirectToActionResult>(result);
@@ -92,19 +98,17 @@ namespace Faculty.UnitTests
         public void CreateMethod_ReturnsViewResultWithModel_ForInvalidModel()
         {
             // Arrange
-            var modelModify = new StudentModify { Id = 1, Surname = "test1", Name = null, Doublename = "test1" };
-            Mapper.Initialize(cfg => cfg.CreateMap<StudentModify, CreateStudentDto>());
-            var modelDto = Mapper.Map<StudentModify, CreateStudentDto>(modelModify);
-            Mapper.Initialize(cfg => cfg.CreateMap<CreateStudentDto, Student>());
-            var model = Mapper.Map<CreateStudentDto, Student>(modelDto);
+            var modelAdd = new StudentAdd { Surname = "test1", Name = null, Doublename = "test1" };
+            var modelDto = _mapper.Map<StudentAdd, StudentAddDto>(modelAdd);
+            var model = _mapper.Map<StudentAddDto, Student>(modelDto);
             var mockRepository = new Mock<IRepository<Student>>();
             mockRepository.Setup(repository => repository.Insert(model)).Verifiable();
             var modelService = new StudentService(mockRepository.Object);
-            var modelController = new StudentController(modelService);
+            var modelController = new StudentController(modelService, _mapper);
             modelController.ModelState.AddModelError("NameRequired", "Name is required.");
 
             // Act
-            var result = modelController.Create(modelModify);
+            var result = modelController.Create(modelAdd);
 
             // Assert
             Assert.IsType<ViewResult>(result);
@@ -120,7 +124,7 @@ namespace Faculty.UnitTests
             var mockRepository = new Mock<IRepository<Student>>();
             mockRepository.Setup(repository => repository.Delete(model)).Verifiable();
             var modelService = new StudentService(mockRepository.Object);
-            var modelController = new StudentController(modelService);
+            var modelController = new StudentController(modelService, _mapper);
 
             // Act
             var result = modelController.Delete(deleteModelId);
@@ -132,38 +136,16 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void DeleteMethod_RedirectToIndexMethod_ForInvalidArgument()
-        {
-            // Arrange
-            int? deleteModelId = null;
-            var model = new Student { Surname = "test1", Name = "test1", Doublename = "test1" };
-            var mockRepository = new Mock<IRepository<Student>>();
-            mockRepository.Setup(repository => repository.Delete(model)).Verifiable();
-            var modelService = new StudentService(mockRepository.Object);
-            var modelController = new StudentController(modelService);
-
-            // Act
-            var result = modelController.Delete(deleteModelId);
-
-            // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            mockRepository.Verify(r => r.Delete(It.IsAny<Student>()), Times.Never);
-        }
-
-        [Fact]
         public void EditPostMethod_CallUpdateMethodRepository_RedirectToIndexMethod_ForCorrectModel()
         {
             // Arrange
-            var modelModify = new StudentModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1" };
-            Mapper.Initialize(cfg => cfg.CreateMap<StudentModify, EditStudentDto>());
-            var modelDto = Mapper.Map<StudentModify, EditStudentDto>(modelModify);
-            Mapper.Initialize(cfg => cfg.CreateMap<EditStudentDto, Student>());
-            var model = Mapper.Map<EditStudentDto, Student>(modelDto);
+            var modelModify = new StudentDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1" };
+            var modelDto = _mapper.Map<StudentDisplayModify, StudentDisplayModifyDto>(modelModify);
+            var model = _mapper.Map<StudentDisplayModifyDto, Student>(modelDto);
             var mockRepository = new Mock<IRepository<Student>>();
             mockRepository.Setup(repository => repository.Update(model)).Verifiable();
             var modelService = new StudentService(mockRepository.Object);
-            var modelController = new StudentController(modelService);
+            var modelController = new StudentController(modelService, _mapper);
 
             // Act
             var result = modelController.Edit(modelModify);
@@ -178,15 +160,13 @@ namespace Faculty.UnitTests
         public void EditPostMethod_ReturnsViewResultWithModel_ForInvalidModel()
         {
             // Arrange
-            var modelModify = new StudentModify { Id = 1, Surname = "test1", Name = null, Doublename = "test1" };
-            Mapper.Initialize(cfg => cfg.CreateMap<StudentModify, EditStudentDto>());
-            var modelDto = Mapper.Map<StudentModify, EditStudentDto>(modelModify);
-            Mapper.Initialize(cfg => cfg.CreateMap<EditStudentDto, Student>());
-            var model = Mapper.Map<EditStudentDto, Student>(modelDto);
+            var modelModify = new StudentDisplayModify { Id = 1, Surname = "test1", Name = null, Doublename = "test1" };
+            var modelDto = _mapper.Map<StudentDisplayModify, StudentDisplayModifyDto>(modelModify);
+            var model = _mapper.Map<StudentDisplayModifyDto, Student>(modelDto);
             var mockRepository = new Mock<IRepository<Student>>();
             mockRepository.Setup(repository => repository.Update(model)).Verifiable();
             var modelService = new StudentService(mockRepository.Object);
-            var modelController = new StudentController(modelService);
+            var modelController = new StudentController(modelService, _mapper);
             modelController.ModelState.AddModelError("NameRequired", "Name is required.");
 
             // Act
@@ -202,15 +182,13 @@ namespace Faculty.UnitTests
         {
             // Arrange
             const int editModelId = 1;
-            var modelModify = new StudentModify { Id = editModelId, Surname = "test1", Name = "test1", Doublename = "test1" };
-            Mapper.Initialize(cfg => cfg.CreateMap<StudentModify, EditStudentDto>());
-            var modelDto = Mapper.Map<StudentModify, EditStudentDto>(modelModify);
-            Mapper.Initialize(cfg => cfg.CreateMap<EditStudentDto, Student>());
-            var model = Mapper.Map<EditStudentDto, Student>(modelDto);
+            var modelModify = new StudentDisplayModify { Id = editModelId, Surname = "test1", Name = "test1", Doublename = "test1" };
+            var modelDto = _mapper.Map<StudentDisplayModify, StudentDisplayModifyDto>(modelModify);
+            var model = _mapper.Map<StudentDisplayModifyDto, Student>(modelDto);
             var mockRepository = new Mock<IRepository<Student>>();
             mockRepository.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
             var modelService = new StudentService(mockRepository.Object);
-            var modelController = new StudentController(modelService);
+            var modelController = new StudentController(modelService, _mapper);
 
             // Act
             var result = modelController.Edit(editModelId);
@@ -222,23 +200,6 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void EditGetMethod_RedirectToIndexMethod_ForInvalidArgument()
-        {
-            // Arrange
-            int? editModelId = null;
-            var mockRepository = new Mock<IRepository<Student>>();
-            var modelService = new StudentService(mockRepository.Object);
-            var modelController = new StudentController(modelService);
-
-            // Act
-            var result = modelController.Edit(editModelId);
-
-            // Assert
-            var redirectToAction = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToAction.ActionName);
-        }
-
-        [Fact]
         public void EditGetMethod_RedirectToIndexMethod_ForNotFoundedModel()
         {
             // Arrange
@@ -247,7 +208,7 @@ namespace Faculty.UnitTests
             var mockRepository = new Mock<IRepository<Student>>();
             mockRepository.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
             var modelService = new StudentService(mockRepository.Object);
-            var modelController = new StudentController(modelService);
+            var modelController = new StudentController(modelService, _mapper);
 
             // Act
             var result = modelController.Edit(editModelId);

@@ -1,28 +1,29 @@
 ﻿using AutoMapper;
 using System.Linq;
-using Faculty.AspUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Faculty.AspUI.ViewModels.Curator;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.ModelsDto.CuratorDto;
+using Faculty.BusinessLayer.Dto.Curator;
 
 namespace Faculty.AspUI.Controllers
 {
     public class CuratorController : Controller
     {
-        private readonly ICuratorOperations _curatorService;
+        private readonly ICuratorService _curatorService;
+        private readonly IMapper _mapper;
 
-        public CuratorController(ICuratorOperations curatorService)
+        public CuratorController(ICuratorService curatorService, IMapper mapper)
         {
             _curatorService = curatorService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var modelsDto = _curatorService.GetList();
-            Mapper.Initialize(cfg => cfg.CreateMap<DisplayCuratorDto, CuratorDisplay>());
-            var models = Mapper.Map<IEnumerable<DisplayCuratorDto>, IEnumerable<CuratorDisplay>>(modelsDto);
+            var modelsDto = _curatorService.GetAll();
+            var models = _mapper.Map<IEnumerable<CuratorDisplayModifyDto>, IEnumerable<CuratorDisplayModify>>(modelsDto);
             return View(models.ToList());
         }
 
@@ -33,39 +34,35 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CuratorModify model)
+        public IActionResult Create(CuratorAdd model)
         {
             if (ModelState.IsValid == false) return View(model);
-            Mapper.Initialize(cfg => cfg.CreateMap<CuratorModify, CreateCuratorDto>());
-            var createCurator = Mapper.Map<CuratorModify, CreateCuratorDto>(model);
+            var createCurator = _mapper.Map<CuratorAdd, CuratorAddDto>(model);
             _curatorService.Create(createCurator);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            if (id is not null) _curatorService.Delete(id.Value);
+            _curatorService.Delete(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            EditCuratorDto modelDto = default;
-            if (id is not null) modelDto = _curatorService.GetModel(id.Value);
+            var modelDto = _curatorService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            Mapper.Initialize(cfg => cfg.CreateMap<EditCuratorDto, CuratorModify>());
-            var model = Mapper.Map<EditCuratorDto, CuratorModify>(modelDto);
+            var model = _mapper.Map<CuratorDisplayModifyDto, CuratorDisplayModify>(modelDto);
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(CuratorModify model)
+        public IActionResult Edit(CuratorDisplayModify model)
         {
             if (ModelState.IsValid == false) return View(model);
-            Mapper.Initialize(cfg => cfg.CreateMap<CuratorModify, EditCuratorDto>());
-            var modelDto = Mapper.Map<CuratorModify, EditCuratorDto>(model);
+            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(model);
             _curatorService.Edit(modelDto);
             return RedirectToAction("Index");
         }

@@ -3,11 +3,11 @@ using Faculty.DataAccessLayer;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.ModelsDto.CuratorDto;
+using Faculty.BusinessLayer.Dto.Curator;
 
 namespace Faculty.BusinessLayer.Services
 {
-    public class CuratorService : ICuratorOperations
+    public class CuratorService : ICuratorService
     {
         private readonly IRepository<Curator> _repositoryCurator;
 
@@ -16,19 +16,19 @@ namespace Faculty.BusinessLayer.Services
             _repositoryCurator = repositoryCurator;
         }
 
-        public IEnumerable<DisplayCuratorDto> GetList()
+        public IEnumerable<CuratorDisplayModifyDto> GetAll()
         {
             var models = _repositoryCurator.GetAll();
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<IEnumerable<Curator>, IEnumerable<DisplayCuratorDto>>(models);
+            return mapper.Map<IEnumerable<Curator>, IEnumerable<CuratorDisplayModifyDto>>(models);
         }
 
-        public void Create(CreateCuratorDto modelDto)
+        public void Create(CuratorAddDto modelDto)
         {
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            _repositoryCurator.Insert(mapper.Map<CreateCuratorDto, Curator>(modelDto));
+            _repositoryCurator.Insert(mapper.Map<CuratorAddDto, Curator>(modelDto));
         }
 
         public void Delete(int id)
@@ -37,19 +37,19 @@ namespace Faculty.BusinessLayer.Services
             _repositoryCurator.Delete(model);
         }
 
-        public EditCuratorDto GetModel(int id)
+        public CuratorDisplayModifyDto GetById(int id)
         {
             var model = _repositoryCurator.GetById(id);
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<Curator, EditCuratorDto>(model);
+            return mapper.Map<Curator, CuratorDisplayModifyDto>(model);
         }
 
-        public void Edit(EditCuratorDto modelDto)
+        public void Edit(CuratorDisplayModifyDto modelDto)
         {
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            _repositoryCurator.Update(mapper.Map<EditCuratorDto, Curator>(modelDto));
+            _repositoryCurator.Update(mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto));
         }
     }
 }
