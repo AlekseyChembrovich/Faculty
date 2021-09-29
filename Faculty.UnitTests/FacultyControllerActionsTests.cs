@@ -4,7 +4,6 @@ using System;
 using AutoMapper;
 using System.Linq;
 using FluentAssertions;
-using Faculty.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
@@ -12,24 +11,28 @@ using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
 using Faculty.AspUI.ViewModels.Faculty;
 using Faculty.BusinessLayer.Dto.Faculty;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
+using Faculty.DataAccessLayer.Repository;
+using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
 namespace Faculty.UnitTests
 {
     public class FacultyControllerActionsTests
     {
         private readonly Mock<IRepositoryFaculty> _mockRepositoryFaculty;
-        private readonly Mock<IRepositoryGroup> _mockRepositoryGroup;
-        private readonly Mock<IRepository<Student>> _mockRepositoryStudent;
-        private readonly Mock<IRepository<Curator>> _mockRepositoryCurator;
+        private readonly GroupService _groupService;
+        private readonly StudentService _studentService;
+        private readonly CuratorService _curatorService;
         private readonly IMapper _mapper;
 
         public FacultyControllerActionsTests()
         {
             _mockRepositoryFaculty = new Mock<IRepositoryFaculty>();
-            _mockRepositoryGroup = new Mock<IRepositoryGroup>();
-            _mockRepositoryStudent = new Mock<IRepository<Student>>();
-            _mockRepositoryCurator = new Mock<IRepository<Curator>>();
+            var mockRepositoryGroup = new Mock<IRepositoryGroup>();
+            var mockRepositoryStudent = new Mock<IRepository<Student>>();
+            var mockRepositoryCurator = new Mock<IRepository<Curator>>();
+            _groupService = new GroupService(mockRepositoryGroup.Object);
+            _studentService = new StudentService(mockRepositoryStudent.Object);
+            _curatorService = new CuratorService(mockRepositoryCurator.Object);
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             _mapper = new Mapper(mapperConfiguration);
         }
@@ -40,10 +43,7 @@ namespace Faculty.UnitTests
             // Arrange
             _mockRepositoryFaculty.Setup(repository => repository.GetAllIncludeForeignKey()).Returns(GetTestModels()).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object);
-            var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var studentService = new StudentService(_mockRepositoryStudent.Object);
-            var curatorService = new CuratorService(_mockRepositoryCurator.Object);
-            var modelController = new FacultyController(facultyService, groupService, studentService, curatorService, _mapper);
+            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
 
             // Act
             var result = modelController.Index();
@@ -107,10 +107,7 @@ namespace Faculty.UnitTests
             var model = _mapper.Map<FacultyAddDto, DataAccessLayer.Models.Faculty>(modelDto);
             _mockRepositoryFaculty.Setup(repository => repository.Insert(model)).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object);
-            var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var studentService = new StudentService(_mockRepositoryStudent.Object);
-            var curatorService = new CuratorService(_mockRepositoryCurator.Object);
-            var modelController = new FacultyController(facultyService, groupService, studentService, curatorService, _mapper);
+            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
 
             // Act
             var result = modelController.Create(modelAdd);
@@ -137,10 +134,7 @@ namespace Faculty.UnitTests
             var model = _mapper.Map<FacultyAddDto, DataAccessLayer.Models.Faculty>(modelDto);
             _mockRepositoryFaculty.Setup(repository => repository.Insert(model)).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object);
-            var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var studentService = new StudentService(_mockRepositoryStudent.Object);
-            var curatorService = new CuratorService(_mockRepositoryCurator.Object);
-            var modelController = new FacultyController(facultyService, groupService, studentService, curatorService, _mapper);
+            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
             modelController.ModelState.AddModelError("YearsRange", "Count year education should be between 3 and 5.");
 
             // Act
@@ -167,10 +161,7 @@ namespace Faculty.UnitTests
             };
             _mockRepositoryFaculty.Setup(repository => repository.Delete(model)).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object);
-            var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var studentService = new StudentService(_mockRepositoryStudent.Object);
-            var curatorService = new CuratorService(_mockRepositoryCurator.Object);
-            var modelController = new FacultyController(facultyService, groupService, studentService, curatorService, _mapper);
+            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
 
             // Act
             var result = modelController.Delete(deleteModelId);
@@ -198,10 +189,7 @@ namespace Faculty.UnitTests
             var model = _mapper.Map<FacultyModifyDto, DataAccessLayer.Models.Faculty>(modelDto);
             _mockRepositoryFaculty.Setup(repository => repository.Update(model)).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object);
-            var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var studentService = new StudentService(_mockRepositoryStudent.Object);
-            var curatorService = new CuratorService(_mockRepositoryCurator.Object);
-            var modelController = new FacultyController(facultyService, groupService, studentService, curatorService, _mapper);
+            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
 
             // Act
             var result = modelController.Edit(modelModify);
@@ -229,10 +217,7 @@ namespace Faculty.UnitTests
             var model = _mapper.Map<FacultyModifyDto, DataAccessLayer.Models.Faculty>(modelDto);
             _mockRepositoryFaculty.Setup(repository => repository.Update(model)).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object);
-            var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var studentService = new StudentService(_mockRepositoryStudent.Object);
-            var curatorService = new CuratorService(_mockRepositoryCurator.Object);
-            var modelController = new FacultyController(facultyService, groupService, studentService, curatorService, _mapper);
+            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
             modelController.ModelState.AddModelError("YearsRange", "Count year education should be between 3 and 5.");
 
             // Act
@@ -261,10 +246,7 @@ namespace Faculty.UnitTests
             var model = _mapper.Map<FacultyModifyDto, DataAccessLayer.Models.Faculty>(modelDto);
             _mockRepositoryFaculty.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object);
-            var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var studentService = new StudentService(_mockRepositoryStudent.Object);
-            var curatorService = new CuratorService(_mockRepositoryCurator.Object);
-            var modelController = new FacultyController(facultyService, groupService, studentService, curatorService, _mapper);
+            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
 
             // Act
             var result = modelController.Edit(editModelId);
@@ -283,10 +265,7 @@ namespace Faculty.UnitTests
             DataAccessLayer.Models.Faculty model = default;
             _mockRepositoryFaculty.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object);
-            var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var studentService = new StudentService(_mockRepositoryStudent.Object);
-            var curatorService = new CuratorService(_mockRepositoryCurator.Object);
-            var modelController = new FacultyController(facultyService, groupService, studentService, curatorService, _mapper);
+            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
 
             // Act
             var result = modelController.Edit(editModelId);

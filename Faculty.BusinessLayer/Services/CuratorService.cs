@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using Faculty.DataAccessLayer;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.BusinessLayer.Dto.Curator;
+using Faculty.DataAccessLayer.Repository;
 
 namespace Faculty.BusinessLayer.Services
 {

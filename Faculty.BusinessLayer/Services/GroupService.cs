@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Dto.Group;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
+using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
 namespace Faculty.BusinessLayer.Services
 {

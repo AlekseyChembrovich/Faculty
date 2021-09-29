@@ -1,6 +1,5 @@
 using AutoMapper;
 using System.Globalization;
-using Faculty.DataAccessLayer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,10 +10,11 @@ using Faculty.BusinessLayer.Services;
 using Faculty.BusinessLayer.Interfaces;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
+using Faculty.DataAccessLayer.Repository;
 using Faculty.AspUI.Middleware.Implementation;
 using Microsoft.Extensions.DependencyInjection;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
-using IConfigurationProvider = AutoMapper.IConfigurationProvider;
+using Faculty.DataAccessLayer.Repository.EntityFramework;
+using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
 namespace Faculty.AspUI
 {
@@ -47,7 +47,7 @@ namespace Faculty.AspUI
 
             var connectionString = Configuration.GetSection("ConnectionString").GetValue(typeof(string), "ConStr").ToString();
             services.AddDbContext<DatabaseContextEntityFramework>(option => option.UseSqlServer(connectionString));
-            services.AddSingleton<IConfigurationProvider>(x => new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile())));
+            services.AddSingleton<AutoMapper.IConfigurationProvider>(x => new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile())));
             services.AddSingleton<IMapper, Mapper>();
 
             services.AddScoped<IRepository<Student>, BaseRepositoryEntityFramework<Student>>();

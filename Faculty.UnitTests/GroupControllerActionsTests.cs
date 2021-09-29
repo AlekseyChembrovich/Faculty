@@ -3,7 +3,6 @@ using Xunit;
 using AutoMapper;
 using System.Linq;
 using FluentAssertions;
-using Faculty.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
@@ -11,20 +10,22 @@ using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
 using Faculty.AspUI.ViewModels.Group;
 using Faculty.BusinessLayer.Dto.Group;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
+using Faculty.DataAccessLayer.Repository;
+using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
 namespace Faculty.UnitTests
 {
     public class GroupControllerActionsTests
     {
         private readonly Mock<IRepositoryGroup> _mockRepositoryGroup;
-        private readonly Mock<IRepository<Specialization>> _mockRepositorySpecialization;
+        private readonly SpecializationService _specializationService;
         private readonly IMapper _mapper;
 
         public GroupControllerActionsTests()
         {
             _mockRepositoryGroup = new Mock<IRepositoryGroup>();
-            _mockRepositorySpecialization = new Mock<IRepository<Specialization>>();
+            var mockRepositorySpecialization = new Mock<IRepository<Specialization>>();
+            _specializationService = new SpecializationService(mockRepositorySpecialization.Object);
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             _mapper = new Mapper(mapperConfiguration);
         }
@@ -35,8 +36,7 @@ namespace Faculty.UnitTests
             // Arrange
             _mockRepositoryGroup.Setup(repository => repository.GetAllIncludeForeignKey()).Returns(GetTestModels()).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var specializationService = new SpecializationService(_mockRepositorySpecialization.Object);
-            var modelController = new GroupController(groupService, specializationService, _mapper);
+            var modelController = new GroupController(groupService, _specializationService, _mapper);
 
             // Act
             var result = modelController.Index();
@@ -84,8 +84,7 @@ namespace Faculty.UnitTests
             var model = _mapper.Map<GroupAddDto, Group>(modelDto);
             _mockRepositoryGroup.Setup(repository => repository.Insert(model)).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var specializationService = new SpecializationService(_mockRepositorySpecialization.Object);
-            var modelController = new GroupController(groupService, specializationService, _mapper);
+            var modelController = new GroupController(groupService, _specializationService, _mapper);
 
             // Act
             var result = modelController.Create(modelAdd);
@@ -105,8 +104,7 @@ namespace Faculty.UnitTests
             var model = _mapper.Map<GroupAddDto, Group>(modelDto);
             _mockRepositoryGroup.Setup(repository => repository.Insert(model)).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var specializationService = new SpecializationService(_mockRepositorySpecialization.Object);
-            var modelController = new GroupController(groupService, specializationService, _mapper);
+            var modelController = new GroupController(groupService, _specializationService, _mapper);
             modelController.ModelState.AddModelError("NameRequired", "Name is required.");
 
             // Act
@@ -125,8 +123,7 @@ namespace Faculty.UnitTests
             var model = new Group { Id = deleteModelId, Name = "test1", SpecializationId = 1 };
             _mockRepositoryGroup.Setup(repository => repository.Delete(model)).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var specializationService = new SpecializationService(_mockRepositorySpecialization.Object);
-            var modelController = new GroupController(groupService, specializationService, _mapper);
+            var modelController = new GroupController(groupService, _specializationService, _mapper);
 
             // Act
             var result = modelController.Delete(deleteModelId);
@@ -146,8 +143,7 @@ namespace Faculty.UnitTests
             var model = _mapper.Map<GroupModifyDto, Group>(modelDto);
             _mockRepositoryGroup.Setup(repository => repository.Update(model)).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var specializationService = new SpecializationService(_mockRepositorySpecialization.Object);
-            var modelController = new GroupController(groupService, specializationService, _mapper);
+            var modelController = new GroupController(groupService, _specializationService, _mapper);
 
             // Act
             var result = modelController.Edit(modelModify);
@@ -167,8 +163,7 @@ namespace Faculty.UnitTests
             var model = _mapper.Map<GroupModifyDto, Group>(modelDto);
             _mockRepositoryGroup.Setup(repository => repository.Update(model)).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var specializationService = new SpecializationService(_mockRepositorySpecialization.Object);
-            var modelController = new GroupController(groupService, specializationService, _mapper);
+            var modelController = new GroupController(groupService, _specializationService, _mapper);
             modelController.ModelState.AddModelError("NameRequired", "Name is required.");
 
             // Act
@@ -189,8 +184,7 @@ namespace Faculty.UnitTests
             var model = _mapper.Map<GroupModifyDto, Group>(modelDto);
             _mockRepositoryGroup.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var specializationService = new SpecializationService(_mockRepositorySpecialization.Object);
-            var modelController = new GroupController(groupService, specializationService, _mapper);
+            var modelController = new GroupController(groupService, _specializationService, _mapper);
 
             // Act
             var result = modelController.Edit(editModelId);
@@ -209,8 +203,7 @@ namespace Faculty.UnitTests
             Group model = default;
             _mockRepositoryGroup.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object);
-            var specializationService = new SpecializationService(_mockRepositorySpecialization.Object);
-            var modelController = new GroupController(groupService, specializationService, _mapper);
+            var modelController = new GroupController(groupService, _specializationService, _mapper);
 
             // Act
             var result = modelController.Edit(editModelId);
