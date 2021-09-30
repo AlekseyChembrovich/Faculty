@@ -1,7 +1,7 @@
 ﻿namespace Faculty.AspUI.ViewModels.Curator
 {
     /// <summary>
-    /// Entity Curator.
+    /// ViewModel Curator.
     /// </summary>
     public class CuratorDisplayModify : CuratorAdd
     {

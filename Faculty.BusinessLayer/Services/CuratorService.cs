@@ -7,15 +7,29 @@ using Faculty.DataAccessLayer.Repository;
 
 namespace Faculty.BusinessLayer.Services
 {
+    /// <summary>
+    /// Curator service.
+    /// </summary>
     public class CuratorService : ICuratorService
     {
+        /// <summary>
+        /// Model repository.
+        /// </summary>
         private readonly IRepository<Curator> _repositoryCurator;
 
+        /// <summary>
+        /// Constructor for init repository.
+        /// </summary>
+        /// <param name="repositoryCurator">Model repository.</param>
         public CuratorService(IRepository<Curator> repositoryCurator)
         {
             _repositoryCurator = repositoryCurator;
         }
 
+        /// <summary>
+        /// Method for receive set of entity.
+        /// </summary>
+        /// <returns>Dto set.</returns>
         public IEnumerable<CuratorDisplayModifyDto> GetAll()
         {
             var models = _repositoryCurator.GetAll();
@@ -24,19 +38,32 @@ namespace Faculty.BusinessLayer.Services
             return mapper.Map<IEnumerable<Curator>, IEnumerable<CuratorDisplayModifyDto>>(models);
         }
 
-        public void Create(CuratorAddDto modelDto)
+        /// <summary>
+        /// Method for creating a new entity.
+        /// </summary>
+        /// <param name="dto">Add Dto.</param>
+        public void Create(CuratorAddDto dto)
         {
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            _repositoryCurator.Insert(mapper.Map<CuratorAddDto, Curator>(modelDto));
+            _repositoryCurator.Insert(mapper.Map<CuratorAddDto, Curator>(dto));
         }
 
+        /// <summary>
+        /// Method for deleting a exist entity.
+        /// </summary>
+        /// <param name="id">Id exist entity.</param>
         public void Delete(int id)
         {
             var model = _repositoryCurator.GetById(id);
             _repositoryCurator.Delete(model);
         }
 
+        /// <summary>
+        /// Method for receive dto.
+        /// </summary>
+        /// <param name="id">Id exist entity.</param>
+        /// <returns>Modify Dto.</returns>
         public CuratorDisplayModifyDto GetById(int id)
         {
             var model = _repositoryCurator.GetById(id);
@@ -45,11 +72,15 @@ namespace Faculty.BusinessLayer.Services
             return mapper.Map<Curator, CuratorDisplayModifyDto>(model);
         }
 
-        public void Edit(CuratorDisplayModifyDto modelDto)
+        /// <summary>
+        /// Method for changing a exist entity.
+        /// </summary>
+        /// <param name="dto">Modify Dto.</param>
+        public void Edit(CuratorDisplayModifyDto dto)
         {
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             var mapper = new Mapper(mapperConfiguration);
-            _repositoryCurator.Update(mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto));
+            _repositoryCurator.Update(mapper.Map<CuratorDisplayModifyDto, Curator>(dto));
         }
     }
 }

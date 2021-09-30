@@ -1,9 +1,7 @@
-﻿using Faculty.BusinessLayer.Dto.Faculty;
-
-namespace Faculty.AspUI.ViewModels.Faculty
+﻿namespace Faculty.AspUI.ViewModels.Faculty
 {
     /// <summary>
-    /// Entity Faculty.
+    /// ViewModel Faculty.
     /// </summary>
     public class FacultyModify : FacultyAdd
     {

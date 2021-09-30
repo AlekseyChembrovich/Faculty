@@ -1,12 +1,12 @@
 ﻿namespace Faculty.AspUI.ViewModels.Group
 {
     /// <summary>
-    /// Entity Group.
+    /// ViewModel Group.
     /// </summary>
     public class GroupModify : GroupAdd
     {
         /// <summary>
-        /// Unique identificator curator.
+        /// Unique identificator group.
         /// </summary>
         public int Id { get; set; }
     }

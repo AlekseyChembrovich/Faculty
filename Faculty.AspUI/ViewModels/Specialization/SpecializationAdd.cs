@@ -3,7 +3,7 @@
 namespace Faculty.AspUI.ViewModels.Specialization
 {
     /// <summary>
-    /// Entity Specialization.
+    /// ViewModel Specialization.
     /// </summary>
     public class SpecializationAdd
     {

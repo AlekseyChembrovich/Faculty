@@ -1,7 +1,7 @@
 ﻿namespace Faculty.BusinessLayer.Dto.Faculty
 {
     /// <summary>
-    /// Entity Faculty.
+    /// Dto Faculty.
     /// </summary>
     public class FacultyModifyDto : FacultyAddDto
     {

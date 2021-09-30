@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Faculty.AspUI.ViewModels.Faculty
 {
     /// <summary>
-    /// Entity Faculty.
+    /// ViewModel Faculty.
     /// </summary>
     public class FacultyAdd
     {

@@ -1,14 +1,12 @@
-﻿using Faculty.BusinessLayer.Dto.Specialization;
-
-namespace Faculty.AspUI.ViewModels.Specialization
+﻿namespace Faculty.AspUI.ViewModels.Specialization
 {
     /// <summary>
-    /// Entity Specialization.
+    /// ViewModel Specialization.
     /// </summary>
     public class SpecializationDisplayModify : SpecializationAdd
     {
         /// <summary>
-        /// Unique identificator curator.
+        /// Unique identificator specialization.
         /// </summary>
         public int Id { get; set; }
     }

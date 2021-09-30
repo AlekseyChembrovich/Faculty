@@ -3,7 +3,7 @@
 namespace Faculty.AspUI.ViewModels.Student
 {
     /// <summary>
-    /// Entity Student.
+    /// ViewModel Student.
     /// </summary>
     public class StudentAdd
     {

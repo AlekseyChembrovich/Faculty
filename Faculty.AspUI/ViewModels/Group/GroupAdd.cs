@@ -3,7 +3,7 @@
 namespace Faculty.AspUI.ViewModels.Group
 {
     /// <summary>
-    /// Entity Group.
+    /// ViewModel Group.
     /// </summary>
     public class GroupAdd
     {

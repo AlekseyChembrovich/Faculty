@@ -1,12 +1,12 @@
 ﻿namespace Faculty.BusinessLayer.Dto.Group
 {
     /// <summary>
-    /// Entity Group.
+    /// Dto Group.
     /// </summary>
     public class GroupDisplayDto
     {
         /// <summary>
-        /// Unique identificator curator.
+        /// Unique identificator group.
         /// </summary>
         public int Id { get; set; }
 
@@ -16,7 +16,7 @@
         public string Name { get; set; }
 
         /// <summary>
-        /// Foreign key for specialization entity.
+        /// Name specialization.
         /// </summary>
         public string SpecializationName { get; set; }
     }

@@ -1,12 +1,12 @@
 ﻿namespace Faculty.BusinessLayer.Dto.Group
 {
     /// <summary>
-    /// Entity Group.
+    /// Dto Group.
     /// </summary>
     public class GroupModifyDto : GroupAddDto
     {
         /// <summary>
-        /// Unique identificator curator.
+        /// Unique identificator group.
         /// </summary>
         public int Id { get; set; }
     }

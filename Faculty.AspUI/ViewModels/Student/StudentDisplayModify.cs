@@ -1,14 +1,12 @@
-﻿using Faculty.BusinessLayer.Dto.Student;
-
-namespace Faculty.AspUI.ViewModels.Student
+﻿namespace Faculty.AspUI.ViewModels.Student
 {
     /// <summary>
-    /// Entity Student.
+    /// ViewModel Student.
     /// </summary>
     public class StudentDisplayModify : StudentAdd
     {
         /// <summary>
-        /// Unique identificator curator.
+        /// Unique identificator student.
         /// </summary>
         public int Id { get; set; }
     }

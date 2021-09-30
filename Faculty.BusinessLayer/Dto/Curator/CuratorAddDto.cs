@@ -1,7 +1,7 @@
 ﻿namespace Faculty.BusinessLayer.Dto.Curator
 {
     /// <summary>
-    /// Entity Curator.
+    /// Dto Curator.
     /// </summary>
     public class CuratorAddDto
     {

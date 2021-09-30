@@ -11,7 +11,6 @@ using Faculty.BusinessLayer.Interfaces;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Faculty.DataAccessLayer.Repository;
-using Faculty.AspUI.Middleware.Implementation;
 using Microsoft.Extensions.DependencyInjection;
 using Faculty.DataAccessLayer.Repository.EntityFramework;
 using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
@@ -46,8 +45,6 @@ namespace Faculty.AspUI
 
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseMiddleware<LocalizerMiddleware>();
-
             app.UseRequestLocalization(localizationOptions.Value);
             app.UseEndpoints(endpoints =>
             {

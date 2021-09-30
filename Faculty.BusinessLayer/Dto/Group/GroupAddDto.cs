@@ -1,7 +1,7 @@
 ﻿namespace Faculty.BusinessLayer.Dto.Group
 {
     /// <summary>
-    /// Entity Group.
+    /// Dto Group.
     /// </summary>
     public class GroupAddDto
     {

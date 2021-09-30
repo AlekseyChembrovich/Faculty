@@ -3,7 +3,7 @@
 namespace Faculty.AspUI.ViewModels.Faculty
 {
     /// <summary>
-    /// Entity Faculty.
+    /// ViewModel Faculty.
     /// </summary>
     public class FacultyDisplay
     {
@@ -23,17 +23,17 @@ namespace Faculty.AspUI.ViewModels.Faculty
         public int CountYearEducation { get; set; }
 
         /// <summary>
-        /// Foreign key for student entity.
+        /// Surname student.
         /// </summary>
         public string StudentSurname { get; set; }
 
         /// <summary>
-        /// Foreign key for group entity.
+        /// Name group.
         /// </summary>
         public string GroupName { get; set; }
 
         /// <summary>
-        /// Foreign key for curator entity.
+        /// Surname curator.
         /// </summary>
         public string CuratorSurname { get; set; }
     }

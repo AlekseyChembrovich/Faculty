@@ -1,7 +1,7 @@
 ﻿namespace Faculty.BusinessLayer.Dto.Specialization
 {
     /// <summary>
-    /// Entity Specialization.
+    /// Dto Specialization.
     /// </summary>
     public class SpecializationAddDto
     {
