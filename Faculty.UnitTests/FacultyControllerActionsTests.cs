@@ -146,7 +146,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void DeleteMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        public void DeleteGetMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
         {
             // Arrange
             const int deleteModelId = 1;
@@ -165,6 +165,34 @@ namespace Faculty.UnitTests
 
             // Act
             var result = modelController.Delete(deleteModelId);
+
+            // Assert
+            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectToActionResult.ActionName);
+            _mockRepositoryFaculty.Verify(r => r.Delete(It.IsAny<DataAccessLayer.Models.Faculty>()), Times.Once);
+        }
+
+        [Fact]
+        public void DeletePostMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        {
+            // Arrange
+            var modelModify = new FacultyModify
+            {
+                Id = 1,
+                StartDateEducation = DateTime.Now,
+                CountYearEducation = 5,
+                StudentId = 1,
+                CuratorId = 1,
+                GroupId = 1
+            };
+            var modelDto = _mapper.Map<FacultyModify, FacultyModifyDto>(modelModify);
+            var model = _mapper.Map<FacultyModifyDto, DataAccessLayer.Models.Faculty>(modelDto);
+            _mockRepositoryFaculty.Setup(repository => repository.Delete(model)).Verifiable();
+            var facultyService = new FacultyService(_mockRepositoryFaculty.Object);
+            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
+
+            // Act
+            var result = modelController.Delete(modelModify);
 
             // Assert
             var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);

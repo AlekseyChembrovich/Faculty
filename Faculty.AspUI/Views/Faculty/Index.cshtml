@@ -40,7 +40,7 @@
                 <td>@Model[i].CuratorSurname</td>
                 <td>@Model[i].StudentSurname</td>
                 <td>
-                    @Html.ActionLink(_localizer["BtnDelete"].Value, "Delete", "Faculty", new { id = Model[i].Id }, new { @class = "btn btn-primary mr-2", onclick = "ConfirmOperation()" })
+                    @Html.ActionLink(_localizer["BtnDelete"].Value, "Confirm", "Faculty", new { id = Model[i].Id }, new { @class = "btn btn-primary mr-2", onclick = "ConfirmOperation()" })
                     @Html.ActionLink(_localizer["BtnEdit"].Value, "Edit", "Faculty", new { id = Model[i].Id }, new { @class = "btn btn-primary" })
                 </td>
             </tr>

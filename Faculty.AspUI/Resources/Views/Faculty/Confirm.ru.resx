@@ -117,19 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LinkCurator" xml:space="preserve">
-    <value>Curators</value>
+  <data name="BtnAccept" xml:space="preserve">
+    <value>Подтвердить</value>
   </data>
-  <data name="LinkFaculty" xml:space="preserve">
-    <value>Faculties</value>
+  <data name="ConfirmCaption" xml:space="preserve">
+    <value>Подтверждение</value>
   </data>
-  <data name="LinkGroup" xml:space="preserve">
-    <value>Groups</value>
+  <data name="ConfirmMessage" xml:space="preserve">
+    <value>Вы действительно хотите продолжить выполнение операции?</value>
   </data>
-  <data name="LinkSpecialization" xml:space="preserve">
-    <value>Specializations</value>
+  <data name="FacultyCaption" xml:space="preserve">
+    <value>Факультет</value>
   </data>
-  <data name="LinkStudent" xml:space="preserve">
-    <value>Students</value>
+  <data name="LabelCountYearEducation" xml:space="preserve">
+    <value>Количество лет обучения:</value>
+  </data>
+  <data name="LabelStartDateEducation" xml:space="preserve">
+    <value>Дата начала обучения:</value>
+  </data>
+  <data name="LinkBackToList" xml:space="preserve">
+    <value>Вернуться к списку</value>
+  </data>
+  <data name="SelectCurator" xml:space="preserve">
+    <value>Выбранный куратор: </value>
+  </data>
+  <data name="SelectGroup" xml:space="preserve">
+    <value>Выбранный группа: </value>
+  </data>
+  <data name="SelectStudent" xml:space="preserve">
+    <value>Выбранный студент: </value>
   </data>
 </root>

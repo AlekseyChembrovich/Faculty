@@ -118,7 +118,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void DeleteMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        public void DeleteGetMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
         {
             // Arrange
             const int deleteModelId = 1;
@@ -129,6 +129,26 @@ namespace Faculty.UnitTests
 
             // Act
             var result = modelController.Delete(deleteModelId);
+
+            // Assert
+            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectToActionResult.ActionName);
+            _mockRepositoryCurator.Verify(r => r.Delete(It.IsAny<Curator>()), Times.Once);
+        }
+
+        [Fact]
+        public void DeletePostMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        {
+            // Arrange
+            var modelModify = new CuratorDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
+            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(modelModify);
+            var model = _mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto);
+            _mockRepositoryCurator.Setup(repository => repository.Delete(model)).Verifiable();
+            var modelService = new CuratorService(_mockRepositoryCurator.Object);
+            var modelController = new CuratorController(modelService, _mapper);
+
+            // Act
+            var result = modelController.Delete(modelModify);
 
             // Assert
             var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);

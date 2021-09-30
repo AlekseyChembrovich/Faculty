@@ -117,19 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LinkCurator" xml:space="preserve">
-    <value>Curators</value>
+  <data name="BtnAccept" xml:space="preserve">
+    <value>Accept</value>
   </data>
-  <data name="LinkFaculty" xml:space="preserve">
-    <value>Faculties</value>
+  <data name="ConfirmCaption" xml:space="preserve">
+    <value>Confirm</value>
   </data>
-  <data name="LinkGroup" xml:space="preserve">
-    <value>Groups</value>
+  <data name="ConfirmMessage" xml:space="preserve">
+    <value>Are you sure you want to perform the operation?</value>
   </data>
-  <data name="LinkSpecialization" xml:space="preserve">
-    <value>Specializations</value>
+  <data name="LabelDoublename" xml:space="preserve">
+    <value>Doublename: </value>
   </data>
-  <data name="LinkStudent" xml:space="preserve">
-    <value>Students</value>
+  <data name="LabelName" xml:space="preserve">
+    <value>Name: </value>
+  </data>
+  <data name="LabelSurname" xml:space="preserve">
+    <value>Surname: </value>
+  </data>
+  <data name="LinkBackToList" xml:space="preserve">
+    <value>Back to list</value>
+  </data>
+  <data name="StudentCaption" xml:space="preserve">
+    <value>Student</value>
   </data>
 </root>

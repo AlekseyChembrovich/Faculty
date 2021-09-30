@@ -109,7 +109,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void DeleteMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        public void DeleteGetMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
         {
             // Arrange
             const int deleteModelId = 1;
@@ -120,6 +120,26 @@ namespace Faculty.UnitTests
 
             // Act
             var result = modelController.Delete(deleteModelId);
+
+            // Assert
+            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectToActionResult.ActionName);
+            _mockRepositorySpecialization.Verify(r => r.Delete(It.IsAny<Specialization>()), Times.Once);
+        }
+
+        [Fact]
+        public void DeletePostMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        {
+            // Arrange
+            var modelModify = new SpecializationDisplayModify { Id = 1, Name = "test1" };
+            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(modelModify);
+            var model = _mapper.Map<SpecializationDisplayModifyDto, Specialization>(modelDto);
+            _mockRepositorySpecialization.Setup(repository => repository.Delete(model)).Verifiable();
+            var modelService = new SpecializationService(_mockRepositorySpecialization.Object);
+            var modelController = new SpecializationController(modelService, _mapper);
+
+            // Act
+            var result = modelController.Delete(modelModify);
 
             // Assert
             var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);

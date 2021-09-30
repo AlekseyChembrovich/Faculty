@@ -117,19 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LinkCurator" xml:space="preserve">
-    <value>Curators</value>
+  <data name="BtnAccept" xml:space="preserve">
+    <value>Accept</value>
   </data>
-  <data name="LinkFaculty" xml:space="preserve">
-    <value>Faculties</value>
+  <data name="ConfirmCaption" xml:space="preserve">
+    <value>Confirm</value>
   </data>
-  <data name="LinkGroup" xml:space="preserve">
-    <value>Groups</value>
+  <data name="ConfirmMessage" xml:space="preserve">
+    <value>Are you sure you want to perform the operation?</value>
   </data>
-  <data name="LinkSpecialization" xml:space="preserve">
-    <value>Specializations</value>
+  <data name="FacultyCaption" xml:space="preserve">
+    <value>Faculty</value>
   </data>
-  <data name="LinkStudent" xml:space="preserve">
-    <value>Students</value>
+  <data name="LabelCountYearEducation" xml:space="preserve">
+    <value>Count year education:</value>
+  </data>
+  <data name="LabelStartDateEducation" xml:space="preserve">
+    <value>Start date education:</value>
+  </data>
+  <data name="LinkBackToList" xml:space="preserve">
+    <value>Back to list</value>
+  </data>
+  <data name="SelectCurator" xml:space="preserve">
+    <value>Select curator:</value>
+  </data>
+  <data name="SelectGroup" xml:space="preserve">
+    <value>Select group: </value>
+  </data>
+  <data name="SelectStudent" xml:space="preserve">
+    <value>Select student:</value>
   </data>
 </root>
