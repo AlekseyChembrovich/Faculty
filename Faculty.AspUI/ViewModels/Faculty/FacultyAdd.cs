@@ -12,14 +12,14 @@ namespace Faculty.AspUI.ViewModels.Faculty
         /// Date start education student. 
         /// </summary>
         [Required(ErrorMessage = "DateRequired")]
-        public DateTime StartDateEducation { get; set; }
+        public DateTime? StartDateEducation { get; set; }
 
         /// <summary>
         /// Count year education student.
         /// </summary>
         [Required(ErrorMessage = "YearsRequired")]
         [Range(3, 5, ErrorMessage = "YearsRange")]
-        public int CountYearEducation { get; set; }
+        public int? CountYearEducation { get; set; }
 
         /// <summary>
         /// Foreign key for student entity.

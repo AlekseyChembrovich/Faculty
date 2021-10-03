@@ -1,5 +1,4 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -37,9 +36,8 @@ namespace Faculty.AspUI.Controllers
         [HttpPost]
         public IActionResult Create(CuratorAdd model)
         {
-            if (ModelState.IsValid == false) return View(model);
-            var createCurator = _mapper.Map<CuratorAdd, CuratorAddDto>(model);
-            _curatorService.Create(createCurator);
+            var modelDto = _mapper.Map<CuratorAdd, CuratorAddDto>(model);
+            _curatorService.Create(modelDto);
             return RedirectToAction("Index");
         }
 
@@ -69,40 +67,24 @@ namespace Faculty.AspUI.Controllers
         [HttpPost]
         public IActionResult Edit(CuratorDisplayModify model)
         {
-            if (ModelState.IsValid == false) return View(model);
             var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(model);
             _curatorService.Edit(modelDto);
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public IActionResult Confirm(CuratorDisplayModify model)
-        {
-            var referer = Request.Headers["referer"].ToString();
-            ViewBag.RefererActionName = GetNameActionRefererUrl(referer);
-            return View(model);
-        }
-
         [HttpGet]
-        public IActionResult Confirm(int id)
+        public IActionResult Confirm(int id, string actionName)
         {
-            var referer = Request.Headers["referer"].ToString();
-            ViewBag.RefererActionName = "Delete";
-            var modelDto = _curatorService.GetById(id);
-            var model = _mapper.Map<CuratorDisplayModifyDto, CuratorDisplayModify>(modelDto);
+            ViewBag.RefererActionName = actionName;
+            var model = _mapper.Map<CuratorDisplayModifyDto, CuratorDisplayModify>(_curatorService.GetById(id));
             return View(model);
         }
 
-        public string GetNameActionRefererUrl(string referer)
+        [HttpPost]
+        public IActionResult Confirm(CuratorDisplayModify model, string actionName)
         {
-            var valuesUrlReferer = referer.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            var actionNameReferer = valuesUrlReferer[^1];
-            if (valuesUrlReferer[^1].Contains("?"))
-            {
-                actionNameReferer = actionNameReferer[..actionNameReferer.IndexOf('?')];
-            }
-
-            return actionNameReferer;
+            ViewBag.RefererActionName = actionName;
+            return ModelState.IsValid == false ? View(actionName, model) : View(model);
         }
     }
 }

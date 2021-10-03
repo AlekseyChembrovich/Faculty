@@ -31,7 +31,7 @@ namespace Faculty.UnitTests
         {
             // Arrange
             _mockRepositoryCurator.Setup(repository => repository.GetAll()).Returns(GetTestModels()).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object);
+            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
             var modelController = new CuratorController(modelService, _mapper);
 
             // Act
@@ -85,7 +85,7 @@ namespace Faculty.UnitTests
             var modelDto = _mapper.Map<CuratorAdd, CuratorAddDto>(modelAdd);
             var model = _mapper.Map<CuratorAddDto, Curator>(modelDto);
             _mockRepositoryCurator.Setup(repository => repository.Insert(model)).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object);
+            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
             var modelController = new CuratorController(modelService, _mapper);
 
             // Act
@@ -98,33 +98,13 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void CreateMethod_ReturnsViewResultWithModel_ForInvalidModel()
-        {
-            // Arrange
-            var modelAdd = new CuratorAdd { Surname = "test1", Name = null, Doublename = "test1", Phone = "+375-29-557-06-11" };
-            var modelDto = _mapper.Map<CuratorAdd, CuratorAddDto>(modelAdd);
-            var model = _mapper.Map<CuratorAddDto, Curator>(modelDto);
-            _mockRepositoryCurator.Setup(repository => repository.Insert(model)).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object);
-            var modelController = new CuratorController(modelService, _mapper);
-            modelController.ModelState.AddModelError("NameRequired", "Name is required.");
-
-            // Act
-            var result = modelController.Create(modelAdd);
-
-            // Assert
-            Assert.IsType<ViewResult>(result);
-            _mockRepositoryCurator.Verify(r => r.Insert(It.IsAny<Curator>()), Times.Never);
-        }
-
-        [Fact]
         public void DeleteGetMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
         {
             // Arrange
             const int deleteModelId = 1;
             var model = new Curator { Id = deleteModelId, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
             _mockRepositoryCurator.Setup(repository => repository.Delete(model)).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object);
+            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
             var modelController = new CuratorController(modelService, _mapper);
 
             // Act
@@ -144,7 +124,7 @@ namespace Faculty.UnitTests
             var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(modelModify);
             var model = _mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto);
             _mockRepositoryCurator.Setup(repository => repository.Delete(model)).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object);
+            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
             var modelController = new CuratorController(modelService, _mapper);
 
             // Act
@@ -164,7 +144,7 @@ namespace Faculty.UnitTests
             var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(modelModify);
             var model = _mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto);
             _mockRepositoryCurator.Setup(repository => repository.Update(model)).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object);
+            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
             var modelController = new CuratorController(modelService, _mapper);
 
             // Act
@@ -177,26 +157,6 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void EditPostMethod_ReturnsViewResultWithModel_ForInvalidModel()
-        {
-            // Arrange
-            var modelModify = new CuratorDisplayModify { Id = 1, Surname = "test1", Name = null, Doublename = "test1", Phone = "+375-29-557-06-11" };
-            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto);
-            _mockRepositoryCurator.Setup(repository => repository.Update(model)).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object);
-            var modelController = new CuratorController(modelService, _mapper);
-            modelController.ModelState.AddModelError("NameRequired", "Name is required.");
-
-            // Act
-            var result = modelController.Edit(modelModify);
-
-            // Assert
-            Assert.IsType<ViewResult>(result);
-            _mockRepositoryCurator.Verify(r => r.Update(It.IsAny<Curator>()), Times.Never);
-        }
-
-        [Fact]
         public void EditGetMethod_CallGetByIdMethodRepository_ReturnsViewResultWithModel_ForCorrectArgument()
         {
             // Arrange
@@ -205,7 +165,7 @@ namespace Faculty.UnitTests
             var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(modelModify);
             var model = _mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto);
             _mockRepositoryCurator.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object);
+            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
             var modelController = new CuratorController(modelService, _mapper);
 
             // Act
@@ -224,7 +184,7 @@ namespace Faculty.UnitTests
             const int editModelId = 1;
             Curator model = default;
             _mockRepositoryCurator.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object);
+            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
             var modelController = new CuratorController(modelService, _mapper);
 
             // Act

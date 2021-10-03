@@ -18,12 +18,19 @@ namespace Faculty.BusinessLayer.Services
         private readonly IRepositoryGroup _repositoryGroup;
 
         /// <summary>
+        /// Auto mapper.
+        /// </summary>
+        private readonly IMapper _mapper;
+
+        /// <summary>
         /// Constructor for init repository.
         /// </summary>
         /// <param name="repositoryGroup">Model repository.</param>
-        public GroupService(IRepositoryGroup repositoryGroup)
+        /// <param name="mapper">Mapper.</param>
+        public GroupService(IRepositoryGroup repositoryGroup, IMapper mapper)
         {
             _repositoryGroup = repositoryGroup;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -33,9 +40,7 @@ namespace Faculty.BusinessLayer.Services
         public IEnumerable<GroupDisplayDto> GetAll()
         {
             var models = _repositoryGroup.GetAllIncludeForeignKey();
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<IEnumerable<Group>, IEnumerable<GroupDisplayDto>>(models);
+            return _mapper.Map<IEnumerable<Group>, IEnumerable<GroupDisplayDto>>(models);
         }
 
         /// <summary>
@@ -44,9 +49,7 @@ namespace Faculty.BusinessLayer.Services
         /// <param name="dto">Add Dto.</param>
         public void Create(GroupAddDto dto)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            _repositoryGroup.Insert(mapper.Map<GroupAddDto, Group>(dto));
+            _repositoryGroup.Insert(_mapper.Map<GroupAddDto, Group>(dto));
         }
 
         /// <summary>
@@ -68,9 +71,7 @@ namespace Faculty.BusinessLayer.Services
         public GroupModifyDto GetById(int id)
         {
             var model = _repositoryGroup.GetById(id);
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<Group, GroupModifyDto>(model);
+            return _mapper.Map<Group, GroupModifyDto>(model);
         }
 
         /// <summary>
@@ -79,9 +80,7 @@ namespace Faculty.BusinessLayer.Services
         /// <param name="dto">Modify Dto.</param>
         public void Edit(GroupModifyDto dto)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            _repositoryGroup.Update(mapper.Map<GroupModifyDto, Group>(dto));
+            _repositoryGroup.Update(_mapper.Map<GroupModifyDto, Group>(dto));
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -37,9 +36,8 @@ namespace Faculty.AspUI.Controllers
         [HttpPost]
         public IActionResult Create(SpecializationAdd model)
         {
-            if (ModelState.IsValid == false) return View(model);
-            var createCurator = _mapper.Map<SpecializationAdd, SpecializationAddDto>(model);
-            _specializationService.Create(createCurator);
+            var modelDto = _mapper.Map<SpecializationAdd, SpecializationAddDto>(model);
+            _specializationService.Create(modelDto);
             return RedirectToAction("Index");
         }
 
@@ -75,34 +73,19 @@ namespace Faculty.AspUI.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public IActionResult Confirm(SpecializationDisplayModify model)
-        {
-            var referer = Request.Headers["referer"].ToString();
-            ViewBag.RefererActionName = GetNameActionRefererUrl(referer);
-            return View(model);
-        }
-
         [HttpGet]
-        public IActionResult Confirm(int id)
+        public IActionResult Confirm(int id, string actionName)
         {
-            var referer = Request.Headers["referer"].ToString();
-            ViewBag.RefererActionName = "Delete";
-            var modelDto = _specializationService.GetById(id);
-            var model = _mapper.Map<SpecializationDisplayModifyDto, SpecializationDisplayModify>(modelDto);
+            ViewBag.RefererActionName = actionName;
+            var model = _mapper.Map<SpecializationDisplayModifyDto, SpecializationDisplayModify>(_specializationService.GetById(id));
             return View(model);
         }
 
-        public string GetNameActionRefererUrl(string referer)
+        [HttpPost]
+        public IActionResult Confirm(SpecializationDisplayModify model, string actionName)
         {
-            var valuesUrlReferer = referer.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            var actionNameReferer = valuesUrlReferer[^1];
-            if (valuesUrlReferer[^1].Contains("?"))
-            {
-                actionNameReferer = actionNameReferer[..actionNameReferer.IndexOf('?')];
-            }
-
-            return actionNameReferer;
+            ViewBag.RefererActionName = actionName;
+            return ModelState.IsValid == false ? View(actionName, model) : View(model);
         }
     }
 }

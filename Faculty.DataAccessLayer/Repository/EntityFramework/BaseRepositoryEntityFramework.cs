@@ -99,7 +99,7 @@ namespace Faculty.DataAccessLayer.Repository.EntityFramework
         /// <returns>Lots of Entity objects returned.</returns>
         public IEnumerable<T> GetAll() 
         {
-            return Context.Set<T>().AsNoTracking().ToList();
+            return Context.Set<T>().AsNoTracking().AsEnumerable();
         }
 
         /// <summary>
@@ -110,7 +110,11 @@ namespace Faculty.DataAccessLayer.Repository.EntityFramework
         public T GetById(int id)
         {
             var entity = Context.Set<T>().Find(id);
-            Context.Entry(entity).State = EntityState.Detached;
+            if (entity is not null)
+            {
+                Context.Entry(entity).State = EntityState.Detached;
+            }
+
             return entity;
         }
     }

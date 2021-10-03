@@ -24,7 +24,7 @@
                 <td>@(i + 1)</td>
                 <td>@Model[i].Name</td>
                 <td>
-                    @Html.ActionLink(_localizer["BtnDelete"].Value, "Confirm", "Specialization", new { id = Model[i].Id }, new { @class = "btn btn-primary mr-2" })
+                    @Html.ActionLink(_localizer["BtnDelete"].Value, "Confirm", "Specialization", new { id = Model[i].Id, actionName = "Delete" }, new { @class = "btn btn-primary mr-2" })
                     @Html.ActionLink(_localizer["BtnEdit"].Value, "Edit", "Specialization", new { id = Model[i].Id }, new { @class = "btn btn-primary" })
                 </td>
             </tr>

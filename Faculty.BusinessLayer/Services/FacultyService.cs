@@ -17,12 +17,19 @@ namespace Faculty.BusinessLayer.Services
         private readonly IRepositoryFaculty _repositoryFaculty;
 
         /// <summary>
+        /// Auto mapper.
+        /// </summary>
+        private readonly IMapper _mapper;
+
+        /// <summary>
         /// Constructor for init repository.
         /// </summary>
         /// <param name="repositoryFaculty">Model repository.</param>
-        public FacultyService(IRepositoryFaculty repositoryFaculty)
+        /// <param name="mapper">Mapper.</param>
+        public FacultyService(IRepositoryFaculty repositoryFaculty, IMapper mapper)
         {
             _repositoryFaculty = repositoryFaculty;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -32,9 +39,7 @@ namespace Faculty.BusinessLayer.Services
         public IEnumerable<FacultyDisplayDto> GetAll()
         {
             var models = _repositoryFaculty.GetAllIncludeForeignKey();
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<IEnumerable<DataAccessLayer.Models.Faculty>, IEnumerable<FacultyDisplayDto>>(models);
+            return _mapper.Map<IEnumerable<DataAccessLayer.Models.Faculty>, IEnumerable<FacultyDisplayDto>>(models);
         }
 
         /// <summary>
@@ -43,9 +48,7 @@ namespace Faculty.BusinessLayer.Services
         /// <param name="dto">Add Dto.</param>
         public void Create(FacultyAddDto dto)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            _repositoryFaculty.Insert(mapper.Map<FacultyAddDto, DataAccessLayer.Models.Faculty>(dto));
+            _repositoryFaculty.Insert(_mapper.Map<FacultyAddDto, DataAccessLayer.Models.Faculty>(dto));
         }
 
         /// <summary>
@@ -67,9 +70,7 @@ namespace Faculty.BusinessLayer.Services
         public FacultyModifyDto GetById(int id)
         {
             var model = _repositoryFaculty.GetById(id);
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<DataAccessLayer.Models.Faculty, FacultyModifyDto>(model);
+            return _mapper.Map<DataAccessLayer.Models.Faculty, FacultyModifyDto>(model);
         }
 
         /// <summary>
@@ -78,9 +79,7 @@ namespace Faculty.BusinessLayer.Services
         /// <param name="dto">Modify Dto.</param>
         public void Edit(FacultyModifyDto dto)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            _repositoryFaculty.Update(mapper.Map<FacultyModifyDto, DataAccessLayer.Models.Faculty>(dto));
+            _repositoryFaculty.Update(_mapper.Map<FacultyModifyDto, DataAccessLayer.Models.Faculty>(dto));
         }
     }
 }

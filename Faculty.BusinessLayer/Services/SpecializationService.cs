@@ -19,12 +19,19 @@ namespace Faculty.BusinessLayer.Services
         private readonly IRepository<Specialization> _repositorySpecialization;
 
         /// <summary>
+        /// Auto mapper.
+        /// </summary>
+        private readonly IMapper _mapper;
+
+        /// <summary>
         /// Constructor for init repository.
         /// </summary>
         /// <param name="repositorySpecialization">Model repository.</param>
-        public SpecializationService(IRepository<Specialization> repositorySpecialization)
+        /// <param name="mapper">Mapper.</param>
+        public SpecializationService(IRepository<Specialization> repositorySpecialization, IMapper mapper)
         {
             _repositorySpecialization = repositorySpecialization;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -34,9 +41,7 @@ namespace Faculty.BusinessLayer.Services
         public IEnumerable<SpecializationDisplayModifyDto> GetAll()
         {
             var models = _repositorySpecialization.GetAll().ToList();
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<IEnumerable<Specialization>, IEnumerable<SpecializationDisplayModifyDto>>(models); ;
+            return _mapper.Map<IEnumerable<Specialization>, IEnumerable<SpecializationDisplayModifyDto>>(models); ;
         }
 
         /// <summary>
@@ -45,9 +50,7 @@ namespace Faculty.BusinessLayer.Services
         /// <param name="dto">Add Dto.</param>
         public void Create(SpecializationAddDto dto)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            _repositorySpecialization.Insert(mapper.Map<SpecializationAddDto, Specialization>(dto));
+            _repositorySpecialization.Insert(_mapper.Map<SpecializationAddDto, Specialization>(dto));
         }
 
         /// <summary>
@@ -69,9 +72,7 @@ namespace Faculty.BusinessLayer.Services
         public SpecializationDisplayModifyDto GetById(int id)
         {
             var model = _repositorySpecialization.GetById(id);
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<Specialization, SpecializationDisplayModifyDto>(model);
+            return _mapper.Map<Specialization, SpecializationDisplayModifyDto>(model);
         }
 
         /// <summary>
@@ -80,9 +81,7 @@ namespace Faculty.BusinessLayer.Services
         /// <param name="dto">Modify Dto.</param>
         public void Edit(SpecializationDisplayModifyDto dto)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            _repositorySpecialization.Update(mapper.Map<SpecializationDisplayModifyDto, Specialization>(dto));
+            _repositorySpecialization.Update(_mapper.Map<SpecializationDisplayModifyDto, Specialization>(dto));
         }
     }
 }

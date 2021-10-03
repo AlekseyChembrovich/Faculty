@@ -1,5 +1,4 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -33,7 +32,6 @@ namespace Faculty.AspUI.Controllers
             var modelsDto = _facultyService.GetAll();
             var models = _mapper.Map<IEnumerable<FacultyDisplayDto>, IEnumerable<FacultyDisplay>>(modelsDto);
             var modelsFilter = valueFilter != null ? models.ToList().Where(x => x.CountYearEducation == valueFilter.Value).ToList() : models.ToList();
-            ViewBag.Str = "Str?";
             return View(modelsFilter);
         }
 
@@ -48,9 +46,8 @@ namespace Faculty.AspUI.Controllers
         public IActionResult Create(FacultyAdd model)
         {
             FillViewBag();
-            if (ModelState.IsValid == false) return View(model);
-            var createCurator = _mapper.Map<FacultyAdd, FacultyAddDto>(model);
-            _facultyService.Create(createCurator);
+            var modelDto = _mapper.Map<FacultyAdd, FacultyAddDto>(model);
+            _facultyService.Create(modelDto);
             return RedirectToAction("Index");
         }
 
@@ -82,42 +79,26 @@ namespace Faculty.AspUI.Controllers
         public IActionResult Edit(FacultyModify model)
         {
             FillViewBag();
-            if (ModelState.IsValid == false) return View(model);
             var modelDto = _mapper.Map<FacultyModify, FacultyModifyDto>(model);
             _facultyService.Edit(modelDto);
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public IActionResult Confirm(FacultyModify model)
-        {
-            var referer = Request.Headers["referer"].ToString();
-            ViewBag.RefererActionName = GetNameActionRefererUrl(referer);
-            FillViewBag();
-            return View(model);
-        }
-
         [HttpGet]
-        public IActionResult Confirm(int id)
+        public IActionResult Confirm(int id, string actionName)
         {
-            var referer = Request.Headers["referer"].ToString();
-            ViewBag.RefererActionName = "Delete";
-            var modelDto = _facultyService.GetById(id);
-            var model = _mapper.Map<FacultyModifyDto, FacultyModify>(modelDto);
             FillViewBag();
+            ViewBag.RefererActionName = actionName;
+            var model = _mapper.Map<FacultyModifyDto, FacultyModify>(_facultyService.GetById(id));
             return View(model);
         }
 
-        public string GetNameActionRefererUrl(string referer)
+        [HttpPost]
+        public IActionResult Confirm(FacultyModify model, string actionName)
         {
-            var valuesUrlReferer = referer.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            var actionNameReferer = valuesUrlReferer[^1];
-            if (valuesUrlReferer[^1].Contains("?"))
-            {
-                actionNameReferer = actionNameReferer[..actionNameReferer.IndexOf('?')];
-            }
-
-            return actionNameReferer;
+            FillViewBag();
+            ViewBag.RefererActionName = actionName;
+            return ModelState.IsValid == false ? View(actionName, model) : View(model);
         }
 
         public void FillViewBag()

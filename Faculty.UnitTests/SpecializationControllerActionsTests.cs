@@ -31,7 +31,7 @@ namespace Faculty.UnitTests
         {
             // Arrange
             _mockRepositorySpecialization.Setup(repository => repository.GetAll()).Returns(GetTestModels()).Verifiable();
-            var modelService = new SpecializationService(_mockRepositorySpecialization.Object);
+            var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
 
             // Act
@@ -76,7 +76,7 @@ namespace Faculty.UnitTests
             var modelDto = _mapper.Map<SpecializationAdd, SpecializationAddDto>(modelAdd);
             var model = _mapper.Map<SpecializationAddDto, Specialization>(modelDto);
             _mockRepositorySpecialization.Setup(repository => repository.Insert(model)).Verifiable();
-            var modelService = new SpecializationService(_mockRepositorySpecialization.Object);
+            var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
 
             // Act
@@ -89,33 +89,13 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void CreateMethod_ReturnsViewResultWithModel_ForInvalidModel()
-        {
-            // Arrange
-            var modelAdd = new SpecializationAdd { Name = null };
-            var modelDto = _mapper.Map<SpecializationAdd, SpecializationAddDto>(modelAdd);
-            var model = _mapper.Map<SpecializationAddDto, Specialization>(modelDto);
-            _mockRepositorySpecialization.Setup(repository => repository.Insert(model)).Verifiable();
-            var modelService = new SpecializationService(_mockRepositorySpecialization.Object);
-            var modelController = new SpecializationController(modelService, _mapper);
-            modelController.ModelState.AddModelError("NameRequired", "Name is required.");
-
-            // Act
-            var result = modelController.Create(modelAdd);
-
-            // Assert
-            Assert.IsType<ViewResult>(result);
-            _mockRepositorySpecialization.Verify(r => r.Insert(It.IsAny<Specialization>()), Times.Never);
-        }
-
-        [Fact]
         public void DeleteGetMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
         {
             // Arrange
             const int deleteModelId = 1;
             var model = new Specialization { Id = deleteModelId, Name = "test1" };
             _mockRepositorySpecialization.Setup(repository => repository.Delete(model)).Verifiable();
-            var modelService = new SpecializationService(_mockRepositorySpecialization.Object);
+            var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
 
             // Act
@@ -135,7 +115,7 @@ namespace Faculty.UnitTests
             var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(modelModify);
             var model = _mapper.Map<SpecializationDisplayModifyDto, Specialization>(modelDto);
             _mockRepositorySpecialization.Setup(repository => repository.Delete(model)).Verifiable();
-            var modelService = new SpecializationService(_mockRepositorySpecialization.Object);
+            var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
 
             // Act
@@ -155,7 +135,7 @@ namespace Faculty.UnitTests
             var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(modelModify);
             var model = _mapper.Map<SpecializationDisplayModifyDto, Specialization>(modelDto);
             _mockRepositorySpecialization.Setup(repository => repository.Update(model)).Verifiable();
-            var modelService = new SpecializationService(_mockRepositorySpecialization.Object);
+            var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
 
             // Act
@@ -175,7 +155,7 @@ namespace Faculty.UnitTests
             var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(modelModify);
             var model = _mapper.Map<SpecializationDisplayModifyDto, Specialization>(modelDto);
             _mockRepositorySpecialization.Setup(repository => repository.Update(model)).Verifiable();
-            var modelService = new SpecializationService(_mockRepositorySpecialization.Object);
+            var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
             modelController.ModelState.AddModelError("NameRequired", "Name is required.");
 
@@ -196,7 +176,7 @@ namespace Faculty.UnitTests
             var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(modelModify);
             var model = _mapper.Map<SpecializationDisplayModifyDto, Specialization>(modelDto);
             _mockRepositorySpecialization.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
-            var modelService = new SpecializationService(_mockRepositorySpecialization.Object);
+            var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
 
             // Act
@@ -215,7 +195,7 @@ namespace Faculty.UnitTests
             const int editModelId = 1;
             Specialization model = default;
             _mockRepositorySpecialization.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
-            var modelService = new SpecializationService(_mockRepositorySpecialization.Object);
+            var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
 
             // Act

@@ -11,7 +11,7 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Confirm" asp-controller="Student" method="post">
+        <form asp-action="Confirm" asp-controller="Student">
             <div class="form-group">
                 <label asp-for="Surname">@_localizer["LabelSurname"].Value</label>
                 <input type="text" asp-for="Surname" class="form-control"/>
@@ -28,6 +28,10 @@
                 <label asp-for="Doublename">@_localizer["LabelDoublename"].Value</label>
                 <input type="text" asp-for="Doublename" class="form-control"/>
                 <span asp-validation-for="Doublename" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <input type="hidden" value="Create" name="actionName"/>
             </div>
 
             <div class="form-group">

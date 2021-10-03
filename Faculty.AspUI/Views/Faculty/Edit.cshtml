@@ -18,7 +18,7 @@
 
             <div class="form-group">
                 <label asp-for="StartDateEducation">@_localizer["LabelStartDateEducation"].Value</label>
-                <input asp-for="StartDateEducation" type="date" value="@Model.StartDateEducation.ToString("yyyy-MM-dd")" asp-format="{0:dd/MM/yyyy}" class="form-control" />
+                <input asp-for="StartDateEducation" type="date" value="@Model.StartDateEducation?.ToString("yyyy-MM-dd")" asp-format="{0:dd/MM/yyyy}" class="form-control" />
                 <span asp-validation-for="StartDateEducation" class="text-danger"></span>
             </div>
 
@@ -41,6 +41,10 @@
             <div class="form-group">
                 <label asp-for="GroupId">@_localizer["SelectGroup"].Value</label>
                 <select asp-for="GroupId" asp-items="@(new SelectList(ViewBag.Groups, "Id", "Name"))" class="custom-select"></select>
+            </div>
+            
+            <div class="form-group">
+                <input type="hidden" value="Edit" name="actionName"/>
             </div>
 
             <div class="form-group">

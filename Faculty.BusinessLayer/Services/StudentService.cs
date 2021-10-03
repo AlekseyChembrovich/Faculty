@@ -19,12 +19,19 @@ namespace Faculty.BusinessLayer.Services
         private readonly IRepository<Student> _repositoryStudent;
 
         /// <summary>
+        /// Auto mapper.
+        /// </summary>
+        private readonly IMapper _mapper;
+
+        /// <summary>
         /// Constructor for init repository.
         /// </summary>
         /// <param name="repositoryStudent">Model repository.</param>
-        public StudentService(IRepository<Student> repositoryStudent)
+        /// <param name="mapper">Mapper.</param>
+        public StudentService(IRepository<Student> repositoryStudent, IMapper mapper)
         {
             _repositoryStudent = repositoryStudent;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -34,9 +41,7 @@ namespace Faculty.BusinessLayer.Services
         public IEnumerable<StudentDisplayModifyDto> GetAll()
         {
             var models = _repositoryStudent.GetAll().ToList();
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<IEnumerable<Student>, IEnumerable<StudentDisplayModifyDto>>(models);
+            return _mapper.Map<IEnumerable<Student>, IEnumerable<StudentDisplayModifyDto>>(models);
         }
 
         /// <summary>
@@ -45,9 +50,7 @@ namespace Faculty.BusinessLayer.Services
         /// <param name="dto">Add Dto.</param>
         public void Create(StudentAddDto dto)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            _repositoryStudent.Insert(mapper.Map<StudentAddDto, Student>(dto));
+            _repositoryStudent.Insert(_mapper.Map<StudentAddDto, Student>(dto));
         }
 
         /// <summary>
@@ -69,9 +72,7 @@ namespace Faculty.BusinessLayer.Services
         public StudentDisplayModifyDto GetById(int id)
         {
             var model = _repositoryStudent.GetById(id);
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            return mapper.Map<Student, StudentDisplayModifyDto>(model);
+            return _mapper.Map<Student, StudentDisplayModifyDto>(model);
         }
 
         /// <summary>
@@ -80,9 +81,7 @@ namespace Faculty.BusinessLayer.Services
         /// <param name="dto">Modify Dto.</param>
         public void Edit(StudentDisplayModifyDto dto)
         {
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            var mapper = new Mapper(mapperConfiguration);
-            _repositoryStudent.Update(mapper.Map<StudentDisplayModifyDto, Student>(dto));
+            _repositoryStudent.Update(_mapper.Map<StudentDisplayModifyDto, Student>(dto));
         }
     }
 }
