@@ -1,6 +1,5 @@
 using AutoMapper;
 using System.Globalization;
-using Faculty.AspUI.Middleware;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -47,10 +46,9 @@ namespace Faculty.AspUI
             app.UseStaticFiles();
             app.UseRouting();
             app.UseRequestLocalization(localizationOptions.Value);
-            app.UseMiddleware<LocalizationMiddleware>();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(null, "{controller=Faculty}/{action=Index}");
+                endpoints.MapControllerRoute(null, "{controller=Faculty}/{action=Index}/{id?}");
             });
         }
     }

@@ -29,7 +29,7 @@
                     </div>
 
                     <div class="w-25">
-                        <form action="@Context.Request.Path" method="get">
+                        <form asp-action="Localize" asp-controller="Faculty" asp-route-returnUrl="@Context.Request.Path" method="post">
                             <select asp-items="selectList" name="culture" onchange="this.form.submit()" class="custom-select"></select>
                         </form>
                     </div>

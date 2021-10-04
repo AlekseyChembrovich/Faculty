@@ -44,8 +44,10 @@ namespace Faculty.AspUI.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            _studentService.Delete(id);
-            return RedirectToAction("Index");
+            var modelDto = _studentService.GetById(id);
+            if (modelDto is null) return RedirectToAction("Index");
+            var model = _mapper.Map<StudentDisplayModifyDto, StudentDisplayModify>(modelDto);
+            return View(model);
         }
 
         [HttpPost]
@@ -70,21 +72,6 @@ namespace Faculty.AspUI.Controllers
             var modelDto = _mapper.Map<StudentDisplayModify, StudentDisplayModifyDto>(model);
             _studentService.Edit(modelDto);
             return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public IActionResult Confirm(int id, string actionName)
-        {
-            ViewBag.RefererActionName = actionName;
-            var model = _mapper.Map<StudentDisplayModifyDto, StudentDisplayModify>(_studentService.GetById(id));
-            return View(model);
-        }
-
-        [HttpPost]
-        public IActionResult Confirm(StudentDisplayModify model, string actionName)
-        {
-            ViewBag.RefererActionName = actionName;
-            return ModelState.IsValid == false ? View(actionName, model) : View(model);
         }
     }
 }

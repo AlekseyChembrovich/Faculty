@@ -1,5 +1,4 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -49,8 +48,11 @@ namespace Faculty.AspUI.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            _groupService.Delete(id);
-            return RedirectToAction("Index");
+            var modelDto = _groupService.GetById(id);
+            if (modelDto is null) return RedirectToAction("Index");
+            var model = _mapper.Map<GroupModifyDto, GroupModify>(modelDto);
+            FillViewBag();
+            return View(model);
         }
 
         [HttpPost]
@@ -77,23 +79,6 @@ namespace Faculty.AspUI.Controllers
             var modelDto = _mapper.Map<GroupModify, GroupModifyDto>(model);
             _groupService.Edit(modelDto);
             return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public IActionResult Confirm(int id, string actionName)
-        {
-            FillViewBag();
-            ViewBag.RefererActionName = actionName;
-            var model = _mapper.Map<GroupModifyDto, GroupModify>(_groupService.GetById(id));
-            return View(model);
-        }
-
-        [HttpPost]
-        public IActionResult Confirm(GroupModify model, string actionName)
-        {
-            FillViewBag();
-            ViewBag.RefererActionName = actionName;
-            return ModelState.IsValid == false ? View(actionName, model) : View(model);
         }
 
         public void FillViewBag()

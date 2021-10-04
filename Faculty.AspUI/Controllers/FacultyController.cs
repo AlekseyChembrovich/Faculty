@@ -1,10 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.AspUI.ViewModels.Faculty;
 using Faculty.BusinessLayer.Dto.Faculty;
+using Microsoft.AspNetCore.Localization;
 
 namespace Faculty.AspUI.Controllers
 {
@@ -54,8 +57,11 @@ namespace Faculty.AspUI.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            _facultyService.Delete(id);
-            return RedirectToAction("Index");
+            var modelDto = _facultyService.GetById(id);
+            if (modelDto is null) return RedirectToAction("Index");
+            var model = _mapper.Map<FacultyModifyDto, FacultyModify>(modelDto);
+            FillViewBag();
+            return View(model);
         }
 
         [HttpPost]
@@ -84,28 +90,18 @@ namespace Faculty.AspUI.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpGet]
-        public IActionResult Confirm(int id, string actionName)
-        {
-            FillViewBag();
-            ViewBag.RefererActionName = actionName;
-            var model = _mapper.Map<FacultyModifyDto, FacultyModify>(_facultyService.GetById(id));
-            return View(model);
-        }
-
-        [HttpPost]
-        public IActionResult Confirm(FacultyModify model, string actionName)
-        {
-            FillViewBag();
-            ViewBag.RefererActionName = actionName;
-            return ModelState.IsValid == false ? View(actionName, model) : View(model);
-        }
-
         public void FillViewBag()
         {
             ViewBag.Groups = _groupService.GetAll();
             ViewBag.Students = _studentService.GetAll();
             ViewBag.Curators = _curatorService.GetAll();
+        }
+
+        [HttpPost]
+        public IActionResult Localize(string culture, string returnUrl)
+        {
+            Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)), new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) } );
+            return LocalRedirect(returnUrl);
         }
     }
 }
