@@ -94,7 +94,7 @@ namespace Faculty.UnitTests
             // Arrange
             const int deleteModelId = 1;
             var model = new Specialization { Id = deleteModelId, Name = "test1" };
-            _mockRepositorySpecialization.Setup(repository => repository.Delete(model)).Verifiable();
+            _mockRepositorySpecialization.Setup(repository => repository.GetById(deleteModelId)).Returns(model).Verifiable();
             var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
 
@@ -102,9 +102,9 @@ namespace Faculty.UnitTests
             var result = modelController.Delete(deleteModelId);
 
             // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            _mockRepositorySpecialization.Verify(r => r.Delete(It.IsAny<Specialization>()), Times.Once);
+            var viewResult = Assert.IsType<ViewResult>(result);
+            model.Should().BeEquivalentTo(viewResult.Model);
+            _mockRepositorySpecialization.Verify(r => r.GetById(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]

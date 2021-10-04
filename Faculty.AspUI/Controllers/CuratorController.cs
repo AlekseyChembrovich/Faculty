@@ -36,6 +36,7 @@ namespace Faculty.AspUI.Controllers
         [HttpPost]
         public IActionResult Create(CuratorAdd model)
         {
+            if (ModelState.IsValid == false) return View(model);
             var modelDto = _mapper.Map<CuratorAdd, CuratorAddDto>(model);
             _curatorService.Create(modelDto);
             return RedirectToAction("Index");
@@ -69,6 +70,7 @@ namespace Faculty.AspUI.Controllers
         [HttpPost]
         public IActionResult Edit(CuratorDisplayModify model)
         {
+            if (ModelState.IsValid == false) return View(model);
             var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(model);
             _curatorService.Edit(modelDto);
             return RedirectToAction("Index");

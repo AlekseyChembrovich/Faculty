@@ -132,7 +132,7 @@ namespace Faculty.UnitTests
                 CuratorId = 1,
                 GroupId = 1
             };
-            _mockRepositoryFaculty.Setup(repository => repository.Delete(model)).Verifiable();
+            _mockRepositoryFaculty.Setup(repository => repository.GetById(deleteModelId)).Returns(model).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object, _mapper);
             var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
 
@@ -140,9 +140,9 @@ namespace Faculty.UnitTests
             var result = modelController.Delete(deleteModelId);
 
             // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            _mockRepositoryFaculty.Verify(r => r.Delete(It.IsAny<DataAccessLayer.Models.Faculty>()), Times.Once);
+            var viewResult = Assert.IsType<ViewResult>(result);
+            model.Should().BeEquivalentTo(viewResult.Model);
+            _mockRepositoryFaculty.Verify(r => r.GetById(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]

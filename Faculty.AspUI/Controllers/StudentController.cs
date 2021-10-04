@@ -36,6 +36,7 @@ namespace Faculty.AspUI.Controllers
         [HttpPost]
         public IActionResult Create(StudentAdd model)
         {
+            if (ModelState.IsValid == false) return View(model);
             var modelDto = _mapper.Map<StudentAdd, StudentAddDto>(model);
             _studentService.Create(modelDto);
             return RedirectToAction("Index");
@@ -69,6 +70,7 @@ namespace Faculty.AspUI.Controllers
         [HttpPost]
         public IActionResult Edit(StudentDisplayModify model)
         {
+            if (ModelState.IsValid == false) return View(model);
             var modelDto = _mapper.Map<StudentDisplayModify, StudentDisplayModifyDto>(model);
             _studentService.Edit(modelDto);
             return RedirectToAction("Index");

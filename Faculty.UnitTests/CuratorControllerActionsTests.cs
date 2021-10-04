@@ -103,17 +103,17 @@ namespace Faculty.UnitTests
             // Arrange
             const int deleteModelId = 1;
             var model = new Curator { Id = deleteModelId, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
-            _mockRepositoryCurator.Setup(repository => repository.Delete(model)).Verifiable();
+            _mockRepositoryCurator.Setup(repository => repository.GetById(deleteModelId)).Returns(model).Verifiable();
             var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
             var modelController = new CuratorController(modelService, _mapper);
 
             // Act
             var result = modelController.Delete(deleteModelId);
 
-            // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            _mockRepositoryCurator.Verify(r => r.Delete(It.IsAny<Curator>()), Times.Once);
+            //Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            model.Should().BeEquivalentTo(viewResult.Model);
+            _mockRepositoryCurator.Verify(r => r.GetById(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]

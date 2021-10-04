@@ -36,6 +36,7 @@ namespace Faculty.AspUI.Controllers
         [HttpPost]
         public IActionResult Create(SpecializationAdd model)
         {
+            if (ModelState.IsValid == false) return View(model);
             var modelDto = _mapper.Map<SpecializationAdd, SpecializationAddDto>(model);
             _specializationService.Create(modelDto);
             return RedirectToAction("Index");

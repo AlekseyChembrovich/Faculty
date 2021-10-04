@@ -100,7 +100,7 @@ namespace Faculty.UnitTests
             // Arrange
             const int deleteModelId = 1;
             var model = new Student { Id = deleteModelId, Surname = "test1", Name = "test1", Doublename = "test1" };
-            _mockRepositoryStudent.Setup(repository => repository.Delete(model)).Verifiable();
+            _mockRepositoryStudent.Setup(repository => repository.GetById(deleteModelId)).Returns(model).Verifiable();
             var modelService = new StudentService(_mockRepositoryStudent.Object, _mapper);
             var modelController = new StudentController(modelService, _mapper);
 
@@ -108,9 +108,9 @@ namespace Faculty.UnitTests
             var result = modelController.Delete(deleteModelId);
 
             // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            _mockRepositoryStudent.Verify(r => r.Delete(It.IsAny<Student>()), Times.Once);
+            var viewResult = Assert.IsType<ViewResult>(result);
+            model.Should().BeEquivalentTo(viewResult.Model);
+            _mockRepositoryStudent.Verify(r => r.GetById(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]

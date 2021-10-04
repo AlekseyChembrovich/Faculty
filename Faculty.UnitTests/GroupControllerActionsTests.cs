@@ -101,7 +101,7 @@ namespace Faculty.UnitTests
             // Arrange
             const int deleteModelId = 1;
             var model = new Group { Id = deleteModelId, Name = "test1", SpecializationId = 1 };
-            _mockRepositoryGroup.Setup(repository => repository.Delete(model)).Verifiable();
+            _mockRepositoryGroup.Setup(repository => repository.GetById(deleteModelId)).Returns(model).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object, _mapper);
             var modelController = new GroupController(groupService, _specializationService, _mapper);
 
@@ -109,9 +109,9 @@ namespace Faculty.UnitTests
             var result = modelController.Delete(deleteModelId);
 
             // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            _mockRepositoryGroup.Verify(r => r.Delete(It.IsAny<Group>()), Times.Once);
+            var viewResult = Assert.IsType<ViewResult>(result);
+            model.Should().BeEquivalentTo(viewResult.Model);
+            _mockRepositoryGroup.Verify(r => r.GetById(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
