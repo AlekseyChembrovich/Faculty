@@ -48,8 +48,8 @@ namespace Faculty.AspUI.Controllers
         [HttpPost]
         public IActionResult Create(FacultyAdd model)
         {
-            if (ModelState.IsValid == false) return View(model);
             FillViewBag();
+            if (ModelState.IsValid == false) return View(model);
             var modelDto = _mapper.Map<FacultyAdd, FacultyAddDto>(model);
             _facultyService.Create(modelDto);
             return RedirectToAction("Index");
@@ -85,8 +85,8 @@ namespace Faculty.AspUI.Controllers
         [HttpPost]
         public IActionResult Edit(FacultyModify model)
         {
-            if (ModelState.IsValid == false) return View(model);
             FillViewBag();
+            if (ModelState.IsValid == false) return View(model);
             var modelDto = _mapper.Map<FacultyModify, FacultyModifyDto>(model);
             _facultyService.Edit(modelDto);
             return RedirectToAction("Index");

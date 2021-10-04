@@ -39,8 +39,8 @@ namespace Faculty.AspUI.Controllers
         [HttpPost]
         public IActionResult Create(GroupAdd model)
         {
-            if (ModelState.IsValid == false) return View(model);
             FillViewBag();
+            if (ModelState.IsValid == false) return View(model);
             var modelDto = _mapper.Map<GroupAdd, GroupAddDto>(model);
             _groupService.Create(modelDto);
             return RedirectToAction("Index");
@@ -76,8 +76,8 @@ namespace Faculty.AspUI.Controllers
         [HttpPost]
         public IActionResult Edit(GroupModify model)
         {
-            if (ModelState.IsValid == false) return View(model);
             FillViewBag();
+            if (ModelState.IsValid == false) return View(model);
             var modelDto = _mapper.Map<GroupModify, GroupModifyDto>(model);
             _groupService.Edit(modelDto);
             return RedirectToAction("Index");
