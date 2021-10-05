@@ -1,5 +1,8 @@
+using System;
+using System.Net;
 using AutoMapper;
 using System.Globalization;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,11 +10,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
+using Microsoft.IdentityModel.Tokens;
 using Faculty.BusinessLayer.Interfaces;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Faculty.DataAccessLayer.Repository;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Faculty.DataAccessLayer.Repository.EntityFramework;
 using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
@@ -29,11 +34,14 @@ namespace Faculty.AspUI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews().AddDataAnnotationsLocalization().AddViewLocalization();
-            services.AddRequestLocalization();
+            services.AddAuthenticationWithJwtToken(Configuration);
             services.AddDatabaseContext(Configuration);
-            services.AddRepositories();
+            services.AddRequestLocalization();
             services.AddControllerServices();
+            services.AddAuthHttpClients();
+            services.AddRepositories();
             services.AddMapper();
+            services.AddCors();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RequestLocalizationOptions> localizationOptions)
@@ -43,8 +51,33 @@ namespace Faculty.AspUI
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors(x => x.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseCookiePolicy();
+            app.UseSession();
+            app.Use(async (context, next) =>
+            {
+                var token = context.Request.Cookies["access_token"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    context.Request.Headers.Add("Authorization", "Bearer " + token);
+                }
+                await next();
+            });
+
+            app.UseStatusCodePages(context =>
+            {
+                var response = context.HttpContext.Response;
+                if (response.StatusCode is (int)HttpStatusCode.Unauthorized or (int)HttpStatusCode.Forbidden)
+                {
+                    response.Redirect("/Home/Login");
+                }
+                return Task.CompletedTask;
+            });
+
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseRequestLocalization(localizationOptions.Value);
             app.UseEndpoints(endpoints =>
             {
@@ -101,6 +134,49 @@ namespace Faculty.AspUI
         {
             services.AddSingleton<AutoMapper.IConfigurationProvider>(x => new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile())));
             services.AddSingleton<IMapper, Mapper>();
+        }
+
+        public static void AddAuthenticationWithJwtToken(this IServiceCollection services, IConfiguration configuration)
+        {
+            var authOption = new AuthOptions(configuration);
+            services.AddSingleton(options => new AuthOptions(configuration));
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
+            });
+
+            services
+                .AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(
+                    options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.SaveToken = true;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = authOption?.Issuer,
+
+                            ValidateAudience = true,
+                            ValidAudience = authOption?.Audience,
+
+                            IssuerSigningKey = authOption?.GetSymmetricSecurityKey(),
+                            ValidateIssuerSigningKey = true
+                        };
+                    });
+        }
+
+        public static void AddAuthHttpClients(this IServiceCollection services)
+        {
+            services.AddHttpClient("authClient", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:44342/");
+            });
         }
     }
 }

@@ -28,10 +28,14 @@
                         @Html.ActionLink(linkText: _localizer["LinkCurator"].Value, actionName: "Index", controllerName: "Curator", null, htmlAttributes: new { @class = "nav-link text-white" })
                     </div>
 
-                    <div class="w-25">
-                        <form asp-action="Localize" asp-controller="Faculty" asp-route-returnUrl="@Context.Request.Path" method="post">
-                            <select asp-items="selectList" name="culture" onchange="this.form.submit()" class="custom-select"></select>
-                        </form>
+                    <div class="w-25 d-flex align-items-center justify-content-between">
+                        <div class="w-75">
+                            <form asp-action="Localize" asp-controller="Home" asp-route-returnUrl="@Context.Request.Path" method="post">
+                                <select asp-items="selectList" name="culture" onchange="this.form.submit()" class="custom-select"></select>
+                            </form>
+                        </div>
+                        
+                        @Html.ActionLink(linkText: "Login", actionName: "Login", controllerName: "Home", null, new { @class = "w-25 ml-5 btn btn-outline-primary" })
                     </div>
                 </div>
             </div>

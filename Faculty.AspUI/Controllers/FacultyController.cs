@@ -1,13 +1,10 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.AspUI.ViewModels.Faculty;
 using Faculty.BusinessLayer.Dto.Faculty;
-using Microsoft.AspNetCore.Localization;
 
 namespace Faculty.AspUI.Controllers
 {
@@ -97,13 +94,6 @@ namespace Faculty.AspUI.Controllers
             ViewBag.Groups = _groupService.GetAll();
             ViewBag.Students = _studentService.GetAll();
             ViewBag.Curators = _curatorService.GetAll();
-        }
-
-        [HttpPost]
-        public IActionResult Localize(string culture, string returnUrl)
-        {
-            Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)), new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) } );
-            return LocalRedirect(returnUrl);
         }
     }
 }
