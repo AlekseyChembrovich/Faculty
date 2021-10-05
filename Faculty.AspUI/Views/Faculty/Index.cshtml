@@ -1,0 +1,49 @@
+﻿@model IList<Faculty.AspUI.ViewModels.Faculty.FacultyDisplay>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Faculty - List";
+}
+
+<div class="container mb-3">
+    <form asp-action="Index" asp-controller="Faculty" method="get" class="d-flex flex-row align-items-center">
+        <label for="valueFilter" class="col-form-label">@_localizer["FilterLabel"].Value</label>
+        <input id="valueFilter" name="valueFilter" type="number" class="form-control ml-3 mr-3"/>
+        <input type="submit" value="@_localizer["BtnFilter"].Value" class="btn btn-primary"/>
+    </form>
+</div>
+
+<div class="container mb-3">
+    @Html.ActionLink(_localizer["BtnNew"].Value, "Create", "Faculty", null, new { @class = "btn btn-primary" })
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">@_localizer["ColumnNumber"].Value</th>
+        <th scope="col">@_localizer["ColumnStartDateEducation"].Value</th>
+        <th scope="col">@_localizer["ColumnCountYearEducation"].Value</th>
+        <th scope="col">@_localizer["ColumnGroup"].Value</th>
+        <th scope="col">@_localizer["ColumnCurator"].Value</th>
+        <th scope="col">@_localizer["ColumnStudent"].Value</th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+        @for (var i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>@Model[i].StartDateEducation.ToString("yyyy-MM-dd")</td>
+                <td>@Model[i].CountYearEducation</td>
+                <td>@Model[i].GroupName</td>
+                <td>@Model[i].CuratorSurname</td>
+                <td>@Model[i].StudentSurname</td>
+                <td>
+                    @Html.ActionLink(_localizer["BtnDelete"].Value, "Delete", "Faculty", new { id = Model[i].Id }, new { @class = "btn btn-primary mr-2", onclick = "ConfirmOperation()" })
+                    @Html.ActionLink(_localizer["BtnEdit"].Value, "Edit", "Faculty", new { id = Model[i].Id }, new { @class = "btn btn-primary" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

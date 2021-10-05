@@ -25,11 +25,11 @@ namespace Faculty.DataAccessLayer.Repository.Ado
             command.CommandText = "INSERT INTO dbo.Faculties (dbo.Faculties.StartDateEducation, dbo.Faculties.CountYearEducation, " +
                                   "dbo.Faculties.StudentId, dbo.Faculties.GroupId, dbo.Faculties.CuratorId) " +
                                   "VALUES (@date, @years, @studentId, @groupId, @curatorId);";
-            command.Parameters.AddWithValue("@date", entity.StartDateEducation?.ToShortDateString() is null ? DBNull.Value : entity.StartDateEducation);
-            command.Parameters.AddWithValue("@years", entity.CountYearEducation is null ? DBNull.Value : entity.CountYearEducation);
-            command.Parameters.AddWithValue("@studentId", entity.StudentId is null ? DBNull.Value : entity.StudentId);
-            command.Parameters.AddWithValue("@groupId", entity.GroupId is null ? DBNull.Value : entity.GroupId);
-            command.Parameters.AddWithValue("@curatorId", entity.CuratorId is null ? DBNull.Value : entity.CuratorId);
+            command.Parameters.AddWithValue("@date", entity.StartDateEducation);
+            command.Parameters.AddWithValue("@years", entity.CountYearEducation);
+            command.Parameters.AddWithValue("@studentId", entity.StudentId);
+            command.Parameters.AddWithValue("@groupId", entity.GroupId);
+            command.Parameters.AddWithValue("@curatorId", entity.CuratorId);
         }
 
         /// <summary>
@@ -42,11 +42,11 @@ namespace Faculty.DataAccessLayer.Repository.Ado
             command.CommandText = "UPDATE dbo.Faculties SET dbo.Faculties.StartDateEducation = @date, dbo.Faculties.CountYearEducation = @years, " +
                                   "dbo.Faculties.StudentId = @studentId, dbo.Faculties.GroupId = @curatorId, dbo.Faculties.CuratorId = @curatorId " +
                                   "WHERE dbo.Faculties.Id = @id;";
-            command.Parameters.AddWithValue("@date", entity.StartDateEducation?.ToShortDateString() is null ? DBNull.Value : entity.StartDateEducation);
-            command.Parameters.AddWithValue("@years", entity.CountYearEducation is null ? DBNull.Value : entity.CountYearEducation);
-            command.Parameters.AddWithValue("@studentId", entity.StudentId is null ? DBNull.Value : entity.StudentId);
-            command.Parameters.AddWithValue("@groupId", entity.GroupId is null ? DBNull.Value : entity.GroupId);
-            command.Parameters.AddWithValue("@curatorId", entity.CuratorId is null ? DBNull.Value : entity.CuratorId);
+            command.Parameters.AddWithValue("@date", entity.StartDateEducation);
+            command.Parameters.AddWithValue("@years", entity.CountYearEducation);
+            command.Parameters.AddWithValue("@studentId", entity.StudentId);
+            command.Parameters.AddWithValue("@groupId", entity.GroupId);
+            command.Parameters.AddWithValue("@curatorId", entity.CuratorId);
             command.Parameters.AddWithValue("@id", entity.Id);
         }
 
@@ -82,11 +82,11 @@ namespace Faculty.DataAccessLayer.Repository.Ado
                 var faculty = new Models.Faculty
                 {
                     Id = id,
-                    StartDateEducation = startDateEducation,
-                    CountYearEducation = countYearEducation,
-                    StudentId = studentId,
-                    GroupId = groupId,
-                    CuratorId = curatorId
+                    StartDateEducation = startDateEducation ?? DateTime.MinValue,
+                    CountYearEducation = countYearEducation ?? 0,
+                    StudentId = studentId ?? 0,
+                    GroupId = groupId ?? 0,
+                    CuratorId = curatorId ?? 0
                 };
 
                 faculties.Add(faculty);
@@ -121,11 +121,11 @@ namespace Faculty.DataAccessLayer.Repository.Ado
                 faculty = new Models.Faculty
                 {
                     Id = modelId,
-                    StartDateEducation = startDateEducation,
-                    CountYearEducation = countYearEducation,
-                    StudentId = studentId,
-                    GroupId = groupId,
-                    CuratorId = curatorId
+                    StartDateEducation = startDateEducation ?? DateTime.MinValue,
+                    CountYearEducation = countYearEducation ?? 0,
+                    StudentId = studentId ?? 0,
+                    GroupId = groupId ?? 0,
+                    CuratorId = curatorId ?? 0
                 };
             }
 

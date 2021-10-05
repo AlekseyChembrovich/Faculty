@@ -13,13 +13,13 @@ namespace Faculty.DataAccessLayer.Repository.EntityFramework
         /// <summary>
         /// Private field to store the database context for executing operations.
         /// </summary>
-        protected readonly DbContext Context;
+        protected readonly DatabaseContextEntityFramework Context;
 
         /// <summary>
         /// Constructor to initialize the database context.
         /// </summary>
         /// <param name="context">Database context.</param>
-        public BaseRepositoryEntityFramework(DbContext context)
+        public BaseRepositoryEntityFramework(DatabaseContextEntityFramework context)
         {
             Context = context;
         }
@@ -54,6 +54,7 @@ namespace Faculty.DataAccessLayer.Repository.EntityFramework
         public int Update(T entity)
         {
             if (entity is null) return 0;
+            Context.Entry(entity).State = EntityState.Detached;
             Context.Set<T>().Attach(entity);
             Context.Set<T>().Update(entity);
             try
@@ -98,7 +99,7 @@ namespace Faculty.DataAccessLayer.Repository.EntityFramework
         /// <returns>Lots of Entity objects returned.</returns>
         public IEnumerable<T> GetAll() 
         {
-            return Context.Set<T>().ToList();
+            return Context.Set<T>().AsNoTracking().AsEnumerable();
         }
 
         /// <summary>
@@ -108,7 +109,13 @@ namespace Faculty.DataAccessLayer.Repository.EntityFramework
         /// <returns>Entity object.</returns>
         public T GetById(int id)
         {
-            return Context.Set<T>().Find(id);
+            var entity = Context.Set<T>().Find(id);
+            if (entity is not null)
+            {
+                Context.Entry(entity).State = EntityState.Detached;
+            }
+
+            return entity;
         }
     }
 }

@@ -1,0 +1,56 @@
+﻿@model Faculty.AspUI.ViewModels.Curator.CuratorDisplayModify
+
+@{
+    ViewData["Title"] = "Curator - Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@_localizer["EditCaption"].Value</h1>
+<h4>@_localizer["CuratorCaption"].Value</h4>
+<hr/>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" asp-controller="Curator">
+            <div class="form-group">
+                <input type="hidden" asp-for="Id" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Surname">@_localizer["LabelSurname"].Value</label>
+                <input type="text" asp-for="Surname" class="form-control" />
+                <span asp-validation-for="Surname" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Name">@_localizer["LabelName"].Value</label>
+                <input type="text" asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Doublename">@_localizer["LabelDoublename"].Value</label>
+                <input type="text" asp-for="Doublename" class="form-control" />
+                <span asp-validation-for="Doublename" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Phone">@_localizer["LabelPhone"].Value</label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <input type="hidden" value="Edit" name="actionName"/>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="@_localizer["BtnSave"].Value" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">@_localizer["LinkBackToList"].Value</a>
+</div>

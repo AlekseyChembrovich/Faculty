@@ -1,0 +1,43 @@
+﻿@model Faculty.AspUI.ViewModels.Group.GroupModify
+
+@{
+    ViewData["Title"] = "Group - Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@_localizer["EditCaption"].Value</h1>
+<h4>@_localizer["GroupCaption"].Value</h4>
+<hr/>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" asp-controller="Group">
+            <div class="form-group">
+                <input asp-for="Id" type="hidden" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Name">@_localizer["LabelName"].Value</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SpecializationId">@_localizer["LabelSpecialization"].Value</label>
+                <select asp-for="SpecializationId" asp-items="@(new SelectList(ViewBag.Specializations, "Id", "Name"))" class="custom-select"></select>
+            </div>
+            
+            <div class="form-group">
+                <input type="hidden" value="Edit" name="actionName"/>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="@_localizer["BtnSave"].Value" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">@_localizer["LinkBackToList"].Value</a>
+</div>

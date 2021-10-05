@@ -1,0 +1,33 @@
+﻿@model IList<Faculty.AspUI.ViewModels.Specialization.SpecializationDisplayModify>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Specialization - List";
+}
+
+<div class="container mb-3">
+    @Html.ActionLink(_localizer["BtnNew"].Value, "Create", "Specialization", null, new { @class = "btn btn-primary" })
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">@_localizer["ColumnNumber"].Value</th>
+            <th scope="col">@_localizer["ColumnName"].Value</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (var i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>@Model[i].Name</td>
+                <td>
+                    @Html.ActionLink(_localizer["BtnDelete"].Value, "Delete", "Specialization", new { id = Model[i].Id }, new { @class = "btn btn-primary mr-2" })
+                    @Html.ActionLink(_localizer["BtnEdit"].Value, "Edit", "Specialization", new { id = Model[i].Id }, new { @class = "btn btn-primary" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

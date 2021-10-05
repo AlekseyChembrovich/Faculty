@@ -1,0 +1,59 @@
+﻿@model Faculty.AspUI.ViewModels.Faculty.FacultyModify
+
+@{
+    ViewData["Title"] = "Faculty - Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@_localizer["EditCaption"].Value</h1>
+<h4>@_localizer["FacultyCaption"].Value</h4>
+<hr/>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" asp-controller="Faculty">
+            <div class="form-group">
+                <input type="hidden" asp-for="Id" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StartDateEducation">@_localizer["LabelStartDateEducation"].Value</label>
+                <input asp-for="StartDateEducation" type="date" value="@Model.StartDateEducation?.ToString("yyyy-MM-dd")" asp-format="{0:dd/MM/yyyy}" class="form-control" />
+                <span asp-validation-for="StartDateEducation" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CountYearEducation">@_localizer["LabelCountYearEducation"].Value</label>
+                <input asp-for="CountYearEducation" class="form-control" />
+                <span asp-validation-for="CountYearEducation" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StudentId">@_localizer["SelectStudent"].Value</label>
+                <select asp-for="StudentId" asp-items="@(new SelectList(ViewBag.Students, "Id", "Surname"))" class="custom-select"></select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CuratorId">@_localizer["SelectCurator"].Value</label>
+                <select asp-for="CuratorId" asp-items="@(new SelectList(ViewBag.Curators, "Id", "Surname"))" class="custom-select"></select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="GroupId">@_localizer["SelectGroup"].Value</label>
+                <select asp-for="GroupId" asp-items="@(new SelectList(ViewBag.Groups, "Id", "Name"))" class="custom-select"></select>
+            </div>
+            
+            <div class="form-group">
+                <input type="hidden" value="Edit" name="actionName"/>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="@_localizer["BtnSave"].Value" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">@_localizer["LinkBackToList"].Value</a>
+</div>

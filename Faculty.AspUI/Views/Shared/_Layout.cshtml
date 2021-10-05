@@ -1,0 +1,57 @@
+﻿@{
+    var requestContext = Context.Features.Get<IRequestCultureFeature>();
+    var cultureContext = requestContext.RequestCulture.Culture;
+    var cultureItems = _localizationOptions.Value.SupportedUICultures.ToList();
+    var selectList = new SelectList(cultureItems, "Name", "NativeName", cultureContext);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <div class="collapse navbar-collapse d-flex align-items-center justify-content-between" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        @Html.ActionLink(linkText: _localizer["LinkFaculty"].Value, actionName: "Index", controllerName: "Faculty", null, new { @class = "navbar-brand h1 text-white" })
+                        @Html.ActionLink(linkText: _localizer["LinkGroup"].Value, actionName: "Index", controllerName: "Group", null, htmlAttributes: new { @class = "nav-link text-white" })
+                        @Html.ActionLink(linkText: _localizer["LinkSpecialization"].Value, actionName: "Index", controllerName: "Specialization", null, htmlAttributes: new { @class = "nav-link text-white" })
+                        @Html.ActionLink(linkText: _localizer["LinkStudent"].Value, actionName: "Index", controllerName: "Student", null, htmlAttributes: new { @class = "nav-link text-white" })
+                        @Html.ActionLink(linkText: _localizer["LinkCurator"].Value, actionName: "Index", controllerName: "Curator", null, htmlAttributes: new { @class = "nav-link text-white" })
+                    </div>
+
+                    <div class="w-25">
+                        <form asp-action="Localize" asp-controller="Faculty" asp-route-returnUrl="@Context.Request.Path" method="post">
+                            <select asp-items="selectList" name="culture" onchange="this.form.submit()" class="custom-select"></select>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3 pt-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2021 - FacultyWebApp
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

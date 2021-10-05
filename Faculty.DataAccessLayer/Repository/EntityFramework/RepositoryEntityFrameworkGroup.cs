@@ -12,7 +12,7 @@ namespace Faculty.DataAccessLayer.Repository.EntityFramework
         /// Constructor to initialize the database context.
         /// </summary>
         /// <param name="context">Database context.</param>
-        public RepositoryEntityFrameworkGroup(DbContext context) : base(context)
+        public RepositoryEntityFrameworkGroup(DatabaseContextEntityFramework context) : base(context)
         {
         }
 

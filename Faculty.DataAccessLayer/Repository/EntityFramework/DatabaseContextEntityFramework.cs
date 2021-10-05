@@ -41,7 +41,7 @@ namespace Faculty.DataAccessLayer.Repository.EntityFramework
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=DESKTOP-ALEKSEY\\SQLEXPRESS;Initial Catalog=MbTask;Integrated Security=True");
+                optionsBuilder.UseSqlServer("Data Source=DESKTOP-ALEKSEY\\SQLEXPRESS;Initial Catalog=Faculty;Integrated Security=True");
             }
         }
 
