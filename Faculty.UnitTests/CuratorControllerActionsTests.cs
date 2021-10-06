@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
 using Faculty.AspUI.ViewModels.Curator;
+using Faculty.AspUI.ViewModels.User;
 using Faculty.BusinessLayer.Dto.Curator;
 using Faculty.DataAccessLayer.Repository;
 
@@ -39,7 +40,7 @@ namespace Faculty.UnitTests
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            var models = Assert.IsAssignableFrom<IEnumerable<CuratorDisplayModify>>(viewResult.Model);
+            var models = Assert.IsAssignableFrom<IEnumerable<UserModify>>(viewResult.Model);
             Assert.Equal(3, models.Count());
             _mockRepositoryCurator.Verify(r => r.GetAll());
         }
@@ -161,8 +162,8 @@ namespace Faculty.UnitTests
         {
             // Arrange
             const int editModelId = 1;
-            var modelModify = new CuratorDisplayModify { Id = editModelId, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
-            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(modelModify);
+            var modelModify = new UserModify { Id = editModelId, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
+            var modelDto = _mapper.Map<UserModify, CuratorDisplayModifyDto>(modelModify);
             var model = _mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto);
             _mockRepositoryCurator.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
             var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);

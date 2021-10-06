@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -32,30 +33,28 @@ namespace Faculty.AuthenticationServer.Controllers
             if (identity == null) return BadRequest();
             var result = await _signInManager.CheckPasswordSignInAsync(identity, user.Password, false);
             if (result.Succeeded == false) return BadRequest();
-
             var claimsIdentity = GetIdentityClaims(identity);
-
             var now = DateTime.UtcNow;
             var jwt = new JwtSecurityToken(
                 issuer: _authOptions.Issuer,
                 audience: _authOptions.Audience,
                 notBefore: now,
                 claims: claimsIdentity.Claims,
-                expires: now.Add(TimeSpan.FromMinutes(_authOptions.Lifetime)),
+                expires: now.Add(TimeSpan.FromDays(_authOptions.Lifetime)),
                 signingCredentials: new SigningCredentials(_authOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-
             var token = new JwtSecurityTokenHandler().WriteToken(jwt);
             return Ok(token);
         }
 
         private ClaimsIdentity GetIdentityClaims(IdentityUser identity)
         {
-            var role = _userManager.GetRolesAsync(identity).Result[0];
+            var roles = _userManager.GetRolesAsync(identity).Result;
             var claims = new List<Claim>
             {
-                new (ClaimsIdentity.DefaultNameClaimType, identity.UserName),
-                new (ClaimsIdentity.DefaultRoleClaimType, role)
+                new (ClaimsIdentity.DefaultNameClaimType, identity.UserName)
             };
+
+            claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
             return new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
         }
 

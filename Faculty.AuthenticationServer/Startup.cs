@@ -27,7 +27,6 @@ namespace Faculty.AuthenticationServer
             services.AddIdentity<IdentityUser, IdentityRole>(
                 options =>
                 {
-                    options.User.RequireUniqueEmail = true;
                     options.Password.RequiredLength = 5;
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireLowercase = false;

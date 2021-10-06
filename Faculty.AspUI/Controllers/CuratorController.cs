@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Faculty.AspUI.ViewModels.Curator;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.BusinessLayer.Dto.Curator;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AspUI.Controllers
 {
@@ -20,6 +22,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var modelsDto = _curatorService.GetAll();
@@ -28,12 +31,14 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create(CuratorAdd model)
         {
             if (ModelState.IsValid == false) return View(model);
@@ -43,6 +48,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(int id)
         {
             var modelDto = _curatorService.GetById(id);
@@ -52,6 +58,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(CuratorDisplayModify model)
         {
             _curatorService.Delete(model.Id);
@@ -59,6 +66,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(int id)
         {
             var modelDto = _curatorService.GetById(id);
@@ -68,6 +76,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(CuratorDisplayModify model)
         {
             if (ModelState.IsValid == false) return View(model);

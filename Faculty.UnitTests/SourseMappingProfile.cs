@@ -9,6 +9,7 @@ using Faculty.BusinessLayer.Dto.Curator;
 using Faculty.BusinessLayer.Dto.Faculty;
 using Faculty.BusinessLayer.Dto.Student;
 using Faculty.AspUI.ViewModels.Specialization;
+using Faculty.AspUI.ViewModels.User;
 using Faculty.BusinessLayer.Dto.Specialization;
 
 namespace Faculty.UnitTests
@@ -108,9 +109,9 @@ namespace Faculty.UnitTests
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
                 .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename));
 
-            CreateMap<CuratorDisplayModifyDto, CuratorDisplayModify>();
-            CreateMap<CuratorDisplayModify, CuratorDisplayModifyDto>();
-            CreateMap<CuratorAdd, CuratorAddDto>();
+            CreateMap<CuratorDisplayModifyDto, UserModify>();
+            CreateMap<UserModify, CuratorDisplayModifyDto>();
+            CreateMap<UserAdd, CuratorAddDto>();
 
             CreateMap<FacultyDisplayDto, FacultyDisplay>();
             CreateMap<FacultyModifyDto, FacultyModify>();

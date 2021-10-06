@@ -3,8 +3,10 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Faculty.BusinessLayer.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Faculty.AspUI.ViewModels.Specialization;
 using Faculty.BusinessLayer.Dto.Specialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AspUI.Controllers
 {
@@ -20,6 +22,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var modelsDto = _specializationService.GetAll();
@@ -28,12 +31,14 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create(SpecializationAdd model)
         {
             if (ModelState.IsValid == false) return View(model);
@@ -43,6 +48,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(int id)
         {
             var modelDto = _specializationService.GetById(id);
@@ -52,6 +58,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(SpecializationDisplayModify model)
         {
             _specializationService.Delete(model.Id);
@@ -59,6 +66,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(int id)
         {
             var modelDto = _specializationService.GetById(id);
@@ -68,6 +76,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(SpecializationDisplayModify model)
         {
             if (ModelState.IsValid == false) return View(model);

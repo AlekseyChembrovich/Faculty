@@ -3,6 +3,7 @@ using System.Net;
 using AutoMapper;
 using System.Globalization;
 using System.Threading.Tasks;
+using Faculty.AspUI.Localization;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
 using Microsoft.IdentityModel.Tokens;
 using Faculty.BusinessLayer.Interfaces;
+using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Faculty.DataAccessLayer.Repository;
@@ -103,6 +105,7 @@ namespace Faculty.AspUI
                 options.SupportedUICultures = cultures;
             });
 
+            services.AddScoped<IStringLocalizer, ServerErrorLocalizer>();
             services.AddLocalization(options => options.ResourcesPath = "Resources");
         }
 
@@ -173,7 +176,7 @@ namespace Faculty.AspUI
 
         public static void AddAuthHttpClients(this IServiceCollection services)
         {
-            services.AddHttpClient("authClient", client =>
+            services.AddHttpClient("usersHttpClient", client =>
             {
                 client.BaseAddress = new Uri("https://localhost:44342/");
             });

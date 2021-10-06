@@ -7,8 +7,8 @@ namespace Faculty.AuthenticationServer
     {
         public static async Task InitializeAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
-            const string login = "Admin123456";
-            const string password = "Admin_123456";
+            const string login = "Admin12345";
+            const string password = "Admin12345";
             if (await roleManager.FindByNameAsync("administrator") == null)
             {
                 await roleManager.CreateAsync(new IdentityRole("administrator"));
@@ -23,7 +23,7 @@ namespace Faculty.AuthenticationServer
                 var result = await userManager.CreateAsync(admin, password);
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(admin, "administrator");
+                    await userManager.AddToRolesAsync(admin, new[] { "administrator", "employee" });
                 }
             }
         }

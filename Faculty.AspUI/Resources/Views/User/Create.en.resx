@@ -117,25 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ComparePassword" xml:space="preserve">
-    <value>Passwords must be equal.</value>
+  <data name="BtnCreate" xml:space="preserve">
+    <value>Create</value>
   </data>
-  <data name="ConfirmPasswordRequired" xml:space="preserve">
-    <value>Сonfirm password required.</value>
+  <data name="CreateCaption" xml:space="preserve">
+    <value>Create</value>
   </data>
-  <data name="LoginLength" xml:space="preserve">
-    <value>Login length must be between 10 and 30 characters.</value>
+  <data name="LabelLogin" xml:space="preserve">
+    <value>Login: </value>
   </data>
-  <data name="LoginRequired" xml:space="preserve">
-    <value>Login required.</value>
+  <data name="LabelPassword" xml:space="preserve">
+    <value>Password: </value>
   </data>
-  <data name="PasswordLength" xml:space="preserve">
-    <value>Password length must be between 8 and 50 characters.</value>
+  <data name="LabelRoles" xml:space="preserve">
+    <value>Roles: </value>
   </data>
-  <data name="PasswordRequired" xml:space="preserve">
-    <value>Password required.</value>
+  <data name="LinkBackToList" xml:space="preserve">
+    <value>Back to list</value>
   </data>
-  <data name="PasswordType" xml:space="preserve">
-    <value>Invalid password format.</value>
+  <data name="UserCaption" xml:space="preserve">
+    <value>User</value>
   </data>
 </root>

@@ -3,6 +3,8 @@
     var cultureContext = requestContext.RequestCulture.Culture;
     var cultureItems = _localizationOptions.Value.SupportedUICultures.ToList();
     var selectList = new SelectList(cultureItems, "Name", "NativeName", cultureContext);
+    var isAuth = Context.User.Identity?.IsAuthenticated ?? false;
+    var isAdmin = Context.User.IsInRole("administrator");
 }
 
 <!DOCTYPE html>
@@ -20,7 +22,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
                 <div class="collapse navbar-collapse d-flex align-items-center justify-content-between" id="navbarNavAltMarkup">
-                    <div class="navbar-nav">
+                    <div class="navbar-nav w-50">
                         @Html.ActionLink(linkText: _localizer["LinkFaculty"].Value, actionName: "Index", controllerName: "Faculty", null, new { @class = "navbar-brand h1 text-white" })
                         @Html.ActionLink(linkText: _localizer["LinkGroup"].Value, actionName: "Index", controllerName: "Group", null, htmlAttributes: new { @class = "nav-link text-white" })
                         @Html.ActionLink(linkText: _localizer["LinkSpecialization"].Value, actionName: "Index", controllerName: "Specialization", null, htmlAttributes: new { @class = "nav-link text-white" })
@@ -28,14 +30,31 @@
                         @Html.ActionLink(linkText: _localizer["LinkCurator"].Value, actionName: "Index", controllerName: "Curator", null, htmlAttributes: new { @class = "nav-link text-white" })
                     </div>
 
-                    <div class="w-25 d-flex align-items-center justify-content-between">
-                        <div class="w-75">
+                    <div class="w-50 d-flex align-items-center justify-content-center">
+                        @if (isAuth)
+                        {
+                            <h5 class="w-25 mr-5 text-white text-right">@_localizer["CaptionName"].Value<span class="badge bg-secondary">@Context.User.Identity?.Name</span></h5>
+                        }
+
+                        <div class="w-25">
                             <form asp-action="Localize" asp-controller="Home" asp-route-returnUrl="@Context.Request.Path" method="post">
                                 <select asp-items="selectList" name="culture" onchange="this.form.submit()" class="custom-select"></select>
                             </form>
                         </div>
-                        
-                        @Html.ActionLink(linkText: "Login", actionName: "Login", controllerName: "Home", null, new { @class = "w-25 ml-5 btn btn-outline-primary" })
+
+                        @if (isAuth)
+                        {
+                            @Html.ActionLink(linkText: _localizer["LinkLogout"].Value, actionName: "Logout", controllerName: "Home", null, new {@class = "w-25 ml-5 btn btn-outline-primary"})
+                        }
+                        else
+                        {
+                            @Html.ActionLink(linkText: _localizer["LinkLogin"].Value, actionName: "Login", controllerName: "Home", null, new {@class = "w-25 ml-5 btn btn-outline-primary"})
+                        }
+
+                        @if (isAdmin)
+                        {
+                            @Html.ActionLink(linkText: _localizer["LinkUsers"].Value, actionName: "Index", controllerName: "User", null, new {@class = "w-25 ml-5 btn btn-outline-primary"})
+                        }
                     </div>
                 </div>
             </div>

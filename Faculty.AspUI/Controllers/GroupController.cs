@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Faculty.AspUI.ViewModels.Group;
 using Faculty.BusinessLayer.Dto.Group;
 using Faculty.BusinessLayer.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AspUI.Controllers
 {
@@ -22,6 +24,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var modelsDto = _groupService.GetAll();
@@ -30,6 +33,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create()
         {
             FillViewBag();
@@ -37,6 +41,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create(GroupAdd model)
         {
             FillViewBag();
@@ -47,6 +52,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(int id)
         {
             var modelDto = _groupService.GetById(id);
@@ -57,6 +63,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(GroupModify model)
         {
             _groupService.Delete(model.Id);
@@ -64,6 +71,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(int id)
         {
             var modelDto = _groupService.GetById(id);
@@ -74,6 +82,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(GroupModify model)
         {
             FillViewBag();

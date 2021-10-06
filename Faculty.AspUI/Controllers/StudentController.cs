@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Faculty.AspUI.ViewModels.Student;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.BusinessLayer.Dto.Student;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AspUI.Controllers
 {
@@ -20,6 +22,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var modelsDto = _studentService.GetAll();
@@ -28,12 +31,14 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create(StudentAdd model)
         {
             if (ModelState.IsValid == false) return View(model);
@@ -43,6 +48,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(int id)
         {
             var modelDto = _studentService.GetById(id);
@@ -52,6 +58,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(StudentDisplayModify model)
         {
             _studentService.Delete(model.Id);
@@ -59,6 +66,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(int id)
         {
             var modelDto = _studentService.GetById(id);
@@ -68,6 +76,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(StudentDisplayModify model)
         {
             if (ModelState.IsValid == false) return View(model);

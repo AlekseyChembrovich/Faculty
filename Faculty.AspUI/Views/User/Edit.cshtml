@@ -1,0 +1,56 @@
+﻿@model Faculty.AspUI.ViewModels.User.UserModify
+
+@{
+    ViewData["Title"] = "User - Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@_localizer["EditCaption"].Value</h1>
+<h4>@_localizer["UserCaption"].Value</h4>
+<hr/>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" asp-controller="User">
+            <div class="form-group">
+                <input type="hidden" asp-for="Id" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Login" class="col-form-label">@_localizer["LabelLogin"].Value</label>
+                <input asp-for="Login" class="form-control"/>
+                <span asp-validation-for="Login" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Roles">@_localizer["LabelRoles"].Value</label>
+                <select asp-for="Roles" multiple class="custom-select">
+                    @foreach (var item in ViewBag.Roles)
+                    {
+                        if (Model?.Roles?.Contains(item) ?? false)
+                        {
+                            <option selected value="@item">@item</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="Roles" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="@_localizer["BtnSave"].Value" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" asp-controller="User">@_localizer["LinkBackToList"].Value</a>
+</div>

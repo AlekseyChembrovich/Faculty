@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CaptionName" xml:space="preserve">
+    <value>User name: </value>
+  </data>
   <data name="LinkCurator" xml:space="preserve">
     <value>Curators</value>
   </data>
@@ -126,10 +129,19 @@
   <data name="LinkGroup" xml:space="preserve">
     <value>Groups</value>
   </data>
+  <data name="LinkLogin" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="LinkLogout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
   <data name="LinkSpecialization" xml:space="preserve">
-    <value>Specializations</value>
+    <value>Specialization</value>
   </data>
   <data name="LinkStudent" xml:space="preserve">
     <value>Students</value>
+  </data>
+  <data name="LinkUsers" xml:space="preserve">
+    <value>Users</value>
   </data>
 </root>
