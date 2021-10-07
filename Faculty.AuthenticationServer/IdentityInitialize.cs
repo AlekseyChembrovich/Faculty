@@ -13,10 +13,12 @@ namespace Faculty.AuthenticationServer
             {
                 await roleManager.CreateAsync(new IdentityRole("administrator"));
             }
+
             if (await roleManager.FindByNameAsync("employee") == null)
             {
                 await roleManager.CreateAsync(new IdentityRole("employee"));
             }
+
             if (await userManager.FindByNameAsync(login) == null)
             {
                 var admin = new IdentityUser { UserName = login };

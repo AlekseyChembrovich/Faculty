@@ -2,12 +2,15 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Faculty.AuthenticationServer.Models.User;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AuthenticationServer.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
     public class UserController : Controller
     {
         private readonly UserManager<IdentityUser> _userManager;

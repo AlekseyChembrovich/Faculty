@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Faculty.AuthenticationServer.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AuthenticationServer
 {
@@ -21,6 +23,7 @@ namespace Faculty.AuthenticationServer
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var authOption = new AuthOptions(Configuration);
             services.AddSingleton(options => new AuthOptions(Configuration));
 
             services.AddDbContext<AuthContext>(option => option.UseSqlServer(Configuration.GetConnectionString("ConStr")));
@@ -33,6 +36,30 @@ namespace Faculty.AuthenticationServer
                     options.Password.RequireUppercase = false;
                     options.Password.RequireDigit = false;
                 }).AddEntityFrameworkStores<AuthContext>();
+
+            services
+                .AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(
+                    options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.SaveToken = true;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = authOption?.Issuer,
+
+                            ValidateAudience = true,
+                            ValidAudience = authOption?.Audience,
+
+                            IssuerSigningKey = authOption?.GetSymmetricSecurityKey(),
+                            ValidateIssuerSigningKey = true
+                        };
+                    });
 
             services.AddCors();
             services.AddControllers();

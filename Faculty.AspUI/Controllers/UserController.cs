@@ -1,10 +1,7 @@
-﻿using System.Text;
-using System.Linq;
-using Newtonsoft.Json;
-using System.Net.Http;
+﻿using System.Linq;
+using Faculty.AspUI.Services;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using Faculty.AspUI.ViewModels.User;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
@@ -16,22 +13,19 @@ namespace Faculty.AspUI.Controllers
     public class UserController : Controller
     {
         private readonly IStringLocalizer _stringLocalizer;
-        private readonly HttpClient _userClient;
+        private readonly UserService _userService;
 
-        public UserController(IHttpClientFactory clientFactory, IStringLocalizer stringLocalizer)
+        public UserController(UserService userService, IStringLocalizer stringLocalizer)
         {
             _stringLocalizer = stringLocalizer;
-            _userClient = clientFactory.CreateClient("usersHttpClient");
+            _userService = userService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var message = new HttpRequestMessage(HttpMethod.Get, "User/GetAll");
-            var response = await _userClient.SendAsync(message);
-            var usersJson = await response.Content.ReadAsStringAsync();
-            var usersDisplay = JsonConvert.DeserializeObject<IEnumerable<UserDisplay>>(usersJson);
-            return View(usersDisplay?.ToList());
+            var users = await _userService.GetAllUsers();
+            return View(users?.ToList());
         }
 
         [HttpGet]
@@ -46,7 +40,7 @@ namespace Faculty.AspUI.Controllers
         {
             await FillViewBag();
             if (ModelState.IsValid == false) return View(user);
-            var response = await _userClient.PostAsync("User/Create", new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json"));
+            var response = await _userService.CreateNewUser(user);
             if (response.IsSuccessStatusCode) return RedirectToAction("Index");
             ModelState.AddModelError("", _stringLocalizer["CommonError"]);
             return View(user);
@@ -55,20 +49,15 @@ namespace Faculty.AspUI.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(string id)
         {
-            var message = new HttpRequestMessage(HttpMethod.Get, $"User/Delete?id={id}");
-            _ = await _userClient.SendAsync(message);
+            await _userService.DeleteExistUser(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
-            var message = new HttpRequestMessage(HttpMethod.Get, $"User/GetById?id={id}");
-            var response = await _userClient.SendAsync(message);
-            var modelJson = await response.Content.ReadAsStringAsync();
-            var model = JsonConvert.DeserializeObject<UserModify>(modelJson);
             await FillViewBag();
-            return View(model);
+            return View(await _userService.FindByIdUser(id));
         }
 
         [HttpPost]
@@ -76,7 +65,7 @@ namespace Faculty.AspUI.Controllers
         {
             await FillViewBag();
             if (ModelState.IsValid == false) return View(user);
-            var response = await _userClient.PostAsync("User/Edit", new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json"));
+            var response = await _userService.EditExistUser(user);
             if (response.IsSuccessStatusCode) return RedirectToAction("Index");
             ModelState.AddModelError("", _stringLocalizer["CommonError"]);
             return View(user);
@@ -94,7 +83,7 @@ namespace Faculty.AspUI.Controllers
         {
             await FillViewBag();
             if (ModelState.IsValid == false) return View(user);
-            var response = await _userClient.PostAsync("User/EditPassword", new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json"));
+            var response = await _userService.EditPasswordExistUser(user);
             if (response.IsSuccessStatusCode) return RedirectToAction("Index");
             ModelState.AddModelError("", _stringLocalizer["CommonError"]);
             return View(user);
@@ -102,11 +91,7 @@ namespace Faculty.AspUI.Controllers
 
         public async Task FillViewBag()
         {
-            var message = new HttpRequestMessage(HttpMethod.Get, "User/GetRoles");
-            var response = await _userClient.SendAsync(message);
-            var modelJson = await response.Content.ReadAsStringAsync();
-            var namesRole = JsonConvert.DeserializeObject<IEnumerable<string>>(modelJson);
-            ViewBag.Roles = namesRole;
+            ViewBag.Roles = await _userService.GetAllRoles();
         }
     }
 }

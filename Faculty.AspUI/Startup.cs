@@ -3,6 +3,7 @@ using System.Net;
 using AutoMapper;
 using System.Globalization;
 using System.Threading.Tasks;
+using Faculty.AspUI.Services;
 using Faculty.AspUI.Localization;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
 using Microsoft.IdentityModel.Tokens;
+using Faculty.AspUI.HttpMessageHandler;
 using Faculty.BusinessLayer.Interfaces;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Localization;
@@ -38,9 +40,10 @@ namespace Faculty.AspUI
             services.AddControllersWithViews().AddDataAnnotationsLocalization().AddViewLocalization();
             services.AddAuthenticationWithJwtToken(Configuration);
             services.AddDatabaseContext(Configuration);
+            services.AddHttpContextAccessor();
             services.AddRequestLocalization();
             services.AddControllerServices();
-            services.AddAuthHttpClients();
+            services.AddUsersHttpClients();
             services.AddRepositories();
             services.AddMapper();
             services.AddCors();
@@ -48,16 +51,11 @@ namespace Faculty.AspUI
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RequestLocalizationOptions> localizationOptions)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
+            app.UseExceptionHandler("/Home/Error");
             app.UseCors(x => x.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             app.UseStaticFiles();
             app.UseRouting();
             app.UseCookiePolicy();
-            app.UseSession();
             app.Use(async (context, next) =>
             {
                 var token = context.Request.Cookies["access_token"];
@@ -144,11 +142,6 @@ namespace Faculty.AspUI
             var authOption = new AuthOptions(configuration);
             services.AddSingleton(options => new AuthOptions(configuration));
 
-            services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(60);
-            });
-
             services
                 .AddAuthentication(x =>
                 {
@@ -174,12 +167,15 @@ namespace Faculty.AspUI
                     });
         }
 
-        public static void AddAuthHttpClients(this IServiceCollection services)
+        public static void AddUsersHttpClients(this IServiceCollection services)
         {
+            services.AddTransient<AuthMessageHandler>();
             services.AddHttpClient("usersHttpClient", client =>
             {
                 client.BaseAddress = new Uri("https://localhost:44342/");
-            });
+            }).AddHttpMessageHandler<AuthMessageHandler>();
+
+            services.AddScoped<UserService>();
         }
     }
 }

@@ -109,9 +109,9 @@ namespace Faculty.UnitTests
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
                 .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename));
 
-            CreateMap<CuratorDisplayModifyDto, UserModify>();
-            CreateMap<UserModify, CuratorDisplayModifyDto>();
-            CreateMap<UserAdd, CuratorAddDto>();
+            CreateMap<CuratorDisplayModifyDto, CuratorDisplayModify>();
+            CreateMap<CuratorDisplayModify, CuratorDisplayModifyDto>();
+            CreateMap<CuratorAdd, CuratorAddDto>();
 
             CreateMap<FacultyDisplayDto, FacultyDisplay>();
             CreateMap<FacultyModifyDto, FacultyModify>();

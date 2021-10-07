@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Text;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Faculty.AspUI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -15,12 +13,12 @@ namespace Faculty.AspUI.Controllers
     public class HomeController : Controller
     {
         private readonly AuthOptions _authOptions;
-        private readonly IHttpClientFactory _clientFactory;
+        private readonly UserService _userService;
         private readonly IStringLocalizer _stringLocalizer;
 
-        public HomeController(IHttpClientFactory clientFactory, IStringLocalizer stringLocalizer, AuthOptions authOptions)
+        public HomeController(UserService userService, IStringLocalizer stringLocalizer, AuthOptions authOptions)
         {
-            _clientFactory = clientFactory;
+            _userService = userService;
             _authOptions = authOptions;
             _stringLocalizer = stringLocalizer;
         }
@@ -37,8 +35,7 @@ namespace Faculty.AspUI.Controllers
         public async Task<IActionResult> Login(LoginUser user)
         {
             if (ModelState.IsValid == false) return View(user);
-            var client = _clientFactory.CreateClient("usersHttpClient");
-            var response = await client.PostAsync("LoginRegister/Login", new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json"));
+            var response = await _userService.GetLoginResponse(user);
             if (response.IsSuccessStatusCode == false)
             {
                 ModelState.AddModelError("", _stringLocalizer["CommonError"]);
@@ -70,8 +67,7 @@ namespace Faculty.AspUI.Controllers
         public async Task<IActionResult> Register(RegisterUser user)
         {
             if (ModelState.IsValid == false) return View(user);
-            var client = _clientFactory.CreateClient("usersHttpClient");
-            var response = await client.PostAsync("LoginRegister/Register", new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json"));
+            var response = await _userService.GetRegisterResponse(user);
             if (response.IsSuccessStatusCode) return RedirectToAction("Login");
             ModelState.AddModelError("", _stringLocalizer["CommonError"]);
             return View(user);
@@ -84,6 +80,13 @@ namespace Faculty.AspUI.Controllers
             Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)), 
                 new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
             return LocalRedirect(returnUrl);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Error()
+        {
+            return View();
         }
     }
 }

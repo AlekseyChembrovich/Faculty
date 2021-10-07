@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using Faculty.AuthenticationServer.Models.LoginRegister;
 
 namespace Faculty.AuthenticationServer.Controllers
@@ -27,6 +28,7 @@ namespace Faculty.AuthenticationServer.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginUser user)
         {
             var identity = await _userManager.FindByNameAsync(user.Login);
@@ -59,6 +61,7 @@ namespace Faculty.AuthenticationServer.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterUser user)
         {
             var identity = new IdentityUser { UserName = user.Login };
