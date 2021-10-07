@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AspUI.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
     public class GroupController : Controller
     {
         private readonly IGroupService _groupService;
@@ -33,7 +34,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create()
         {
             FillViewBag();
@@ -41,7 +41,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create(GroupAdd model)
         {
             FillViewBag();
@@ -52,7 +51,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(int id)
         {
             var modelDto = _groupService.GetById(id);
@@ -63,7 +61,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(GroupModify model)
         {
             _groupService.Delete(model.Id);
@@ -71,7 +68,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(int id)
         {
             var modelDto = _groupService.GetById(id);
@@ -82,7 +78,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(GroupModify model)
         {
             FillViewBag();

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AspUI.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
     public class UserController : Controller
     {
         private readonly IStringLocalizer _stringLocalizer;
@@ -24,7 +25,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public async Task<IActionResult> Index()
         {
             var message = new HttpRequestMessage(HttpMethod.Get, "User/GetAll");
@@ -35,7 +35,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public async Task<IActionResult> Create()
         {
             await FillViewBag();
@@ -43,7 +42,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public async Task<IActionResult> Create(UserAdd user)
         {
             await FillViewBag();
@@ -55,7 +53,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public async Task<IActionResult> Delete(string id)
         {
             var message = new HttpRequestMessage(HttpMethod.Get, $"User/Delete?id={id}");
@@ -64,7 +61,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public async Task<IActionResult> Edit(string id)
         {
             var message = new HttpRequestMessage(HttpMethod.Get, $"User/GetById?id={id}");
@@ -76,7 +72,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public async Task<IActionResult> Edit(UserModify user)
         {
             await FillViewBag();
@@ -88,7 +83,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult EditPassword(string id)
         {
             var model = new EditPassUser { Id = id };
@@ -96,7 +90,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public async Task<IActionResult> EditPassword(EditPassUser user)
         {
             await FillViewBag();

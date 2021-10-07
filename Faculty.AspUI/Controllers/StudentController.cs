@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AspUI.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
     public class StudentController : Controller
     {
         private readonly IStudentService _studentService;
@@ -31,14 +32,12 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create(StudentAdd model)
         {
             if (ModelState.IsValid == false) return View(model);
@@ -48,7 +47,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(int id)
         {
             var modelDto = _studentService.GetById(id);
@@ -58,7 +56,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(StudentDisplayModify model)
         {
             _studentService.Delete(model.Id);
@@ -66,7 +63,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(int id)
         {
             var modelDto = _studentService.GetById(id);
@@ -76,7 +72,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(StudentDisplayModify model)
         {
             if (ModelState.IsValid == false) return View(model);

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AspUI.Controllers
 {
-    [Controller]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
     public class FacultyController : Controller
     {
         private readonly IFacultyService _facultyService;
@@ -39,7 +39,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create()
         {
             FillViewBag();
@@ -47,7 +46,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Create(FacultyAdd model)
         {
             FillViewBag();
@@ -58,7 +56,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(int id)
         {
             var modelDto = _facultyService.GetById(id);
@@ -69,7 +66,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Delete(FacultyModify model)
         {
             _facultyService.Delete(model.Id);
@@ -77,7 +73,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(int id)
         {
             var modelDto = _facultyService.GetById(id);
@@ -88,7 +83,6 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
         public IActionResult Edit(FacultyModify model)
         {
             FillViewBag();
