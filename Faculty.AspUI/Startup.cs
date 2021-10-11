@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
 using Microsoft.IdentityModel.Tokens;
-using Faculty.AspUI.HttpMessageHandler;
+using Faculty.AspUI.HttpMessageHandlers;
 using Faculty.BusinessLayer.Interfaces;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Localization;

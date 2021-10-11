@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Faculty.AspUI.HttpMessageHandler
+namespace Faculty.AspUI.HttpMessageHandlers
 {
     public class AuthMessageHandler : DelegatingHandler
     {

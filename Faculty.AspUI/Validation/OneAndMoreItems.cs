@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Faculty.AspUI.Validation
 {
-    public class OneAndMore : ValidationAttribute
+    public class OneAndMoreItems : ValidationAttribute
     {
         private readonly IStringLocalizer _stringLocalizer = new ServerErrorLocalizer();
 

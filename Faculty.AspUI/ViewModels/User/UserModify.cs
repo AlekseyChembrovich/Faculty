@@ -12,7 +12,7 @@ namespace Faculty.AspUI.ViewModels.User
         [StringLength(30, MinimumLength = 10, ErrorMessage = "LoginLength")]
         public string Login { get; set; }
 
-        [OneAndMore(ErrorMessage = "RoleOneAndMore")]
+        [OneAndMoreItems(ErrorMessage = "RoleOneAndMore")]
         public IList<string> Roles { get; set; }
     }
 }

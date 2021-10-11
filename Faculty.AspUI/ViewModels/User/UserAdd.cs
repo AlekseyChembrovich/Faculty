@@ -15,7 +15,7 @@ namespace Faculty.AspUI.ViewModels.User
         [StringLength(50, MinimumLength = 8, ErrorMessage = "PasswordLength")]
         public string Password { get; set; }
 
-        [OneAndMore(ErrorMessage = "RoleOneAndMore")]
+        [OneAndMoreItems(ErrorMessage = "RoleOneAndMore")]
         public IList<string> Roles { get; set; }
     }
 }

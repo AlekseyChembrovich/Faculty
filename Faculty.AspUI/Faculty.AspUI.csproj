@@ -16,8 +16,4 @@
     <ProjectReference Include="..\Faculty.DataAccessLayer\Faculty.DataAccessLayer.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Validation\" />
-  </ItemGroup>
-
 </Project>
