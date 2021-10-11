@@ -79,10 +79,9 @@ namespace Faculty.AuthenticationServer
             }
 
             app.UseCors(x => x
-                .SetIsOriginAllowed(origin => true)
+                .AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
+                .AllowAnyHeader());
 
             app.UseHttpsRedirection();
             app.UseRouting();

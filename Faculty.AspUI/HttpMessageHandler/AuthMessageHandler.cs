@@ -17,7 +17,7 @@ namespace Faculty.AspUI.HttpMessageHandler
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var token = _httpContextAccessor.HttpContext?.Request.Cookies["access_token"];
-            request.Headers.Add("Authorization", "Bearer " + token);
+            if (string.IsNullOrEmpty(token) == false) request.Headers.Add("Authorization", "Bearer " + token);
             var response = await base.SendAsync(request, cancellationToken);
             return response;
         }

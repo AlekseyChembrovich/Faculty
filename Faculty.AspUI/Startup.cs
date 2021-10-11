@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Faculty.AspUI.Services;
 using Faculty.AspUI.Localization;
-using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
@@ -72,6 +71,10 @@ namespace Faculty.AspUI
                 if (response.StatusCode is (int)HttpStatusCode.Unauthorized or (int)HttpStatusCode.Forbidden)
                 {
                     response.Redirect("/Home/Login");
+                }
+                else if (response.StatusCode >= 400)
+                {
+                    response.Redirect("/Home/Error");
                 }
                 return Task.CompletedTask;
             });

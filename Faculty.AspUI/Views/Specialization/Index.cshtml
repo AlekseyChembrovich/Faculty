@@ -11,10 +11,6 @@
     {
         @Html.ActionLink(_localizer["BtnNew"].Value, "Create", "Specialization", null, new { @class = "btn btn-primary" })
     }
-    else
-    {
-        <p disabled="disabled" class="btn btn-primary disabled">@_localizer["BtnNew"].Value</p>
-    }
 </div>
 
 <table class="table">
@@ -36,11 +32,6 @@
                     {
                         @Html.ActionLink(_localizer["BtnDelete"].Value, "Delete", "Specialization", new {id = Model[i].Id}, new {@class = "btn btn-primary mr-2"})
                         @Html.ActionLink(_localizer["BtnEdit"].Value, "Edit", "Specialization", new {id = Model[i].Id}, new {@class = "btn btn-primary"})
-                    }
-                    else
-                    {
-                        <p disabled="disabled" class="btn btn-primary disabled">@_localizer["BtnDelete"].Value</p>
-                        <p disabled="disabled" class="btn btn-primary disabled">@_localizer["BtnEdit"].Value</p>
                     }
                 </td>
             </tr>
