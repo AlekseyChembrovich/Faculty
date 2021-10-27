@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Faculty.AuthenticationServer.Models.LoginRegister;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AuthenticationServer.Controllers
 {
@@ -57,7 +58,7 @@ namespace Faculty.AuthenticationServer.Controllers
             };
 
             claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
-            return new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+            return new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme, ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
         }
 
         [HttpPost]

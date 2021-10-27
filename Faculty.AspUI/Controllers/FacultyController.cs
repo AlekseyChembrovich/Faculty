@@ -6,11 +6,11 @@ using Faculty.BusinessLayer.Interfaces;
 using Faculty.AspUI.ViewModels.Faculty;
 using Faculty.BusinessLayer.Dto.Faculty;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Faculty.AspUI.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "administrator")]
     public class FacultyController : Controller
     {
         private readonly IFacultyService _facultyService;

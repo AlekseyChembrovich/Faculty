@@ -6,11 +6,11 @@ using Faculty.AspUI.ViewModels.Group;
 using Faculty.BusinessLayer.Dto.Group;
 using Faculty.BusinessLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Faculty.AspUI.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "administrator")]
     public class GroupController : Controller
     {
         private readonly IGroupService _groupService;

@@ -101,7 +101,7 @@ namespace Faculty.AuthenticationServer
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the Bearer scheme",
+                    Description = "JWT Authorization header using the Bearer scheme (Value template: \"Bearer ****\")",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
