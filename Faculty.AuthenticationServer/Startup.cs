@@ -60,7 +60,7 @@ namespace Faculty.AuthenticationServer
         public static void AddDatabaseContext(this IServiceCollection services, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("ConStr");
-            services.AddDbContext<AuthContext>(option => option.UseSqlServer(connectionString));
+            services.AddDbContext<CustomIdentityContext>(option => option.UseSqlServer(connectionString));
         }
 
         public static void AddAuthenticationWithJwtToken(this IServiceCollection services, IConfiguration configuration)
@@ -128,7 +128,7 @@ namespace Faculty.AuthenticationServer
 
         public static void AddIdentityWithInstalledConfiguration(this IServiceCollection services)
         {
-            services.AddIdentity<IdentityUser, IdentityRole>(
+            services.AddIdentity<CustomUser, IdentityRole>(
                 options =>
                 {
                     options.Password.RequiredLength = 5;
@@ -136,7 +136,7 @@ namespace Faculty.AuthenticationServer
                     options.Password.RequireLowercase = false;
                     options.Password.RequireUppercase = false;
                     options.Password.RequireDigit = false;
-                }).AddEntityFrameworkStores<AuthContext>();
+                }).AddEntityFrameworkStores<CustomIdentityContext>();
         }
     }
 }

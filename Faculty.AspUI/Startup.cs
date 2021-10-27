@@ -138,6 +138,7 @@ namespace Faculty.AspUI
                 {
                     options.LoginPath = new PathString("/Home/Login");
                     options.LogoutPath = new PathString("/Home/Logout");
+                    options.AccessDeniedPath = new PathString("/Home/Login");
                     options.ExpireTimeSpan = TimeSpan.FromDays(authOption.Lifetime);
                 });
         }
@@ -187,9 +188,9 @@ namespace Faculty.AspUI
 
         public static void AddUsersHttpClients(this IServiceCollection services, IConfiguration configuration)
         {
-            var url = configuration.GetSection("Url").GetValue(typeof(string), "UsersHttpClient").ToString();
+            var url = configuration["Url:AuthHttpClient"];
             services.AddTransient<AuthMessageHandler>();
-            services.AddHttpClient("UsersHttpClient", client =>
+            services.AddHttpClient("AuthHttpClient", client =>
             {
                 client.BaseAddress = new Uri(url ?? string.Empty);
             }).AddHttpMessageHandler<AuthMessageHandler>();

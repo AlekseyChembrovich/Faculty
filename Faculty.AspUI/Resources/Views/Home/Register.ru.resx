@@ -129,6 +129,9 @@
   <data name="ConfirmPasswordRequired" xml:space="preserve">
     <value>Требуется подтвердить пароль.</value>
   </data>
+  <data name="LabelBirthday" xml:space="preserve">
+    <value>Дата рождения: </value>
+  </data>
   <data name="LabelLogin" xml:space="preserve">
     <value>Имя пользователя: </value>
   </data>

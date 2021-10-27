@@ -123,6 +123,9 @@
   <data name="ConfirmPasswordRequired" xml:space="preserve">
     <value>Требуется подтвердить пароль.</value>
   </data>
+  <data name="DateRequired" xml:space="preserve">
+    <value>Требуется дата.</value>
+  </data>
   <data name="LoginLength" xml:space="preserve">
     <value>Длина имени должна быть от 10 до 30 символов.</value>
   </data>

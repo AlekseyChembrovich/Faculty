@@ -123,6 +123,9 @@
   <data name="ConfirmPasswordRequired" xml:space="preserve">
     <value>Сonfirm password required.</value>
   </data>
+  <data name="DateRequired" xml:space="preserve">
+    <value>Date is required.</value>
+  </data>
   <data name="LoginLength" xml:space="preserve">
     <value>Login length must be between 10 and 30 characters.</value>
   </data>

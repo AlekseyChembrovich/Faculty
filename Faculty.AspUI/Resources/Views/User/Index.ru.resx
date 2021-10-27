@@ -129,6 +129,9 @@
   <data name="BtnNew" xml:space="preserve">
     <value>Новый</value>
   </data>
+  <data name="ColumnBirthday" xml:space="preserve">
+    <value>Дата рождения</value>
+  </data>
   <data name="ColumnLogin" xml:space="preserve">
     <value>Логин</value>
   </data>

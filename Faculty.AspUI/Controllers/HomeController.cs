@@ -56,7 +56,11 @@ namespace Faculty.AspUI.Controllers
                     IsPersistent = true,
                     ExpiresUtc = DateTime.UtcNow.AddDays(_authOptions.Lifetime)
                 });
-                HttpContext.Response.Cookies.Append("access_token", result);
+
+                HttpContext.Response.Cookies.Append("access_token", result, new CookieOptions
+                {
+                    Expires = DateTime.UtcNow.AddDays(_authOptions.Lifetime)
+                });
                 return RedirectToAction("Index", "Faculty");
             }
 

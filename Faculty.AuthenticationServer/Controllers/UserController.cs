@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Faculty.AuthenticationServer.Models;
 using Faculty.AuthenticationServer.Models.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
@@ -13,12 +14,12 @@ namespace Faculty.AuthenticationServer.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
     public class UserController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<CustomUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IPasswordValidator<IdentityUser> _passwordValidator;
-        private readonly IPasswordHasher<IdentityUser> _passwordHasher;
+        private readonly IPasswordValidator<CustomUser> _passwordValidator;
+        private readonly IPasswordHasher<CustomUser> _passwordHasher;
 
-        public UserController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IPasswordValidator<IdentityUser> passwordValidator, IPasswordHasher<IdentityUser> passwordHasher, AuthOptions authOptions)
+        public UserController(UserManager<CustomUser> userManager, RoleManager<IdentityRole> roleManager, IPasswordValidator<CustomUser> passwordValidator, IPasswordHasher<CustomUser> passwordHasher, AuthOptions authOptions)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -34,7 +35,8 @@ namespace Faculty.AuthenticationServer.Controllers
             {
                 Id = user.Id,
                 Login = user.UserName,
-                Roles = _userManager.GetRolesAsync(user).Result
+                Roles = _userManager.GetRolesAsync(user).Result,
+                Birthday = user.Birthday
             }).ToList();
 
             return Json(usersDisplay);
@@ -48,7 +50,8 @@ namespace Faculty.AuthenticationServer.Controllers
             {
                 Id = identity.Id,
                 Login = identity.UserName,
-                Roles = _userManager.GetRolesAsync(identity).Result
+                Roles = _userManager.GetRolesAsync(identity).Result,
+                Birthday = identity.Birthday
             };
 
             return Json(model);
@@ -57,7 +60,7 @@ namespace Faculty.AuthenticationServer.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(UserAdd model)
         {
-            var identity = new IdentityUser { UserName = model.Login };
+            var identity = new CustomUser { UserName = model.Login, Birthday = model.Birthday };
             var result = await _userManager.CreateAsync(identity, model.Password);
             if (result.Succeeded == false) return BadRequest();
             await _userManager.AddToRolesAsync(identity, model.Roles);
@@ -78,6 +81,7 @@ namespace Faculty.AuthenticationServer.Controllers
         {
             var identity = await _userManager.FindByIdAsync(model.Id);
             identity.UserName = model.Login;
+            identity.Birthday = model.Birthday;
             var roles = await _userManager.GetRolesAsync(identity);
             var resultRemove = await _userManager.RemoveFromRolesAsync(identity, roles);
             if (resultRemove.Succeeded == false) return BadRequest();

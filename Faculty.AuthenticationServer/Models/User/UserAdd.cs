@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Faculty.AuthenticationServer.Models.User
 {
@@ -9,5 +10,7 @@ namespace Faculty.AuthenticationServer.Models.User
         public string Password { get; set; }
 
         public IList<string> Roles { get; set; }
+
+        public DateTime Birthday { get; set; }
     }
 }

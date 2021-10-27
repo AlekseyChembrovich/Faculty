@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
+using Faculty.AuthenticationServer.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace Faculty.AuthenticationServer
 {
     public class IdentityInitialize
     {
-        public static async Task InitializeAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task InitializeAsync(UserManager<CustomUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             const string login = "Admin12345";
             const string password = "Admin12345";
@@ -21,7 +22,7 @@ namespace Faculty.AuthenticationServer
 
             if (await userManager.FindByNameAsync(login) == null)
             {
-                var admin = new IdentityUser { UserName = login };
+                var admin = new CustomUser { UserName = login };
                 var result = await userManager.CreateAsync(admin, password);
                 if (result.Succeeded)
                 {

@@ -8,20 +8,22 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
-using Faculty.AuthenticationServer.Models.LoginRegister;
+using Faculty.AuthenticationServer.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Faculty.AuthenticationServer.Models.LoginRegister;
+
 
 namespace Faculty.AuthenticationServer.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class LoginRegisterController : Controller
+    public class AuthController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<CustomUser> _userManager;
+        private readonly SignInManager<CustomUser> _signInManager;
         private readonly AuthOptions _authOptions;
 
-        public LoginRegisterController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, AuthOptions authOptions)
+        public AuthController(UserManager<CustomUser> userManager, SignInManager<CustomUser> signInManager, AuthOptions authOptions)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -49,7 +51,7 @@ namespace Faculty.AuthenticationServer.Controllers
             return Ok(token);
         }
 
-        private ClaimsIdentity GetIdentityClaims(IdentityUser identity)
+        private ClaimsIdentity GetIdentityClaims(CustomUser identity)
         {
             var roles = _userManager.GetRolesAsync(identity).Result;
             var claims = new List<Claim>
@@ -65,7 +67,7 @@ namespace Faculty.AuthenticationServer.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterUser user)
         {
-            var identity = new IdentityUser { UserName = user.Login };
+            var identity = new CustomUser { UserName = user.Login, Birthday = user.Birthday };
             var result = await _userManager.CreateAsync(identity, user.Password);
             if (result.Succeeded == false)
             {

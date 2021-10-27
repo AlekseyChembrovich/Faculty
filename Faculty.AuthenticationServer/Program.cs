@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Faculty.AuthenticationServer.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -18,7 +19,7 @@ namespace Faculty.AuthenticationServer
                 var services = scope.ServiceProvider;
                 try
                 {
-                    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+                    var userManager = services.GetRequiredService<UserManager<CustomUser>>();
                     var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                     await IdentityInitialize.InitializeAsync(userManager, rolesManager);
                 }

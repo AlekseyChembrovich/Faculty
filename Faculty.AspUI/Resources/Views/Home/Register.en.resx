@@ -129,6 +129,9 @@
   <data name="ConfirmPasswordRequired" xml:space="preserve">
     <value>Сonfirm password required.</value>
   </data>
+  <data name="LabelBirthday" xml:space="preserve">
+    <value>Birthday: </value>
+  </data>
   <data name="LabelLogin" xml:space="preserve">
     <value>Login: </value>
   </data>

@@ -57,7 +57,8 @@ namespace Faculty.AspUI.Controllers
         public async Task<IActionResult> Edit(string id)
         {
             await FillViewBag();
-            return View(await _userService.FindByIdUser(id));
+            var model = await _userService.FindByIdUser(id);
+            return View(model);
         }
 
         [HttpPost]

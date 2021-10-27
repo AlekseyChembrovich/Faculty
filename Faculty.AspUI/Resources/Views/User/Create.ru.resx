@@ -123,6 +123,9 @@
   <data name="CreateCaption" xml:space="preserve">
     <value>Создание</value>
   </data>
+  <data name="LabelBirthday" xml:space="preserve">
+    <value>Дата рождения: </value>
+  </data>
   <data name="LabelLogin" xml:space="preserve">
     <value>Логин: </value>
   </data>

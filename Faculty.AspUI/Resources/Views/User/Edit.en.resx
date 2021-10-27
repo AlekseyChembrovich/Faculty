@@ -123,6 +123,9 @@
   <data name="EditCaption" xml:space="preserve">
     <value>Edit</value>
   </data>
+  <data name="LabelBirthday" xml:space="preserve">
+    <value>Birthday: </value>
+  </data>
   <data name="LabelLogin" xml:space="preserve">
     <value>Login: </value>
   </data>

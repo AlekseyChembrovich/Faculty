@@ -14,7 +14,7 @@ namespace Faculty.AspUI.Services
 
         public UserService(IHttpClientFactory clientFactory)
         {
-            _userClient = clientFactory.CreateClient("UsersHttpClient");
+            _userClient = clientFactory.CreateClient("AuthHttpClient");
         }
 
         public async Task<IEnumerable<UserDisplay>> GetAllUsers()
@@ -50,9 +50,9 @@ namespace Faculty.AspUI.Services
             return namesRole;
         }
 
-        public async Task<HttpResponseMessage> GetLoginResponse(LoginUser loginUser) => await SendPost("LoginRegister/Login", loginUser);
+        public async Task<HttpResponseMessage> GetLoginResponse(LoginUser loginUser) => await SendPost("Auth/Login", loginUser);
 
-        public async Task<HttpResponseMessage> GetRegisterResponse(RegisterUser registerUser) => await SendPost("LoginRegister/Register", registerUser);
+        public async Task<HttpResponseMessage> GetRegisterResponse(RegisterUser registerUser) => await SendPost("Auth/Register", registerUser);
 
         private async Task<HttpResponseMessage> SendGet(string url, string id = null)
         {

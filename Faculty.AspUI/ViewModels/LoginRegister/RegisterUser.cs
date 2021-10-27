@@ -19,5 +19,8 @@ namespace Faculty.AspUI.ViewModels.LoginRegister
         [DataType(DataType.Password, ErrorMessage = "PasswordType")]
         [field: NonSerialized]
         public string PasswordConfirm { get; set; }
+
+        [Required(ErrorMessage = "DateRequired")]
+        public DateTime? Birthday { get; set; }
     }
 }
