@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Faculty.AspUI.ViewModels.LoginRegister;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AspUI.Controllers
 {
@@ -43,15 +44,15 @@ namespace Faculty.AspUI.Controllers
             }
 
             var result = await response.Content.ReadAsStringAsync();
-            HttpContext.Response.Cookies.Append("access_token", result, new CookieOptions { HttpOnly = true, Secure = true, Expires = DateTime.Now.AddDays(_authOptions.Lifetime) });
+            HttpContext.Response.Cookies.Append("access_token", result, new CookieOptions { Expires = DateTime.Now.AddDays(_authOptions.Lifetime) });
             return RedirectToAction("Index", "Faculty");
         }
 
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator,employee")]
         public IActionResult Logout()
         {
-            HttpContext.Response.Cookies.Append("access_token", "", new CookieOptions { HttpOnly = true, Secure = true, Expires = DateTime.Now.AddDays(_authOptions.Lifetime) });
+            HttpContext.Response.Cookies.Append("access_token", string.Empty, new CookieOptions { Expires = DateTime.Now.AddDays(_authOptions.Lifetime) });
             return RedirectToAction("Index", "Faculty");
         }
 

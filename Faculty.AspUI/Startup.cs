@@ -4,7 +4,9 @@ using AutoMapper;
 using System.Globalization;
 using System.Threading.Tasks;
 using Faculty.AspUI.Services;
+using Microsoft.AspNetCore.Http;
 using Faculty.AspUI.Localization;
+using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
@@ -12,10 +14,11 @@ using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
 using Microsoft.IdentityModel.Tokens;
-using Faculty.AspUI.HttpMessageHandlers;
 using Faculty.BusinessLayer.Interfaces;
+using Faculty.AspUI.HttpMessageHandlers;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.Configuration;
 using Faculty.DataAccessLayer.Repository;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,7 +45,7 @@ namespace Faculty.AspUI
             services.AddHttpContextAccessor();
             services.AddRequestLocalization();
             services.AddControllerServices();
-            services.AddUsersHttpClients();
+            services.AddUsersHttpClients(Configuration);
             services.AddRepositories();
             services.AddMapper();
             services.AddCors();
@@ -51,37 +54,20 @@ namespace Faculty.AspUI
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RequestLocalizationOptions> localizationOptions)
         {
             app.UseExceptionHandler("/Home/Error");
-            app.UseCors(x => x.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseCookiePolicy();
-            app.Use(async (context, next) =>
-            {
-                var token = context.Request.Cookies["access_token"];
-                if (!string.IsNullOrEmpty(token))
-                {
-                    context.Request.Headers.Add("Authorization", "Bearer " + token);
-                }
-                await next();
-            });
-
-            app.UseStatusCodePages(context =>
-            {
-                var response = context.HttpContext.Response;
-                if (response.StatusCode is (int)HttpStatusCode.Unauthorized or (int)HttpStatusCode.Forbidden)
-                {
-                    response.Redirect("/Home/Login");
-                }
-                else if (response.StatusCode >= 400)
-                {
-                    response.Redirect("/Home/Error");
-                }
-                return Task.CompletedTask;
-            });
-
+            app.UseCors(x => x.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+            app.UseRedirectionForAuthorizationErrors(Configuration);
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseRequestLocalization(localizationOptions.Value);
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict,
+                HttpOnly = HttpOnlyPolicy.Always,
+                Secure = CookieSecurePolicy.Always
+            });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(null, "{controller=Faculty}/{action=Index}/{id?}");
@@ -112,7 +98,7 @@ namespace Faculty.AspUI
 
         public static void AddDatabaseContext(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetSection("ConnectionString").GetValue(typeof(string), "ConStr").ToString();
+            var connectionString = configuration.GetSection("ConnectionString").GetValue(typeof(string), "ConStr")?.ToString() ?? string.Empty;
             services.AddDbContext<DatabaseContextEntityFramework>(option => option.UseSqlServer(connectionString));
         }
 
@@ -144,6 +130,15 @@ namespace Faculty.AspUI
         {
             var authOption = new AuthOptions(configuration);
             services.AddSingleton(options => new AuthOptions(configuration));
+            var validationParams = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = authOption?.Issuer,
+                ValidateAudience = true,
+                ValidAudience = authOption?.Audience,
+                IssuerSigningKey = authOption?.GetSymmetricSecurityKey(),
+                ValidateIssuerSigningKey = true
+            };
 
             services
                 .AddAuthentication(x =>
@@ -156,29 +151,62 @@ namespace Faculty.AspUI
                     {
                         options.RequireHttpsMetadata = false;
                         options.SaveToken = true;
-                        options.TokenValidationParameters = new TokenValidationParameters
+                        options.TokenValidationParameters = validationParams;
+                        options.Events = new JwtBearerEvents
                         {
-                            ValidateIssuer = true,
-                            ValidIssuer = authOption?.Issuer,
+                            OnMessageReceived = (context) =>
+                            {
+                                var token = context.HttpContext.Request.Cookies["access_token"];
+                                if (string.IsNullOrEmpty(token) == false)
+                                {
+                                    context.Token = token;
+                                }
 
-                            ValidateAudience = true,
-                            ValidAudience = authOption?.Audience,
-
-                            IssuerSigningKey = authOption?.GetSymmetricSecurityKey(),
-                            ValidateIssuerSigningKey = true
+                                return Task.CompletedTask;
+                            }
                         };
-                    });
+                    }
+                );
         }
 
-        public static void AddUsersHttpClients(this IServiceCollection services)
+        public static void AddUsersHttpClients(this IServiceCollection services, IConfiguration configuration)
         {
+            var url = configuration.GetSection("Url").GetValue(typeof(string), "UsersHttpClient").ToString();
             services.AddTransient<AuthMessageHandler>();
-            services.AddHttpClient("usersHttpClient", client =>
+            services.AddHttpClient("UsersHttpClient", client =>
             {
-                client.BaseAddress = new Uri("https://localhost:44342/");
+                client.BaseAddress = new Uri(url ?? string.Empty);
             }).AddHttpMessageHandler<AuthMessageHandler>();
 
             services.AddScoped<UserService>();
+        }
+    }
+
+    public static class ApplicationBuilderExtension
+    {
+        public static void UseRedirectionForAuthorizationErrors(this IApplicationBuilder app, IConfiguration configuration)
+        {
+            app.UseStatusCodePages(context =>
+            {
+                var response = context.HttpContext.Response;
+                switch (response.StatusCode)
+                {
+                    case (int)HttpStatusCode.Unauthorized or (int)HttpStatusCode.Forbidden:
+                    {
+                        var urlLogin = configuration.GetSection("Url").GetValue(typeof(string), "Login").ToString();
+                        response.Redirect(urlLogin ?? string.Empty);
+                    }
+                        break;
+                    case >= 400:
+                    {
+                        var urlRedirect = configuration.GetSection("RedirectError").GetValue(typeof(string), "RedirectError").ToString();
+                        response.Redirect(urlRedirect ?? string.Empty);
+                    }
+                        break;
+                }
+
+                return Task.CompletedTask;
+            });
         }
     }
 }

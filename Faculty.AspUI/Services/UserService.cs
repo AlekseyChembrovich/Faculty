@@ -14,7 +14,7 @@ namespace Faculty.AspUI.Services
 
         public UserService(IHttpClientFactory clientFactory)
         {
-            _userClient = clientFactory.CreateClient("usersHttpClient");
+            _userClient = clientFactory.CreateClient("UsersHttpClient");
         }
 
         public async Task<IEnumerable<UserDisplay>> GetAllUsers()
