@@ -47,7 +47,11 @@
             
             <div class="form-group">
                 <label asp-for="Birthday" class="col-form-label">@_localizer["LabelBirthday"].Value</label>
-                <input asp-for="Birthday" type="date" value="@Model?.Birthday?.ToString("yyyy-MM-dd")" asp-format="{0:dd/MM/yyyy}" class="form-control"/>
+                <input asp-for="Birthday" type="date" 
+                       value="@(Model?.Birthday?.ToString("yyyy-MM-dd"))" 
+                       min="@(DateTime.Now.AddYears(-100).ToString("yyyy-MM-dd"))"
+                       max="@(DateTime.Now.ToString("yyyy-MM-dd"))" 
+                       asp-format="{0:dd/MM/yyyy}" class="form-control"/>
                 <span asp-validation-for="Birthday" class="text-danger"></span>
             </div>
 

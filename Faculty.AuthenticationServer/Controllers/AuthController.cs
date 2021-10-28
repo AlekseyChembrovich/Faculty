@@ -67,7 +67,7 @@ namespace Faculty.AuthenticationServer.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterUser user)
         {
-            var identity = new CustomUser { UserName = user.Login, Birthday = user.Birthday };
+            var identity = new CustomUser { UserName = user.Login };
             var result = await _userManager.CreateAsync(identity, user.Password);
             if (result.Succeeded == false)
             {
