@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Faculty.AuthenticationServer.Models;
+using Faculty.AuthenticationServer.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
@@ -14,21 +16,22 @@ namespace Faculty.AuthenticationServer
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDatabaseContext(Configuration);
-            services.AddIdentityWithInstalledConfiguration();
+            services.AddIdentityConfiguration();
             services.AddAuthenticationWithJwtToken(Configuration);
-            services.AddCors();
+            services.AddAuthorizationWithRole();
+            services.AddSwaggerConfiguration();
             services.AddControllers();
-            services.AddSwaggerWithInstalledConfiguration();
+            services.AddCors();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -45,7 +48,8 @@ namespace Faculty.AuthenticationServer
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader());
+                .AllowAnyHeader()
+            );
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
@@ -67,11 +71,7 @@ namespace Faculty.AuthenticationServer
         {
             var authOption = new AuthOptions(configuration);
             services.AddSingleton(options => new AuthOptions(configuration));
-            services.AddAuthentication(x =>
-                {
-                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(
                     options =>
                     {
@@ -89,7 +89,23 @@ namespace Faculty.AuthenticationServer
                     });
         }
 
-        public static void AddSwaggerWithInstalledConfiguration(this IServiceCollection services)
+        public static void AddAuthorizationWithRole(this IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Administrator", builder =>
+                {
+                    builder.RequireClaim(ClaimTypes.Role, "administrator");
+                });
+
+                options.AddPolicy("Employee", builder =>
+                {
+                    builder.RequireClaim(ClaimTypes.Role, "employee");
+                });
+            });
+        }
+
+        public static void AddSwaggerConfiguration(this IServiceCollection services)
         {
             services.AddSwaggerGen(c =>
             {
@@ -126,7 +142,7 @@ namespace Faculty.AuthenticationServer
             });
         }
 
-        public static void AddIdentityWithInstalledConfiguration(this IServiceCollection services)
+        public static void AddIdentityConfiguration(this IServiceCollection services)
         {
             services.AddIdentity<CustomUser, IdentityRole>(
                 options =>

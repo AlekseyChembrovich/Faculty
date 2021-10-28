@@ -2,7 +2,7 @@
 using Faculty.AuthenticationServer.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace Faculty.AuthenticationServer
+namespace Faculty.AuthenticationServer.Tools
 {
     public class IdentityInitialize
     {

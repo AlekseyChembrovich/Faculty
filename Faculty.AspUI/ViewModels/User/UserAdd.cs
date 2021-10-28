@@ -1,5 +1,5 @@
 ﻿using System;
-using Faculty.AspUI.Validation;
+using Faculty.AspUI.Tools;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,7 +16,7 @@ namespace Faculty.AspUI.ViewModels.User
         [StringLength(50, MinimumLength = 8, ErrorMessage = "PasswordLength")]
         public string Password { get; set; }
 
-        [OneAndMoreItems(ErrorMessage = "RoleOneAndMore")]
+        [RoleAttribute(ErrorMessage = "RoleRequirement")]
         public IList<string> Roles { get; set; }
 
         [Required(ErrorMessage = "DateRequired")]

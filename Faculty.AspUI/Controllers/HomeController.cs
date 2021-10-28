@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Net;
+using System.Net.Http;
+using Faculty.AspUI.Tools;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Faculty.AspUI.Services;
@@ -19,9 +22,9 @@ namespace Faculty.AspUI.Controllers
     {
         private readonly AuthOptions _authOptions;
         private readonly UserService _userService;
-        private readonly IStringLocalizer _stringLocalizer;
+        private readonly IStringLocalizer<HomeController> _stringLocalizer;
 
-        public HomeController(UserService userService, IStringLocalizer stringLocalizer, AuthOptions authOptions)
+        public HomeController(UserService userService, IStringLocalizer<HomeController> stringLocalizer, AuthOptions authOptions)
         {
             _userService = userService;
             _authOptions = authOptions;
@@ -40,35 +43,38 @@ namespace Faculty.AspUI.Controllers
         public async Task<IActionResult> Login(LoginUser user)
         {
             if (ModelState.IsValid == false) return View(user);
-            var response = await _userService.GetLoginResponse(user);
-            if (response.IsSuccessStatusCode == false)
+            HttpResponseMessage response = default;
+            try
             {
-                ModelState.AddModelError("", _stringLocalizer["CommonError"]);
+                response = await _userService.GetLoginResponse(user);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
+            {
+                ModelState.AddModelError(string.Empty, _stringLocalizer["CommonError"]);
                 return View(user);
             }
-
-            var result = await response.Content.ReadAsStringAsync();
-            var principal = ValidateToken(result);
-            if (principal is not null)
+            catch
             {
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties
-                {
-                    IsPersistent = true,
-                    ExpiresUtc = DateTime.UtcNow.AddDays(_authOptions.Lifetime)
-                });
-
-                HttpContext.Response.Cookies.Append("access_token", result, new CookieOptions
-                {
-                    Expires = DateTime.UtcNow.AddDays(_authOptions.Lifetime)
-                });
-                return RedirectToAction("Index", "Faculty");
+                return RedirectToAction("Error", "Home");
             }
 
-            ModelState.AddModelError("", _stringLocalizer["CommonError"]);
-            return View(user);
+            var token = await response.Content.ReadAsStringAsync();
+            var principal = ValidateToken(token);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTime.UtcNow.AddDays(_authOptions.Lifetime)
+            });
+
+            HttpContext.Response.Cookies.Append("access_token", token, new CookieOptions
+            {
+                Expires = DateTime.UtcNow.AddDays(_authOptions.Lifetime)
+            });
+
+            return RedirectToAction("Index", "Faculty");
         }
 
-        private ClaimsPrincipal ValidateToken(string jwtToken)
+        private ClaimsPrincipal ValidateToken(string token)
         {
             var validationParameters = new TokenValidationParameters
             {
@@ -80,12 +86,12 @@ namespace Faculty.AspUI.Controllers
                 ValidateIssuerSigningKey = true
             };
 
-            var principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out SecurityToken validatedToken);
+            var principal = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out SecurityToken validatedToken);
             return principal;
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "administrator,employee")]
+        [Authorize(Policy = "Common")]
         public async Task<IActionResult> Logout()
         {
             HttpContext.Response.Cookies.Delete("access_token");
@@ -105,18 +111,28 @@ namespace Faculty.AspUI.Controllers
         public async Task<IActionResult> Register(RegisterUser user)
         {
             if (ModelState.IsValid == false) return View(user);
-            var response = await _userService.GetRegisterResponse(user);
-            if (response.IsSuccessStatusCode) return RedirectToAction("Login");
-            ModelState.AddModelError("", _stringLocalizer["CommonError"]);
-            return View(user);
+            try
+            {
+                await _userService.GetRegisterResponse(user);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
+            {
+                ModelState.AddModelError(string.Empty, _stringLocalizer["CommonError"]);
+                return View(user);
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return RedirectToAction("Login");
         }
 
         [HttpPost]
         [AllowAnonymous]
         public IActionResult Localize(string culture, string returnUrl)
         {
-            Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)), 
-                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
+            Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)), new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
             return LocalRedirect(returnUrl);
         }
 

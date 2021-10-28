@@ -6,11 +6,10 @@ using Faculty.AspUI.ViewModels.Curator;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.BusinessLayer.Dto.Curator;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Faculty.AspUI.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "administrator")]
+    [Authorize(Policy = "Administrator")]
     public class CuratorController : Controller
     {
         private readonly ICuratorService _curatorService;

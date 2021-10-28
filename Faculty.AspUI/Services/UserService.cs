@@ -41,7 +41,7 @@ namespace Faculty.AspUI.Services
             return userModify;
         }
 
-        public async Task<HttpResponseMessage> EditPasswordExistUser(EditPassUser editPassUser) => await SendPost("User/EditPassword", editPassUser);
+        public async Task<HttpResponseMessage> EditPasswordExistUser(UserEditPass editPassUser) => await SendPost("User/EditPassword", editPassUser);
 
         public async Task<IEnumerable<string>> GetAllRoles()
         {
@@ -59,12 +59,14 @@ namespace Faculty.AspUI.Services
             url = (id is null) ? url : url + $"?id={id}";
             var message = new HttpRequestMessage(HttpMethod.Get, url);
             var response = await _userClient.SendAsync(message);
+            response.EnsureSuccessStatusCode();
             return response;
         }
 
         private async Task<HttpResponseMessage> SendPost<T>(string url, T model)
         {
             var response = await _userClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
+            response.EnsureSuccessStatusCode();
             return response;
         }
 

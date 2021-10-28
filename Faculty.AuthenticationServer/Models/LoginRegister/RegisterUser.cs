@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace Faculty.AuthenticationServer.Models.LoginRegister
 {

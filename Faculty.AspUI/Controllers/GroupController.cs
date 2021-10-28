@@ -6,11 +6,10 @@ using Faculty.AspUI.ViewModels.Group;
 using Faculty.BusinessLayer.Dto.Group;
 using Faculty.BusinessLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Faculty.AspUI.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "administrator")]
+    [Authorize(Policy = "Administrator")]
     public class GroupController : Controller
     {
         private readonly IGroupService _groupService;

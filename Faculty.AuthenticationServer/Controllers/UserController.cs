@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Faculty.AuthenticationServer.Models;
 using Faculty.AuthenticationServer.Models.User;
+using Faculty.AuthenticationServer.Tools;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.AuthenticationServer.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "administrator")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
     public class UserController : Controller
     {
         private readonly UserManager<CustomUser> _userManager;
@@ -93,7 +94,7 @@ namespace Faculty.AuthenticationServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditPassword(EditPassUser model)
+        public async Task<IActionResult> EditPassword(UserEditPass model)
         {
             var identity = await _userManager.FindByIdAsync(model.Id);
             var resultValidate = await _passwordValidator.ValidateAsync(_userManager, identity, model.NewPassword);

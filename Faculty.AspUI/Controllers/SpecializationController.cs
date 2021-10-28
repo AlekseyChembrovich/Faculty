@@ -6,11 +6,10 @@ using Faculty.BusinessLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Faculty.AspUI.ViewModels.Specialization;
 using Faculty.BusinessLayer.Dto.Specialization;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Faculty.AspUI.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "administrator")]
+    [Authorize(Policy = "Administrator")]
     public class SpecializationController : Controller
     {
         private readonly ISpecializationService _specializationService;

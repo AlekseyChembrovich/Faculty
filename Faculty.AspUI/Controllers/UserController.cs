@@ -1,21 +1,22 @@
-﻿using System.Linq;
+﻿using System.Net;
+using System.Net.Http;
 using Faculty.AspUI.Services;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using Faculty.AspUI.ViewModels.User;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Faculty.AspUI.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "administrator")]
+    [Authorize(Policy = "Administrator")]
     public class UserController : Controller
     {
-        private readonly IStringLocalizer _stringLocalizer;
+        private readonly IStringLocalizer<UserController> _stringLocalizer;
         private readonly UserService _userService;
 
-        public UserController(UserService userService, IStringLocalizer stringLocalizer)
+        public UserController(UserService userService, IStringLocalizer<UserController> stringLocalizer)
         {
             _stringLocalizer = stringLocalizer;
             _userService = userService;
@@ -24,70 +25,165 @@ namespace Faculty.AspUI.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var users = await _userService.GetAllUsers();
-            return View(users?.ToList());
+            IEnumerable<UserDisplay> users = default;
+            try
+            {
+                users = await _userService.GetAllUsers();
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(users);
         }
 
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            await FillViewBag();
+            try
+            {
+                await FillViewBag();
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(UserAdd user)
         {
-            await FillViewBag();
-            if (ModelState.IsValid == false) return View(user);
-            var response = await _userService.CreateNewUser(user);
-            if (response.IsSuccessStatusCode) return RedirectToAction("Index");
-            ModelState.AddModelError("", _stringLocalizer["CommonError"]);
-            return View(user);
+            try
+            {
+                await FillViewBag();
+                if (ModelState.IsValid == false) return View(user);
+                await _userService.CreateNewUser(user);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
+            {
+                ModelState.AddModelError("", _stringLocalizer["CommonError"]);
+                return View(user);
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(string id)
         {
-            await _userService.DeleteExistUser(id);
+            try
+            {
+                await _userService.DeleteExistUser(id);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
-            await FillViewBag();
-            var model = await _userService.FindByIdUser(id);
+            UserModify model = null;
+            try
+            {
+                await FillViewBag();
+                model = await _userService.FindByIdUser(id);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(UserModify user)
         {
-            await FillViewBag();
-            if (ModelState.IsValid == false) return View(user);
-            var response = await _userService.EditExistUser(user);
-            if (response.IsSuccessStatusCode) return RedirectToAction("Index");
-            ModelState.AddModelError("", _stringLocalizer["CommonError"]);
-            return View(user);
+            try
+            {
+                await FillViewBag();
+                if (ModelState.IsValid == false) return View(user);
+                await _userService.EditExistUser(user);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
+            {
+                ModelState.AddModelError("", _stringLocalizer["CommonError"]);
+                return View(user);
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult EditPassword(string id)
         {
-            var model = new EditPassUser { Id = id };
+            var model = new UserEditPass { Id = id };
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditPassword(EditPassUser user)
+        public async Task<IActionResult> EditPassword(UserEditPass user)
         {
-            await FillViewBag();
-            if (ModelState.IsValid == false) return View(user);
-            var response = await _userService.EditPasswordExistUser(user);
-            if (response.IsSuccessStatusCode) return RedirectToAction("Index");
-            ModelState.AddModelError("", _stringLocalizer["CommonError"]);
-            return View(user);
+            try
+            {
+                await FillViewBag();
+                if (ModelState.IsValid == false) return View(user);
+                await _userService.EditPasswordExistUser(user);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
+            {
+                ModelState.AddModelError("", _stringLocalizer["CommonError"]);
+                return View(user);
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return RedirectToAction("Index");
         }
 
         public async Task FillViewBag()

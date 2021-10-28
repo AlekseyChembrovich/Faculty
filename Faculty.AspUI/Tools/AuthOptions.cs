@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 
-namespace Faculty.AuthenticationServer
+namespace Faculty.AspUI.Tools
 {
     public class AuthOptions
     {
@@ -18,10 +18,10 @@ namespace Faculty.AuthenticationServer
 
         public AuthOptions(IConfiguration configuration)
         {
-            Issuer = configuration.GetSection("AuthOptions").GetValue(typeof(string), "Issuer").ToString();
-            Audience = configuration.GetSection("AuthOptions").GetValue(typeof(string), "Audience").ToString();
-            Key = configuration.GetSection("AuthOptions").GetValue(typeof(string), "Key").ToString();
-            Lifetime = int.Parse(configuration.GetSection("AuthOptions").GetValue(typeof(string), "Lifetime").ToString() ?? string.Empty);
+            Issuer = configuration["AuthOptions:Issuer"];
+            Audience = configuration["AuthOptions:Audience"];
+            Key = configuration["AuthOptions:Key"];
+            Lifetime = int.Parse(configuration["AuthOptions:Lifetime"]);
         }
     }
 }

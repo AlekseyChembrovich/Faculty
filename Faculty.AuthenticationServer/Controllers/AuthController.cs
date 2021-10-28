@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
+using Faculty.AuthenticationServer.Tools;
 using Faculty.AuthenticationServer.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Faculty.AuthenticationServer.Models.LoginRegister;
-
 
 namespace Faculty.AuthenticationServer.Controllers
 {

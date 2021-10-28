@@ -1,11 +1,10 @@
 using System;
-using System.Net;
 using AutoMapper;
+using Faculty.AspUI.Tools;
 using System.Globalization;
-using System.Threading.Tasks;
+using System.Security.Claims;
 using Faculty.AspUI.Services;
 using Microsoft.AspNetCore.Http;
-using Faculty.AspUI.Localization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
@@ -14,9 +13,7 @@ using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.AspUI.HttpMessageHandlers;
-using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.Configuration;
 using Faculty.DataAccessLayer.Repository;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,39 +34,29 @@ namespace Faculty.AspUI
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews().AddDataAnnotationsLocalization().AddViewLocalization();
-            services.AddAuthenticationWithCookies(Configuration);
+            services.AddMvc().AddDataAnnotationsLocalization().AddViewLocalization();
             services.AddDatabaseContext(Configuration);
+            services.AddAuthenticationWithCookies(Configuration);
+            services.AddAuthorizationWithRole();
             services.AddHttpContextAccessor();
             services.AddRequestLocalization();
             services.AddControllerServices();
             services.AddUsersHttpClients(Configuration);
             services.AddRepositories();
             services.AddMapper();
-            services.AddCors();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RequestLocalizationOptions> localizationOptions)
         {
-            //app.UseExceptionHandler("/Home/Error");
             app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseCors(x => x.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
-            app.UseRedirectionForAuthorizationErrors(Configuration);
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseRequestLocalization(localizationOptions.Value);
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
-                HttpOnly = HttpOnlyPolicy.Always,
-                Secure = CookieSecurePolicy.Always
-            });
-
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(null, "{controller=Faculty}/{action=Index}/{id?}");
+                endpoints.MapDefaultControllerRoute();
             });
         }
     }
@@ -78,6 +65,7 @@ namespace Faculty.AspUI
     {
         public static void AddRequestLocalization(this IServiceCollection services)
         {
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
             var cultures = new[]
             {
                 new CultureInfo("en"),
@@ -90,9 +78,6 @@ namespace Faculty.AspUI
                 options.SupportedCultures = cultures;
                 options.SupportedUICultures = cultures;
             });
-
-            services.AddScoped<IStringLocalizer, ServerErrorLocalizer>();
-            services.AddLocalization(options => options.ResourcesPath = "Resources");
         }
 
         public static void AddDatabaseContext(this IServiceCollection services, IConfiguration configuration)
@@ -129,62 +114,35 @@ namespace Faculty.AspUI
         {
             var authOption = new AuthOptions(configuration);
             services.AddSingleton(options => new AuthOptions(configuration));
-            services.AddAuthentication(x =>
-                {
-                    x.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    x.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                })
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
                     options.LoginPath = new PathString("/Home/Login");
-                    options.LogoutPath = new PathString("/Home/Logout");
                     options.AccessDeniedPath = new PathString("/Home/Login");
                     options.ExpireTimeSpan = TimeSpan.FromDays(authOption.Lifetime);
                 });
         }
 
-        //public static void AddAuthenticationWithJwtToken(this IServiceCollection services, IConfiguration configuration)
-        //{
-        //    var authOption = new AuthOptions(configuration);
-        //    services.AddSingleton(options => new AuthOptions(configuration));
-        //    var validationParams = new TokenValidationParameters
-        //    {
-        //        ValidateIssuer = true,
-        //        ValidIssuer = authOption?.Issuer,
-        //        ValidateAudience = true,
-        //        ValidAudience = authOption?.Audience,
-        //        IssuerSigningKey = authOption?.GetSymmetricSecurityKey(),
-        //        ValidateIssuerSigningKey = true
-        //    };
+        public static void AddAuthorizationWithRole(this IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Administrator", builder =>
+                {
+                    builder.RequireClaim(ClaimTypes.Role, "administrator");
+                });
 
-        //    services
-        //        .AddAuthentication(x =>
-        //        {
-        //            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        //            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        //        })
-        //        .AddJwtBearer(
-        //            options =>
-        //            {
-        //                options.RequireHttpsMetadata = false;
-        //                options.SaveToken = true;
-        //                options.TokenValidationParameters = validationParams;
-        //                options.Events = new JwtBearerEvents
-        //                {
-        //                    OnMessageReceived = (context) =>
-        //                    {
-        //                        var token = context.HttpContext.Request.Cookies["access_token"];
-        //                        if (string.IsNullOrEmpty(token) == false)
-        //                        {
-        //                            context.Token = token;
-        //                        }
+                options.AddPolicy("Employee", builder =>
+                {
+                    builder.RequireClaim(ClaimTypes.Role, "employee");
+                });
 
-        //                        return Task.CompletedTask;
-        //                    }
-        //                };
-        //            }
-        //        );
-        //}
+                options.AddPolicy("Common", builder =>
+                {
+                    builder.RequireAssertion(x => x.User.HasClaim(ClaimTypes.Role, "administrator") || x.User.HasClaim(ClaimTypes.Role, "employee"));
+                });
+            });
+        }
 
         public static void AddUsersHttpClients(this IServiceCollection services, IConfiguration configuration)
         {
@@ -196,34 +154,6 @@ namespace Faculty.AspUI
             }).AddHttpMessageHandler<AuthMessageHandler>();
 
             services.AddScoped<UserService>();
-        }
-    }
-
-    public static class ApplicationBuilderExtension
-    {
-        public static void UseRedirectionForAuthorizationErrors(this IApplicationBuilder app, IConfiguration configuration)
-        {
-            app.UseStatusCodePages(context =>
-            {
-                var response = context.HttpContext.Response;
-                switch (response.StatusCode)
-                {
-                    case (int)HttpStatusCode.Unauthorized or (int)HttpStatusCode.Forbidden:
-                    {
-                        var urlLogin = configuration["Url:Login"];
-                        response.Redirect(urlLogin ?? string.Empty);
-                    }
-                        break;
-                    case >= 400:
-                    {
-                        var urlRedirect = configuration["Url:RedirectError"];
-                        response.Redirect(urlRedirect ?? string.Empty);
-                    }
-                        break;
-                }
-
-                return Task.CompletedTask;
-            });
         }
     }
 }

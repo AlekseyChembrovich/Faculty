@@ -1,4 +1,4 @@
-﻿@model IList<Faculty.AspUI.ViewModels.User.UserDisplay>
+﻿@model IEnumerable<Faculty.AspUI.ViewModels.User.UserDisplay>
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -21,18 +21,23 @@
     </thead>
 
     <tbody>
-        @for (var i = 0; i < Model.Count(); i++) {
-            <tr>
-                <td>@(i + 1)</td>
-                <td>@Model[i].Login</td>
-                <td>@string.Join(", ", Model[i].Roles)</td>
-                <td>@Model[i].Birthday.ToShortDateString()</td>
-                <td>
-                    @Html.ActionLink(_localizer["BtnChangePassword"].Value, "EditPassword", "User", new { id = Model[i].Id }, new { @class = "btn btn-warning text-white" })
-                    @Html.ActionLink(_localizer["BtnDelete"].Value, "Delete", "User", new {id = Model[i].Id}, new {@class = "btn btn-danger mr-3 ml-3"})
-                    @Html.ActionLink(_localizer["BtnEdit"].Value, "Edit", "User", new {id = Model[i].Id}, new {@class = "btn btn-success"})
-                </td>
-            </tr>
+        @{
+            var number = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@number</td>
+                    <td>@item.Login</td>
+                    <td>@string.Join(", ", item.Roles)</td>
+                    <td>@item.Birthday.ToShortDateString()</td>
+                    <td>
+                        @Html.ActionLink(_localizer["BtnChangePassword"].Value, "EditPassword", "User", new { id = item.Id }, new { @class = "btn btn-warning text-white" })
+                        @Html.ActionLink(_localizer["BtnDelete"].Value, "Delete", "User", new {id = item.Id}, new {@class = "btn btn-danger mr-3 ml-3"})
+                        @Html.ActionLink(_localizer["BtnEdit"].Value, "Edit", "User", new {id = item.Id}, new {@class = "btn btn-success"})
+                    </td>
+                </tr>
+                number++;
+            }
         }
     </tbody>
 </table>

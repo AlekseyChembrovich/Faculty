@@ -1,9 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using Faculty.AuthenticationServer.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Faculty.AuthenticationServer.Tools;
+using Faculty.AuthenticationServer.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faculty.AuthenticationServer
@@ -13,7 +14,6 @@ namespace Faculty.AuthenticationServer
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
