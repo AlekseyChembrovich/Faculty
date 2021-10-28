@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
-using Faculty.AuthenticationServer.Models;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Faculty.AuthenticationServer.Models;
 
 namespace Faculty.AuthenticationServer.Tools
 {
@@ -22,7 +23,7 @@ namespace Faculty.AuthenticationServer.Tools
 
             if (await userManager.FindByNameAsync(login) == null)
             {
-                var admin = new CustomUser { UserName = login };
+                var admin = new CustomUser { UserName = login, Birthday = DateTime.Now };
                 var result = await userManager.CreateAsync(admin, password);
                 if (result.Succeeded)
                 {
