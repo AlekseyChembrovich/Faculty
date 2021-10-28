@@ -9,8 +9,9 @@ namespace Faculty.AuthenticationServer.Models
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasDefaultSchema("auth");
             base.OnModelCreating(modelBuilder);
         }
     }
