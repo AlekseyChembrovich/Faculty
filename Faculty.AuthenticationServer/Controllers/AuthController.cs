@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -16,7 +17,8 @@ using Faculty.AuthenticationServer.Models.LoginRegister;
 namespace Faculty.AuthenticationServer.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [AllowAnonymous]
+    [Route("auth")]
     public class AuthController : Controller
     {
         private readonly UserManager<CustomUser> _userManager;
@@ -30,14 +32,23 @@ namespace Faculty.AuthenticationServer.Controllers
             _authOptions = authOptions;
         }
 
-        [HttpPost]
-        [AllowAnonymous]
+        [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login(LoginUser user)
         {
             var identity = await _userManager.FindByNameAsync(user.Login);
-            if (identity == null) return BadRequest();
+            if (identity == null)
+            {
+                return BadRequest();
+            }
+
             var result = await _signInManager.CheckPasswordSignInAsync(identity, user.Password, false);
-            if (result.Succeeded == false) return BadRequest();
+            if (result.Succeeded == false)
+            {
+                return BadRequest();
+            }
+
             var claimsIdentity = GetIdentityClaims(identity);
             var now = DateTime.UtcNow;
             var jwt = new JwtSecurityToken(
@@ -63,8 +74,9 @@ namespace Faculty.AuthenticationServer.Controllers
             return new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme, ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
         }
 
-        [HttpPost]
-        [AllowAnonymous]
+        [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register(RegisterUser user)
         {
             var identity = new CustomUser { UserName = user.Login };
@@ -75,7 +87,7 @@ namespace Faculty.AuthenticationServer.Controllers
             }
 
             await _userManager.AddToRoleAsync(identity, "employee");
-            return Ok();
+            return NoContent();
         }
     }
 }

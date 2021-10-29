@@ -146,9 +146,9 @@ namespace Faculty.AspUI
 
         public static void AddUsersHttpClients(this IServiceCollection services, IConfiguration configuration)
         {
-            var url = configuration["Url:AuthHttpClient"];
+            var url = configuration["Url:UsersHttpClient"];
             services.AddTransient<AuthMessageHandler>();
-            services.AddHttpClient("AuthHttpClient", client =>
+            services.AddHttpClient("UsersHttpClient", client =>
             {
                 client.BaseAddress = new Uri(url ?? string.Empty);
             }).AddHttpMessageHandler<AuthMessageHandler>();

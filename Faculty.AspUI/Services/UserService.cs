@@ -14,49 +14,64 @@ namespace Faculty.AspUI.Services
 
         public UserService(IHttpClientFactory clientFactory)
         {
-            _userClient = clientFactory.CreateClient("AuthHttpClient");
+            _userClient = clientFactory.CreateClient("UsersHttpClient");
         }
 
-        public async Task<IEnumerable<UserDisplay>> GetAllUsers()
+        public async Task<IEnumerable<UserDisplay>> GetUsers()
         {
-            var response = await SendGet("User/GetAll");
-            var usersDisplay = await HttpResponseToUser<IEnumerable<UserDisplay>>(response);
+            var response = await SendGet("users");
+            var usersDisplay = await ConvertHttpResponseToUser<IEnumerable<UserDisplay>>(response);
             return usersDisplay;
         }
 
-        public async Task<HttpResponseMessage> CreateNewUser(UserAdd userAdd) => await SendPost("User/Create", userAdd);
-
-        public async Task<HttpResponseMessage> DeleteExistUser(string id)
+        public async Task<UserModify> GetUser(string id)
         {
-            var response = await SendGet("User/Delete", id);
-            return response;
-        }
-
-        public async Task<HttpResponseMessage> EditExistUser(UserModify userModify) => await SendPost("User/Edit", userModify);
-
-        public async Task<UserModify> FindByIdUser(string id)
-        {
-            var response = await SendGet("User/GetById", id);
-            var userModify = await HttpResponseToUser<UserModify>(response);
+            var response = await SendGet("users", id);
+            var userModify = await ConvertHttpResponseToUser<UserModify>(response);
             return userModify;
         }
 
-        public async Task<HttpResponseMessage> EditPasswordExistUser(UserEditPass editPassUser) => await SendPost("User/EditPassword", editPassUser);
-
-        public async Task<IEnumerable<string>> GetAllRoles()
+        public async Task<HttpResponseMessage> CreateUser(UserAdd userAdd)
         {
-            var response = await SendGet("User/GetRoles");
-            var namesRole = await HttpResponseToUser<IEnumerable<string>>(response);
+            return await SendPost("users", userAdd);
+        }
+
+        public async Task<HttpResponseMessage> DeleteUser(string id)
+        {
+            var response = await SendDelete("users", id);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> EditUser(UserModify userModify)
+        {
+            return await SendPut("users", userModify);
+        }
+
+        public async Task<HttpResponseMessage> EditPasswordUser(UserEditPass userEditPass)
+        {
+            return await SendPatch("users", userEditPass);
+        }
+
+        public async Task<IEnumerable<string>> GetRoles()
+        {
+            var response = await SendGet("users/roles");
+            var namesRole = await ConvertHttpResponseToUser<IEnumerable<string>>(response);
             return namesRole;
         }
 
-        public async Task<HttpResponseMessage> GetLoginResponse(LoginUser loginUser) => await SendPost("Auth/Login", loginUser);
+        public async Task<HttpResponseMessage> Login(LoginUser loginUser)
+        {
+            return await SendPost("auth/login", loginUser);
+        }
 
-        public async Task<HttpResponseMessage> GetRegisterResponse(RegisterUser registerUser) => await SendPost("Auth/Register", registerUser);
+        public async Task<HttpResponseMessage> Register(RegisterUser registerUser)
+        {
+            return await SendPost("auth/register", registerUser);
+        }
 
         private async Task<HttpResponseMessage> SendGet(string url, string id = null)
         {
-            url = (id is null) ? url : url + $"?id={id}";
+            url = (id is null) ? url : url + $"/{id}";
             var message = new HttpRequestMessage(HttpMethod.Get, url);
             var response = await _userClient.SendAsync(message);
             response.EnsureSuccessStatusCode();
@@ -70,7 +85,30 @@ namespace Faculty.AspUI.Services
             return response;
         }
 
-        private static async Task<T> HttpResponseToUser<T>(HttpResponseMessage response)
+        private async Task<HttpResponseMessage> SendDelete(string url, string id)
+        {
+            url += $"/{id}";
+            var message = new HttpRequestMessage(HttpMethod.Delete, url);
+            var response = await _userClient.SendAsync(message);
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+
+        private async Task<HttpResponseMessage> SendPut<T>(string url, T model)
+        {
+            var response = await _userClient.PutAsync(url, new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+
+        private async Task<HttpResponseMessage> SendPatch<T>(string url, T model)
+        {
+            var response = await _userClient.PatchAsync(url, new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+
+        private static async Task<T> ConvertHttpResponseToUser<T>(HttpResponseMessage response)
         {
             var modelJson = await response.Content.ReadAsStringAsync();
             var model = JsonConvert.DeserializeObject<T>(modelJson);

@@ -46,7 +46,7 @@ namespace Faculty.AspUI.Controllers
             HttpResponseMessage response = default;
             try
             {
-                response = await _userService.GetLoginResponse(user);
+                response = await _userService.Login(user);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
             {
@@ -113,7 +113,7 @@ namespace Faculty.AspUI.Controllers
             if (ModelState.IsValid == false) return View(user);
             try
             {
-                await _userService.GetRegisterResponse(user);
+                await _userService.Register(user);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
             {

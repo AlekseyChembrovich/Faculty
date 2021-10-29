@@ -28,7 +28,7 @@ namespace Faculty.AspUI.Controllers
             IEnumerable<UserDisplay> users = default;
             try
             {
-                users = await _userService.GetAllUsers();
+                users = await _userService.GetUsers();
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -68,7 +68,7 @@ namespace Faculty.AspUI.Controllers
             {
                 await FillViewBag();
                 if (ModelState.IsValid == false) return View(user);
-                await _userService.CreateNewUser(user);
+                await _userService.CreateUser(user);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -92,7 +92,7 @@ namespace Faculty.AspUI.Controllers
         {
             try
             {
-                await _userService.DeleteExistUser(id);
+                await _userService.DeleteUser(id);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -113,7 +113,7 @@ namespace Faculty.AspUI.Controllers
             try
             {
                 await FillViewBag();
-                model = await _userService.FindByIdUser(id);
+                model = await _userService.GetUser(id);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -134,13 +134,13 @@ namespace Faculty.AspUI.Controllers
             {
                 await FillViewBag();
                 if (ModelState.IsValid == false) return View(user);
-                await _userService.EditExistUser(user);
+                await _userService.EditUser(user);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return RedirectToAction("Login", "Home");
             }
-            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
+            catch (HttpRequestException e) when (e.StatusCode is HttpStatusCode.NotFound)
             {
                 ModelState.AddModelError("", _stringLocalizer["CommonError"]);
                 return View(user);
@@ -167,13 +167,13 @@ namespace Faculty.AspUI.Controllers
             {
                 await FillViewBag();
                 if (ModelState.IsValid == false) return View(user);
-                await _userService.EditPasswordExistUser(user);
+                await _userService.EditPasswordUser(user);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return RedirectToAction("Login", "Home");
             }
-            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
+            catch (HttpRequestException e) when (e.StatusCode is HttpStatusCode.NotFound)
             {
                 ModelState.AddModelError("", _stringLocalizer["CommonError"]);
                 return View(user);
@@ -188,7 +188,7 @@ namespace Faculty.AspUI.Controllers
 
         public async Task FillViewBag()
         {
-            ViewBag.Roles = await _userService.GetAllRoles();
+            ViewBag.Roles = await _userService.GetRoles();
         }
     }
 }
