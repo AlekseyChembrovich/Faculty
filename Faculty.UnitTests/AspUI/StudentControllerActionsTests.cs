@@ -7,13 +7,13 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
-using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
+using Faculty.DataAccessLayer.Models;
 using Faculty.AspUI.ViewModels.Student;
 using Faculty.BusinessLayer.Dto.Student;
 using Faculty.DataAccessLayer.Repository;
 
-namespace Faculty.UnitTests
+namespace Faculty.UnitTests.AspUI
 {
     public class StudentControllerActionsTests
     {
