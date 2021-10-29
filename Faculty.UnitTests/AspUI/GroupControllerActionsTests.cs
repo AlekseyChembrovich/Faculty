@@ -3,17 +3,18 @@ using Xunit;
 using AutoMapper;
 using System.Linq;
 using FluentAssertions;
+using Faculty.AspUI.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
-using Faculty.DataAccessLayer.Models;
-using Faculty.BusinessLayer.Services;
 using Faculty.AspUI.ViewModels.Group;
+using Faculty.BusinessLayer.Services;
+using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Dto.Group;
 using Faculty.DataAccessLayer.Repository;
 using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
-namespace Faculty.UnitTests
+namespace Faculty.UnitTests.AspUI
 {
     public class GroupControllerActionsTests
     {

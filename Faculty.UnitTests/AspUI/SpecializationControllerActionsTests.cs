@@ -3,16 +3,17 @@ using Xunit;
 using AutoMapper;
 using System.Linq;
 using FluentAssertions;
+using Faculty.AspUI.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
-using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
+using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.Repository;
 using Faculty.AspUI.ViewModels.Specialization;
 using Faculty.BusinessLayer.Dto.Specialization;
 
-namespace Faculty.UnitTests
+namespace Faculty.UnitTests.AspUI
 {
     public class SpecializationControllerActionsTests
     {
@@ -145,26 +146,6 @@ namespace Faculty.UnitTests
             var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirectToActionResult.ActionName);
             _mockRepositorySpecialization.Verify(r => r.Update(It.IsAny<Specialization>()), Times.Once);
-        }
-
-        [Fact]
-        public void EditPostMethod_ReturnsViewResultWithModel_ForInvalidModel()
-        {
-            // Arrange
-            var modelModify = new SpecializationDisplayModify { Id = 1,  Name = null };
-            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<SpecializationDisplayModifyDto, Specialization>(modelDto);
-            _mockRepositorySpecialization.Setup(repository => repository.Update(model)).Verifiable();
-            var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
-            var modelController = new SpecializationController(modelService, _mapper);
-            modelController.ModelState.AddModelError("NameRequired", "Name is required.");
-
-            // Act
-            var result = modelController.Edit(modelModify);
-
-            // Assert
-            Assert.IsType<ViewResult>(result);
-            _mockRepositorySpecialization.Verify(r => r.Update(It.IsAny<Specialization>()), Times.Never);
         }
 
         [Fact]
