@@ -1,17 +1,17 @@
 ﻿using AutoMapper;
-using Faculty.DataAccessLayer.Models;
 using Faculty.AspUI.ViewModels.Group;
+using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Dto.Group;
 using Faculty.AspUI.ViewModels.Curator;
 using Faculty.AspUI.ViewModels.Faculty;
 using Faculty.AspUI.ViewModels.Student;
-using Faculty.BusinessLayer.Dto.Student;
 using Faculty.BusinessLayer.Dto.Curator;
 using Faculty.BusinessLayer.Dto.Faculty;
+using Faculty.BusinessLayer.Dto.Student;
 using Faculty.AspUI.ViewModels.Specialization;
 using Faculty.BusinessLayer.Dto.Specialization;
 
-namespace Faculty.AspUI
+namespace Faculty.AspUI.Tools
 {
     public class SourceMappingProfile : Profile
     {

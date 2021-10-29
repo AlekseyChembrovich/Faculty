@@ -1,5 +1,6 @@
 using AutoMapper;
 using System.Globalization;
+using Faculty.AspUI.Tools;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
