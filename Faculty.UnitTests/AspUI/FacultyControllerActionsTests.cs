@@ -3,6 +3,7 @@ using Xunit;
 using System;
 using AutoMapper;
 using System.Linq;
+using Faculty.AspUI;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;

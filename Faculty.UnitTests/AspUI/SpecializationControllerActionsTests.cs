@@ -2,6 +2,7 @@ using Moq;
 using Xunit;
 using AutoMapper;
 using System.Linq;
+using Faculty.AspUI;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
@@ -145,26 +146,6 @@ namespace Faculty.UnitTests
             var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirectToActionResult.ActionName);
             _mockRepositorySpecialization.Verify(r => r.Update(It.IsAny<Specialization>()), Times.Once);
-        }
-
-        [Fact]
-        public void EditPostMethod_ReturnsViewResultWithModel_ForInvalidModel()
-        {
-            // Arrange
-            var modelModify = new SpecializationDisplayModify { Id = 1,  Name = null };
-            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<SpecializationDisplayModifyDto, Specialization>(modelDto);
-            _mockRepositorySpecialization.Setup(repository => repository.Update(model)).Verifiable();
-            var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
-            var modelController = new SpecializationController(modelService, _mapper);
-            modelController.ModelState.AddModelError("NameRequired", "Name is required.");
-
-            // Act
-            var result = modelController.Edit(modelModify);
-
-            // Assert
-            Assert.IsType<ViewResult>(result);
-            _mockRepositorySpecialization.Verify(r => r.Update(It.IsAny<Specialization>()), Times.Never);
         }
 
         [Fact]
