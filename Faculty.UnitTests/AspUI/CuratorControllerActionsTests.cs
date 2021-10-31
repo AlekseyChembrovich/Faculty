@@ -28,7 +28,7 @@ namespace Faculty.UnitTests.AspUI
         }
 
         [Fact]
-        public void Index_ReturnsAViewResult_WithAListOfModelDisplay()
+        public void IndexMethod_ReturnsAViewResult_WithAListOfModelDisplay()
         {
             // Arrange
             _mockRepositoryCurator.Setup(repository => repository.GetAll()).Returns(GetTestModels()).Verifiable();
