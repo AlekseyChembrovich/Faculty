@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 namespace Faculty.AuthenticationServer.Controllers
 {
     [ApiController]
-    [Route("users")]
+    [Route("api/users")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : Controller
     {
@@ -30,9 +29,8 @@ namespace Faculty.AuthenticationServer.Controllers
             _passwordHasher = passwordHasher;
         }
 
+        // GET api/users
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserDisplay>))]
         public ActionResult<IEnumerable<UserDisplay>> GetUsers()
         {
             var users = _userManager.Users.ToList();
@@ -52,9 +50,8 @@ namespace Faculty.AuthenticationServer.Controllers
             return Ok(usersDisplay);
         }
 
+        // GET api/users/{id}
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDisplay))]
         public async Task<ActionResult<UserDisplay>> GetUsers(string id)
         {
             var identity = await _userManager.FindByIdAsync(id);
@@ -74,11 +71,10 @@ namespace Faculty.AuthenticationServer.Controllers
             return Ok(model);
         }
 
+        // POST api/users
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public async Task<ActionResult> CreateUser(UserAdd model)
+        public async Task<ActionResult<UserDisplay>> Create(UserAdd model)
         {
             var identity = new CustomUser { UserName = model.Login, Birthday = model.Birthday };
             var result = await _userManager.CreateAsync(identity, model.Password);
@@ -91,11 +87,10 @@ namespace Faculty.AuthenticationServer.Controllers
             return CreatedAtAction(nameof(GetUsers), new { id = identity.Id }, model);
         }
 
+        // DELETE api/users
         [HttpDelete]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public async Task<IActionResult> DeleteUser(string id)
+        public async Task<ActionResult> Delete(string id)
         {
             var identity = await _userManager.FindByIdAsync(id);
             if (identity == null)
@@ -107,22 +102,20 @@ namespace Faculty.AuthenticationServer.Controllers
             return NoContent();
         }
 
+        // PUT api/users
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public async Task<IActionResult> Edit(UserModify model)
+        public async Task<ActionResult> Edit(UserModify userModify)
         {
-            var identity = await _userManager.FindByIdAsync(model.Id);
+            var identity = await _userManager.FindByIdAsync(userModify.Id);
             if (identity == null)
             {
                 return NotFound();
             }
 
-            identity.UserName = model.Login;
-            identity.Birthday = model.Birthday;
-            await UpdateUserRoles(identity, model);
+            identity.UserName = userModify.Login;
+            identity.Birthday = userModify.Birthday;
+            await UpdateUserRoles(identity, userModify);
             var resultUpdate = await _userManager.UpdateAsync(identity);
             if (resultUpdate.Succeeded == false)
             {
@@ -139,26 +132,24 @@ namespace Faculty.AuthenticationServer.Controllers
             await _userManager.AddToRolesAsync(customUser, modifyUser.Roles);
         }
 
+        // PATCH api/users
         [HttpPatch]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public async Task<IActionResult> EditPassword(UserEditPass model)
+        public async Task<ActionResult> EditPassword(UserModifyPassword userModifyPassword)
         {
-            var identity = await _userManager.FindByIdAsync(model.Id);
+            var identity = await _userManager.FindByIdAsync(userModifyPassword.Id);
             if (identity == null)
             {
                 return NotFound();
             }
 
-            var resultValidate = await _passwordValidator.ValidateAsync(_userManager, identity, model.NewPassword);
+            var resultValidate = await _passwordValidator.ValidateAsync(_userManager, identity, userModifyPassword.NewPassword);
             if (resultValidate.Succeeded == false)
             {
                 return BadRequest();
             }
 
-            identity.PasswordHash = _passwordHasher.HashPassword(identity, model.NewPassword);
+            identity.PasswordHash = _passwordHasher.HashPassword(identity, userModifyPassword.NewPassword);
             var resultUpdate = await _userManager.UpdateAsync(identity);
             if (resultUpdate.Succeeded == false)
             {
@@ -168,9 +159,8 @@ namespace Faculty.AuthenticationServer.Controllers
             return NoContent();
         }
 
+        // GET api/users/roles
         [HttpGet("roles")]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<string>))]
         public ActionResult<IEnumerable<string>> GetRoles()
         {
             var namesRole = _roleManager.Roles.ToList().Select(x => x.Name);

@@ -1,6 +1,6 @@
 ﻿namespace Faculty.AuthenticationServer.Models.User
 {
-    public class UserEditPass
+    public class UserModifyPassword
     {
         public string Id { get; set; }
 

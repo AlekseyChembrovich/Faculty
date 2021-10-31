@@ -13,6 +13,7 @@ using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.AspUI.HttpMessageHandlers;
+using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Faculty.DataAccessLayer.Repository;
@@ -102,6 +103,8 @@ namespace Faculty.AspUI
             services.AddScoped<ISpecializationService, SpecializationService>();
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IFacultyService, FacultyService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         public static void AddMapper(this IServiceCollection services)
@@ -146,14 +149,15 @@ namespace Faculty.AspUI
 
         public static void AddUsersHttpClients(this IServiceCollection services, IConfiguration configuration)
         {
-            var url = configuration["Url:UsersHttpClient"];
             services.AddTransient<AuthMessageHandler>();
-            services.AddHttpClient("UsersHttpClient", client =>
+            services.AddHttpClient<IAuthService, AuthService>( client =>
             {
-                client.BaseAddress = new Uri(url ?? string.Empty);
+                client.BaseAddress = new Uri(configuration["Url:AuthenticationServer"]);
             }).AddHttpMessageHandler<AuthMessageHandler>();
-
-            services.AddScoped<UserService>();
+            services.AddHttpClient<IUserService, UserService>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["Url:AuthenticationServer"]);
+            }).AddHttpMessageHandler<AuthMessageHandler>();
         }
     }
 }

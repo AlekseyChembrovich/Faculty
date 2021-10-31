@@ -4,12 +4,12 @@ using System.Net.Http;
 using Faculty.AspUI.Tools;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Faculty.AspUI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Localization;
+using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
@@ -21,12 +21,12 @@ namespace Faculty.AspUI.Controllers
     public class HomeController : Controller
     {
         private readonly AuthOptions _authOptions;
-        private readonly UserService _userService;
+        private readonly IAuthService _authService;
         private readonly IStringLocalizer<HomeController> _stringLocalizer;
 
-        public HomeController(UserService userService, IStringLocalizer<HomeController> stringLocalizer, AuthOptions authOptions)
+        public HomeController(IAuthService authService, IStringLocalizer<HomeController> stringLocalizer, AuthOptions authOptions)
         {
-            _userService = userService;
+            _authService = authService;
             _authOptions = authOptions;
             _stringLocalizer = stringLocalizer;
         }
@@ -46,14 +46,14 @@ namespace Faculty.AspUI.Controllers
             HttpResponseMessage response = default;
             try
             {
-                response = await _userService.Login(user);
+                response = await _authService.Login(user);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
             {
                 ModelState.AddModelError(string.Empty, _stringLocalizer["CommonError"]);
                 return View(user);
             }
-            catch
+            catch (HttpRequestException)
             {
                 return RedirectToAction("Error", "Home");
             }
@@ -113,14 +113,14 @@ namespace Faculty.AspUI.Controllers
             if (ModelState.IsValid == false) return View(user);
             try
             {
-                await _userService.Register(user);
+                await _authService.Register(user);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
             {
                 ModelState.AddModelError(string.Empty, _stringLocalizer["CommonError"]);
                 return View(user);
             }
-            catch
+            catch (HttpRequestException)
             {
                 return RedirectToAction("Error", "Home");
             }

@@ -2,7 +2,7 @@
 
 namespace Faculty.AspUI.ViewModels.User
 {
-    public class UserEditPass
+    public class UserModifyPassword
     {
         public string Id { get; set; }
 

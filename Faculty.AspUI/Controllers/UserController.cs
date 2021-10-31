@@ -1,10 +1,10 @@
 ﻿using System.Net;
 using System.Net.Http;
-using Faculty.AspUI.Services;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Faculty.AspUI.ViewModels.User;
+using Faculty.AspUI.Services.Interfaces;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
 
@@ -14,16 +14,16 @@ namespace Faculty.AspUI.Controllers
     public class UserController : Controller
     {
         private readonly IStringLocalizer<UserController> _stringLocalizer;
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public UserController(UserService userService, IStringLocalizer<UserController> stringLocalizer)
+        public UserController(IUserService userService, IStringLocalizer<UserController> stringLocalizer)
         {
             _stringLocalizer = stringLocalizer;
             _userService = userService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<ActionResult> Index()
         {
             IEnumerable<UserDisplay> users = default;
             try
@@ -34,7 +34,7 @@ namespace Faculty.AspUI.Controllers
             {
                 return RedirectToAction("Login", "Home");
             }
-            catch
+            catch (HttpRequestException)
             {
                 return RedirectToAction("Error", "Home");
             }
@@ -53,7 +53,7 @@ namespace Faculty.AspUI.Controllers
             {
                 return RedirectToAction("Login", "Home");
             }
-            catch
+            catch (HttpRequestException)
             {
                 return RedirectToAction("Error", "Home");
             }
@@ -79,7 +79,7 @@ namespace Faculty.AspUI.Controllers
                 ModelState.AddModelError("", _stringLocalizer["CommonError"]);
                 return View(user);
             }
-            catch
+            catch (HttpRequestException)
             {
                 return RedirectToAction("Error", "Home");
             }
@@ -98,7 +98,7 @@ namespace Faculty.AspUI.Controllers
             {
                 return RedirectToAction("Login", "Home");
             }
-            catch
+            catch (HttpRequestException)
             {
                 return RedirectToAction("Error", "Home");
             }
@@ -119,7 +119,7 @@ namespace Faculty.AspUI.Controllers
             {
                 return RedirectToAction("Login", "Home");
             }
-            catch
+            catch (HttpRequestException)
             {
                 return RedirectToAction("Error", "Home");
             }
@@ -140,12 +140,12 @@ namespace Faculty.AspUI.Controllers
             {
                 return RedirectToAction("Login", "Home");
             }
-            catch (HttpRequestException e) when (e.StatusCode is HttpStatusCode.NotFound)
+            catch (HttpRequestException e) when (e.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.BadRequest)
             {
                 ModelState.AddModelError("", _stringLocalizer["CommonError"]);
                 return View(user);
             }
-            catch
+            catch (HttpRequestException)
             {
                 return RedirectToAction("Error", "Home");
             }
@@ -156,12 +156,12 @@ namespace Faculty.AspUI.Controllers
         [HttpGet]
         public IActionResult EditPassword(string id)
         {
-            var model = new UserEditPass { Id = id };
+            var model = new UserModifyPassword { Id = id };
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditPassword(UserEditPass user)
+        public async Task<IActionResult> EditPassword(UserModifyPassword user)
         {
             try
             {
@@ -173,12 +173,12 @@ namespace Faculty.AspUI.Controllers
             {
                 return RedirectToAction("Login", "Home");
             }
-            catch (HttpRequestException e) when (e.StatusCode is HttpStatusCode.NotFound)
+            catch (HttpRequestException e) when (e.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.BadRequest)
             {
                 ModelState.AddModelError("", _stringLocalizer["CommonError"]);
                 return View(user);
             }
-            catch
+            catch (HttpRequestException)
             {
                 return RedirectToAction("Error", "Home");
             }
