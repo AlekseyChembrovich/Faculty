@@ -28,7 +28,7 @@ namespace Faculty.UnitTests.AspUI
         }
 
         [Fact]
-        public void IndexMethod_ReturnsViewResult_WithListOfDisplayModelsDisplay()
+        public void IndexMethod_ReturnsAViewResult_WithAListOfModelDisplay()
         {
             // Arrange
             _mockRepositorySpecialization.Setup(repository => repository.GetAll()).Returns(GetTestModels()).Verifiable();
@@ -70,7 +70,7 @@ namespace Faculty.UnitTests.AspUI
         }
 
         [Fact]
-        public void CreateMethod_CallInsertMethodRepository_RedirectToIndexMethodWith_ForCorrectModel()
+        public void CreateMethod_CallInsertMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectModel()
         {
             // Arrange
             var modelAdd = new SpecializationAdd { Name = "test1" };
@@ -90,7 +90,7 @@ namespace Faculty.UnitTests.AspUI
         }
 
         [Fact]
-        public void DeleteGetMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        public void DeleteGetMethod_CallDeleteMethodRepository_RedirectToIndexAction_WhenCorrectArgument()
         {
             // Arrange
             const int deleteModelId = 1;
@@ -109,7 +109,7 @@ namespace Faculty.UnitTests.AspUI
         }
 
         [Fact]
-        public void DeletePostMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        public void DeletePostMethod_CallDeleteMethodRepository_RedirectToIndexAction_WhenCorrectArgument()
         {
             // Arrange
             var modelModify = new SpecializationDisplayModify { Id = 1, Name = "test1" };
@@ -129,7 +129,7 @@ namespace Faculty.UnitTests.AspUI
         }
 
         [Fact]
-        public void EditPostMethod_CallUpdateMethodRepository_RedirectToIndexMethod_ForCorrectModel()
+        public void EditPostMethod_CallUpdateMethodRepository_RedirectToIndexAction_WhenCorrectModel()
         {
             // Arrange
             var modelModify = new SpecializationDisplayModify { Id = 1, Name = "test1" };
@@ -149,7 +149,7 @@ namespace Faculty.UnitTests.AspUI
         }
 
         [Fact]
-        public void EditGetMethod_CallGetByIdMethodRepository_ReturnsViewResultWithModel_ForCorrectArgument()
+        public void EditGetMethod_CallGetByIdMethodRepository_ReturnsViewResultWithModel_WhenCorrectArgument()
         {
             // Arrange
             const int editModelId = 1;
@@ -170,7 +170,7 @@ namespace Faculty.UnitTests.AspUI
         }
 
         [Fact]
-        public void EditGetMethod_RedirectToIndexMethod_ForNotFoundedModel()
+        public void EditGetMethod_ReturnsRedirectToIndexAction_WhenNotFoundedModel()
         {
             // Arrange
             const int editModelId = 1;

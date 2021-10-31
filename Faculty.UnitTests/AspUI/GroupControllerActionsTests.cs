@@ -32,7 +32,7 @@ namespace Faculty.UnitTests.AspUI
         }
 
         [Fact]
-        public void IndexMethod_ReturnsViewResult_WithListOfDisplayModelsDisplay()
+        public void IndexMethod_ReturnsAViewResult_WithAListOfModelDisplay()
         {
             // Arrange
             _mockRepositoryGroup.Setup(repository => repository.GetAllIncludeForeignKey()).Returns(GetTestModels()).Verifiable();
@@ -77,7 +77,7 @@ namespace Faculty.UnitTests.AspUI
         }
 
         [Fact]
-        public void CreateMethod_CallInsertMethodRepository_RedirectToIndexMethodWith_ForCorrectModel()
+        public void CreateMethod_CallInsertMethodRepository_RedirectToIndexMethod_ForCorrectModel()
         {
             // Arrange
             var modelAdd = new GroupAdd { Name = "test1", SpecializationId = 1 };
