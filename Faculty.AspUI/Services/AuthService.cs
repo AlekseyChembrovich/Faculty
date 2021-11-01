@@ -18,14 +18,14 @@ namespace Faculty.AspUI.Services
 
         public async Task<HttpResponseMessage> Login(LoginUser loginUser)
         {
-            var response = await _userClient.PostAsync("auth/login", new StringContent(JsonConvert.SerializeObject(loginUser), Encoding.UTF8, "application/json"));
+            var response = await _userClient.PostAsync("api/auth/login", new StringContent(JsonConvert.SerializeObject(loginUser), Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
             return response;
         }
 
         public async Task<HttpResponseMessage> Register(RegisterUser registerUser)
         {
-            var response = await _userClient.PostAsync("auth/register", new StringContent(JsonConvert.SerializeObject(registerUser), Encoding.UTF8, "application/json"));
+            var response = await _userClient.PostAsync("api/auth/register", new StringContent(JsonConvert.SerializeObject(registerUser), Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
             return response;
         }

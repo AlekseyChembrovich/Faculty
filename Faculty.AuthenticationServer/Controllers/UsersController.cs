@@ -18,15 +18,11 @@ namespace Faculty.AuthenticationServer.Controllers
     {
         private readonly UserManager<CustomUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IPasswordValidator<CustomUser> _passwordValidator;
-        private readonly IPasswordHasher<CustomUser> _passwordHasher;
 
-        public UsersController(UserManager<CustomUser> userManager, RoleManager<IdentityRole> roleManager, IPasswordValidator<CustomUser> passwordValidator, IPasswordHasher<CustomUser> passwordHasher, AuthOptions authOptions)
+        public UsersController(UserManager<CustomUser> userManager, RoleManager<IdentityRole> roleManager, AuthOptions authOptions)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _passwordValidator = passwordValidator;
-            _passwordHasher = passwordHasher;
         }
 
         // GET api/users
@@ -87,8 +83,8 @@ namespace Faculty.AuthenticationServer.Controllers
             return CreatedAtAction(nameof(GetUsers), new { id = identity.Id }, model);
         }
 
-        // DELETE api/users
-        [HttpDelete]
+        // DELETE api/users/{id}
+        [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
         public async Task<ActionResult> Delete(string id)
         {
@@ -143,13 +139,13 @@ namespace Faculty.AuthenticationServer.Controllers
                 return NotFound();
             }
 
-            var resultValidate = await _passwordValidator.ValidateAsync(_userManager, identity, userModifyPassword.NewPassword);
+            var resultValidate = await _userManager.PasswordValidators[0].ValidateAsync(_userManager, identity, userModifyPassword.NewPassword);
             if (resultValidate.Succeeded == false)
             {
                 return BadRequest();
             }
 
-            identity.PasswordHash = _passwordHasher.HashPassword(identity, userModifyPassword.NewPassword);
+            identity.PasswordHash = _userManager.PasswordHasher.HashPassword(identity, userModifyPassword.NewPassword);
             var resultUpdate = await _userManager.UpdateAsync(identity);
             if (resultUpdate.Succeeded == false)
             {
@@ -163,7 +159,7 @@ namespace Faculty.AuthenticationServer.Controllers
         [HttpGet("roles")]
         public ActionResult<IEnumerable<string>> GetRoles()
         {
-            var namesRole = _roleManager.Roles.ToList().Select(x => x.Name);
+            var namesRole = _roleManager.Roles.ToList().Select(x => x.Name).ToList();
             if (!namesRole.Any())
             {
                 return NotFound();

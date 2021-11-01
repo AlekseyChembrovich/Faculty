@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -18,7 +17,7 @@ namespace Faculty.AuthenticationServer.Controllers
 {
     [ApiController]
     [AllowAnonymous]
-    [Route("auth")]
+    [Route("api/auth")]
     public class AuthController : Controller
     {
         private readonly UserManager<CustomUser> _userManager;
@@ -32,9 +31,8 @@ namespace Faculty.AuthenticationServer.Controllers
             _authOptions = authOptions;
         }
 
+        // POST api/auth/login
         [HttpPost("login")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login(LoginUser user)
         {
             var identity = await _userManager.FindByNameAsync(user.Login);
@@ -74,9 +72,8 @@ namespace Faculty.AuthenticationServer.Controllers
             return new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme, ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
         }
 
+        // POST api/auth/register
         [HttpPost("register")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register(RegisterUser user)
         {
             var identity = new CustomUser { UserName = user.Login };
