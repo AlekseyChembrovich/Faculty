@@ -72,7 +72,7 @@ namespace Faculty.AuthenticationServer.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
         public async Task<ActionResult<UserDisplay>> Create(UserAdd model)
         {
-            var identity = new CustomUser { UserName = model.Login, Birthday = model.Birthday };
+            var identity = new CustomUser { UserName = model.Login, Birthday = model.Birthday.Date };
             var result = await _userManager.CreateAsync(identity, model.Password);
             if (result.Succeeded == false)
             {
@@ -110,7 +110,7 @@ namespace Faculty.AuthenticationServer.Controllers
             }
 
             identity.UserName = userModify.Login;
-            identity.Birthday = userModify.Birthday;
+            identity.Birthday = userModify.Birthday.Date;
             await UpdateUserRoles(identity, userModify);
             var resultUpdate = await _userManager.UpdateAsync(identity);
             if (resultUpdate.Succeeded == false)
