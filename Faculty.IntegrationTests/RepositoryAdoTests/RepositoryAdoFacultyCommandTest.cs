@@ -4,8 +4,8 @@ using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 using System.Collections.Generic;
-using Faculty.DataAccessLayer.Repository;
 using Microsoft.Extensions.Configuration;
+using Faculty.DataAccessLayer.Repository;
 using Faculty.DataAccessLayer.Repository.Ado;
 
 namespace Faculty.IntegrationTests.RepositoryAdoTests

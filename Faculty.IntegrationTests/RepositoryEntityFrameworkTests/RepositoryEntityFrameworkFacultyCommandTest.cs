@@ -3,9 +3,9 @@ using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Repository;
 using Faculty.DataAccessLayer.Repository.EntityFramework;
-using Microsoft.EntityFrameworkCore;
 
 namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
 {

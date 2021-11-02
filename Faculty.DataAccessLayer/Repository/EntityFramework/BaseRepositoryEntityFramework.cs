@@ -29,21 +29,21 @@ namespace Faculty.DataAccessLayer.Repository.EntityFramework
         /// </summary>
         /// <param name="entity">Entity model.</param>
         /// <returns>Count added models.</returns>
-        public int Insert(T entity)
+        public T Insert(T entity)
         {
-            if (entity is null) return 0;
+            if (entity is null) return null;
             Context.Set<T>().Add(entity);
             try
             {
-                var count = Context.SaveChanges();
-                return count;
+                Context.SaveChanges();
+                return entity;
             }
             catch (DbUpdateConcurrencyException)
             {
 
             }
 
-            return 0;
+            return null;
         }
 
         /// <summary>
