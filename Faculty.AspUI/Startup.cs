@@ -1,6 +1,10 @@
+using System;
 using AutoMapper;
+using Faculty.AspUI.Tools;
 using System.Globalization;
-using Microsoft.Extensions.Hosting;
+using System.Security.Claims;
+using Faculty.AspUI.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
@@ -8,10 +12,13 @@ using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
 using Faculty.BusinessLayer.Interfaces;
+using Faculty.AspUI.HttpMessageHandlers;
+using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Faculty.DataAccessLayer.Repository;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Faculty.DataAccessLayer.Repository.EntityFramework;
 using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
@@ -28,27 +35,29 @@ namespace Faculty.AspUI
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews().AddDataAnnotationsLocalization().AddViewLocalization();
-            services.AddRequestLocalization();
+            services.AddMvc().AddDataAnnotationsLocalization().AddViewLocalization();
             services.AddDatabaseContext(Configuration);
-            services.AddRepositories();
+            services.AddAuthenticationWithCookies(Configuration);
+            services.AddAuthorizationWithRole();
+            services.AddHttpContextAccessor();
+            services.AddRequestLocalization();
             services.AddControllerServices();
+            services.AddUsersHttpClients(Configuration);
+            services.AddRepositories();
             services.AddMapper();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RequestLocalizationOptions> localizationOptions)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
+            app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseRequestLocalization(localizationOptions.Value);
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(null, "{controller=Faculty}/{action=Index}/{id?}");
+                endpoints.MapDefaultControllerRoute();
             });
         }
     }
@@ -57,6 +66,7 @@ namespace Faculty.AspUI
     {
         public static void AddRequestLocalization(this IServiceCollection services)
         {
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
             var cultures = new[]
             {
                 new CultureInfo("en"),
@@ -69,13 +79,11 @@ namespace Faculty.AspUI
                 options.SupportedCultures = cultures;
                 options.SupportedUICultures = cultures;
             });
-
-            services.AddLocalization(options => options.ResourcesPath = "Resources");
         }
 
         public static void AddDatabaseContext(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetSection("ConnectionString").GetValue(typeof(string), "ConStr").ToString();
+            var connectionString = configuration.GetSection("ConnectionString").GetValue(typeof(string), "ConStr")?.ToString() ?? string.Empty;
             services.AddDbContext<DatabaseContextEntityFramework>(option => option.UseSqlServer(connectionString));
         }
 
@@ -95,12 +103,61 @@ namespace Faculty.AspUI
             services.AddScoped<ISpecializationService, SpecializationService>();
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IFacultyService, FacultyService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         public static void AddMapper(this IServiceCollection services)
         {
             services.AddSingleton<AutoMapper.IConfigurationProvider>(x => new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile())));
             services.AddSingleton<IMapper, Mapper>();
+        }
+
+        public static void AddAuthenticationWithCookies(this IServiceCollection services, IConfiguration configuration)
+        {
+            var authOption = new AuthOptions(configuration);
+            services.AddSingleton(options => new AuthOptions(configuration));
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = new PathString("/Home/Login");
+                    options.AccessDeniedPath = new PathString("/Home/Login");
+                    options.ExpireTimeSpan = TimeSpan.FromDays(authOption.Lifetime);
+                });
+        }
+
+        public static void AddAuthorizationWithRole(this IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Administrator", builder =>
+                {
+                    builder.RequireClaim(ClaimTypes.Role, "administrator");
+                });
+
+                options.AddPolicy("Employee", builder =>
+                {
+                    builder.RequireClaim(ClaimTypes.Role, "employee");
+                });
+
+                options.AddPolicy("Common", builder =>
+                {
+                    builder.RequireAssertion(x => x.User.HasClaim(ClaimTypes.Role, "administrator") || x.User.HasClaim(ClaimTypes.Role, "employee"));
+                });
+            });
+        }
+
+        public static void AddUsersHttpClients(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddTransient<AuthMessageHandler>();
+            services.AddHttpClient<IAuthService, AuthService>( client =>
+            {
+                client.BaseAddress = new Uri(configuration["Url:AuthenticationServer"]);
+            }).AddHttpMessageHandler<AuthMessageHandler>();
+            services.AddHttpClient<IUserService, UserService>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["Url:AuthenticationServer"]);
+            }).AddHttpMessageHandler<AuthMessageHandler>();
         }
     }
 }

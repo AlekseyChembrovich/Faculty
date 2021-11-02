@@ -1,0 +1,45 @@
+﻿@model Faculty.AspUI.ViewModels.LoginRegister.RegisterUser
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@_localizer["RegisterCaption"].Value</h1>
+<hr/>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Register">
+            <div class="form-group">
+                <label asp-for="Login" class="col-form-label">@_localizer["LabelLogin"].Value</label>
+                <input asp-for="Login" class="form-control"/>
+                <span asp-validation-for="Login" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password" class="col-form-label">@_localizer["LabelPassword"].Value</label>
+                <input asp-for="Password" class="form-control"/>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PasswordConfirm" class="col-form-label">@_localizer["ConfirmPassword"].Value</label>
+                <input asp-for="PasswordConfirm" class="form-control"/>
+                <span asp-validation-for="PasswordConfirm" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="@_localizer["BtnRegister"].Value" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" asp-controller="Faculty">@_localizer["LinkBackToList"].Value</a>
+</div>

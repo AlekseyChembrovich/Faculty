@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using Faculty.AspUI.ViewModels.Curator;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.BusinessLayer.Dto.Curator;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Faculty.AspUI.Controllers
 {
+    [Authorize(Policy = "Administrator")]
     public class CuratorController : Controller
     {
         private readonly ICuratorService _curatorService;
@@ -20,6 +22,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var modelsDto = _curatorService.GetAll();

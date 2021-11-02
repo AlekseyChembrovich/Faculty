@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using Faculty.AspUI.ViewModels.Student;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.BusinessLayer.Dto.Student;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Faculty.AspUI.Controllers
 {
+    [Authorize(Policy = "Administrator")]
     public class StudentController : Controller
     {
         private readonly IStudentService _studentService;
@@ -20,6 +22,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var modelsDto = _studentService.GetAll();

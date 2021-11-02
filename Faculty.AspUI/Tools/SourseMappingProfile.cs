@@ -5,16 +5,22 @@ using Faculty.BusinessLayer.Dto.Group;
 using Faculty.AspUI.ViewModels.Student;
 using Faculty.AspUI.ViewModels.Curator;
 using Faculty.AspUI.ViewModels.Faculty;
+using Faculty.BusinessLayer.Dto.Student;
 using Faculty.BusinessLayer.Dto.Curator;
 using Faculty.BusinessLayer.Dto.Faculty;
-using Faculty.BusinessLayer.Dto.Student;
 using Faculty.AspUI.ViewModels.Specialization;
 using Faculty.BusinessLayer.Dto.Specialization;
 
-namespace Faculty.UnitTests
+namespace Faculty.AspUI.Tools
 {
+    /// <summary>
+    /// Mapping source.
+    /// </summary>
     public class SourceMappingProfile : Profile
     {
+        /// <summary>
+        /// Constructor for set up mapping.
+        /// </summary>
         public SourceMappingProfile()
         {
             CreateMap<Curator, CuratorDisplayModifyDto>()
@@ -107,6 +113,7 @@ namespace Faculty.UnitTests
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
                 .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename));
+
 
             CreateMap<CuratorDisplayModifyDto, CuratorDisplayModify>();
             CreateMap<CuratorDisplayModify, CuratorDisplayModifyDto>();

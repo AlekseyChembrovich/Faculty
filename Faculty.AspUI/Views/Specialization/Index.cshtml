@@ -3,10 +3,14 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Specialization - List";
+    var isAdmin = Context.User.IsInRole("administrator");
 }
 
 <div class="container mb-3">
-    @Html.ActionLink(_localizer["BtnNew"].Value, "Create", "Specialization", null, new { @class = "btn btn-primary" })
+    @if (isAdmin)
+    {
+        @Html.ActionLink(_localizer["BtnNew"].Value, "Create", "Specialization", null, new { @class = "btn btn-primary" })
+    }
 </div>
 
 <table class="table">
@@ -24,8 +28,11 @@
                 <td>@(i + 1)</td>
                 <td>@Model[i].Name</td>
                 <td>
-                    @Html.ActionLink(_localizer["BtnDelete"].Value, "Delete", "Specialization", new { id = Model[i].Id }, new { @class = "btn btn-primary mr-2" })
-                    @Html.ActionLink(_localizer["BtnEdit"].Value, "Edit", "Specialization", new { id = Model[i].Id }, new { @class = "btn btn-primary" })
+                    @if (isAdmin)
+                    {
+                        @Html.ActionLink(_localizer["BtnDelete"].Value, "Delete", "Specialization", new {id = Model[i].Id}, new {@class = "btn btn-primary mr-2"})
+                        @Html.ActionLink(_localizer["BtnEdit"].Value, "Edit", "Specialization", new {id = Model[i].Id}, new {@class = "btn btn-primary"})
+                    }
                 </td>
             </tr>
         }

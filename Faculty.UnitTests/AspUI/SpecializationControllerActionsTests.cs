@@ -3,16 +3,17 @@ using Xunit;
 using AutoMapper;
 using System.Linq;
 using FluentAssertions;
+using Faculty.AspUI.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
-using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
+using Faculty.DataAccessLayer.Models;
 using Faculty.DataAccessLayer.Repository;
 using Faculty.AspUI.ViewModels.Specialization;
 using Faculty.BusinessLayer.Dto.Specialization;
 
-namespace Faculty.UnitTests
+namespace Faculty.UnitTests.AspUI
 {
     public class SpecializationControllerActionsTests
     {
@@ -27,7 +28,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void IndexMethod_ReturnsViewResult_WithListOfDisplayModelsDisplay()
+        public void IndexMethod_ReturnsAViewResult_WithAListOfModelDisplay()
         {
             // Arrange
             _mockRepositorySpecialization.Setup(repository => repository.GetAll()).Returns(GetTestModels()).Verifiable();
@@ -69,7 +70,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void CreateMethod_CallInsertMethodRepository_RedirectToIndexMethodWith_ForCorrectModel()
+        public void CreateMethod_CallInsertMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectModel()
         {
             // Arrange
             var modelAdd = new SpecializationAdd { Name = "test1" };
@@ -89,7 +90,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void DeleteGetMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        public void DeleteGetMethod_CallDeleteMethodRepository_RedirectToIndexAction_WhenCorrectArgument()
         {
             // Arrange
             const int deleteModelId = 1;
@@ -108,7 +109,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void DeletePostMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        public void DeletePostMethod_CallDeleteMethodRepository_RedirectToIndexAction_WhenCorrectArgument()
         {
             // Arrange
             var modelModify = new SpecializationDisplayModify { Id = 1, Name = "test1" };
@@ -128,7 +129,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void EditPostMethod_CallUpdateMethodRepository_RedirectToIndexMethod_ForCorrectModel()
+        public void EditPostMethod_CallUpdateMethodRepository_RedirectToIndexAction_WhenCorrectModel()
         {
             // Arrange
             var modelModify = new SpecializationDisplayModify { Id = 1, Name = "test1" };
@@ -148,27 +149,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void EditPostMethod_ReturnsViewResultWithModel_ForInvalidModel()
-        {
-            // Arrange
-            var modelModify = new SpecializationDisplayModify { Id = 1,  Name = null };
-            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<SpecializationDisplayModifyDto, Specialization>(modelDto);
-            _mockRepositorySpecialization.Setup(repository => repository.Update(model)).Verifiable();
-            var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
-            var modelController = new SpecializationController(modelService, _mapper);
-            modelController.ModelState.AddModelError("NameRequired", "Name is required.");
-
-            // Act
-            var result = modelController.Edit(modelModify);
-
-            // Assert
-            Assert.IsType<ViewResult>(result);
-            _mockRepositorySpecialization.Verify(r => r.Update(It.IsAny<Specialization>()), Times.Never);
-        }
-
-        [Fact]
-        public void EditGetMethod_CallGetByIdMethodRepository_ReturnsViewResultWithModel_ForCorrectArgument()
+        public void EditGetMethod_CallGetByIdMethodRepository_ReturnsViewResultWithModel_WhenCorrectArgument()
         {
             // Arrange
             const int editModelId = 1;
@@ -189,7 +170,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void EditGetMethod_RedirectToIndexMethod_ForNotFoundedModel()
+        public void EditGetMethod_ReturnsRedirectToIndexAction_WhenNotFoundedModel()
         {
             // Arrange
             const int editModelId = 1;

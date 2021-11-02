@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using Faculty.AspUI.ViewModels.Group;
 using Faculty.BusinessLayer.Dto.Group;
 using Faculty.BusinessLayer.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Faculty.AspUI.Controllers
 {
+    [Authorize(Policy = "Administrator")]
     public class GroupController : Controller
     {
         private readonly IGroupService _groupService;
@@ -22,6 +24,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var modelsDto = _groupService.GetAll();

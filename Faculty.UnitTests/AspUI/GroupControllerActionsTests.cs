@@ -3,17 +3,18 @@ using Xunit;
 using AutoMapper;
 using System.Linq;
 using FluentAssertions;
+using Faculty.AspUI.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
-using Faculty.DataAccessLayer.Models;
-using Faculty.BusinessLayer.Services;
 using Faculty.AspUI.ViewModels.Group;
+using Faculty.BusinessLayer.Services;
+using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Dto.Group;
 using Faculty.DataAccessLayer.Repository;
 using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
-namespace Faculty.UnitTests
+namespace Faculty.UnitTests.AspUI
 {
     public class GroupControllerActionsTests
     {
@@ -31,7 +32,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void IndexMethod_ReturnsViewResult_WithListOfDisplayModelsDisplay()
+        public void IndexMethod_ReturnsAViewResult_WithAListOfModelDisplay()
         {
             // Arrange
             _mockRepositoryGroup.Setup(repository => repository.GetAllIncludeForeignKey()).Returns(GetTestModels()).Verifiable();
@@ -76,7 +77,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void CreateMethod_CallInsertMethodRepository_RedirectToIndexMethodWith_ForCorrectModel()
+        public void CreateMethod_CallInsertMethodRepository_RedirectToIndexMethod_ForCorrectModel()
         {
             // Arrange
             var modelAdd = new GroupAdd { Name = "test1", SpecializationId = 1 };

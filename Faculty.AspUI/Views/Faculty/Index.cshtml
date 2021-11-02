@@ -3,6 +3,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Faculty - List";
+    var isAdmin = Context.User.IsInRole("administrator");
 }
 
 <div class="container mb-3">
@@ -14,7 +15,10 @@
 </div>
 
 <div class="container mb-3">
-    @Html.ActionLink(_localizer["BtnNew"].Value, "Create", "Faculty", null, new { @class = "btn btn-primary" })
+    @if (isAdmin)
+    {
+        @Html.ActionLink(_localizer["BtnNew"].Value, "Create", "Faculty", null, new { @class = "btn btn-primary" })
+    }
 </div>
 
 <table class="table">
@@ -40,8 +44,11 @@
                 <td>@Model[i].CuratorSurname</td>
                 <td>@Model[i].StudentSurname</td>
                 <td>
-                    @Html.ActionLink(_localizer["BtnDelete"].Value, "Delete", "Faculty", new { id = Model[i].Id }, new { @class = "btn btn-primary mr-2", onclick = "ConfirmOperation()" })
-                    @Html.ActionLink(_localizer["BtnEdit"].Value, "Edit", "Faculty", new { id = Model[i].Id }, new { @class = "btn btn-primary" })
+                    @if (isAdmin)
+                    {
+                        @Html.ActionLink(_localizer["BtnDelete"].Value, "Delete", "Faculty", new {id = Model[i].Id}, new {@class = "btn btn-primary mr-2"})
+                        @Html.ActionLink(_localizer["BtnEdit"].Value, "Edit", "Faculty", new {id = Model[i].Id}, new {@class = "btn btn-primary"})
+                    }
                 </td>
             </tr>
         }

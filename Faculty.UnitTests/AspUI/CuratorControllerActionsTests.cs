@@ -3,16 +3,17 @@ using Xunit;
 using AutoMapper;
 using System.Linq;
 using FluentAssertions;
+using Faculty.AspUI.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
-using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
+using Faculty.DataAccessLayer.Models;
 using Faculty.AspUI.ViewModels.Curator;
 using Faculty.BusinessLayer.Dto.Curator;
 using Faculty.DataAccessLayer.Repository;
 
-namespace Faculty.UnitTests
+namespace Faculty.UnitTests.AspUI
 {
     public class CuratorControllerActionsTests
     {
@@ -27,7 +28,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void IndexMethod_ReturnsViewResult_WithListOfDisplayModelsDisplay()
+        public void IndexMethod_ReturnsAViewResult_WithAListOfModelDisplay()
         {
             // Arrange
             _mockRepositoryCurator.Setup(repository => repository.GetAll()).Returns(GetTestModels()).Verifiable();
@@ -78,7 +79,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void CreateMethod_CallInsertMethodRepository_RedirectToIndexMethodWith_ForCorrectModel()
+        public void CreateMethod_CallInsertMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectModel()
         {
             // Arrange
             var modelAdd = new CuratorAdd { Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
@@ -98,7 +99,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void DeleteGetMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        public void DeleteGetMethod_CallDeleteMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectArgument()
         {
             // Arrange
             const int deleteModelId = 1;
@@ -117,7 +118,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void DeletePostMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        public void DeletePostMethod_CallDeleteMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectArgument()
         {
             // Arrange
             var modelModify = new CuratorDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
@@ -137,7 +138,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void EditPostMethod_CallUpdateMethodRepository_RedirectToIndexMethod_ForCorrectModel()
+        public void EditPostMethod_CallUpdateMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectModel()
         {
             // Arrange
             var modelModify = new CuratorDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
@@ -157,7 +158,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void EditGetMethod_CallGetByIdMethodRepository_ReturnsViewResultWithModel_ForCorrectArgument()
+        public void EditGetMethod_CallGetByIdMethodRepository_ReturnsAViewResultWithModel_WhenCorrectArgument()
         {
             // Arrange
             const int editModelId = 1;
@@ -178,7 +179,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void EditGetMethod_RedirectToIndexMethod_ForNotFoundedModel()
+        public void EditGetMethod_ReturnsRedirectToIndexAction_WhenNotFoundedModel()
         {
             // Arrange
             const int editModelId = 1;

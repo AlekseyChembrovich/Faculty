@@ -1,0 +1,43 @@
+﻿@model IEnumerable<Faculty.AspUI.ViewModels.User.UserDisplay>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Users - List";
+}
+
+<div class="container mb-3">
+    @Html.ActionLink(_localizer["BtnNew"].Value, "Create", "User", null, new { @class = "btn btn-primary" })
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">@_localizer["ColumnNumber"].Value</th>
+            <th scope="col">@_localizer["ColumnLogin"].Value</th>
+            <th scope="col">@_localizer["ColumnRoles"].Value</th>
+            <th scope="col">@_localizer["ColumnBirthday"].Value</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @{
+            var number = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@number</td>
+                    <td>@item.Login</td>
+                    <td>@string.Join(", ", item.Roles)</td>
+                    <td>@item.Birthday.ToShortDateString()</td>
+                    <td>
+                        @Html.ActionLink(_localizer["BtnChangePassword"].Value, "EditPassword", "User", new { id = item.Id }, new { @class = "btn btn-warning text-white" })
+                        @Html.ActionLink(_localizer["BtnDelete"].Value, "Delete", "User", new {id = item.Id}, new {@class = "btn btn-danger mr-3 ml-3"})
+                        @Html.ActionLink(_localizer["BtnEdit"].Value, "Edit", "User", new {id = item.Id}, new {@class = "btn btn-success"})
+                    </td>
+                </tr>
+                number++;
+            }
+        }
+    </tbody>
+</table>

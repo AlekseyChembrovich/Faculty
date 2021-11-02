@@ -3,16 +3,17 @@ using Xunit;
 using AutoMapper;
 using System.Linq;
 using FluentAssertions;
+using Faculty.AspUI.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
-using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Services;
+using Faculty.DataAccessLayer.Models;
 using Faculty.AspUI.ViewModels.Student;
 using Faculty.BusinessLayer.Dto.Student;
 using Faculty.DataAccessLayer.Repository;
 
-namespace Faculty.UnitTests
+namespace Faculty.UnitTests.AspUI
 {
     public class StudentControllerActionsTests
     {
@@ -27,7 +28,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void IndexMethod_ReturnsViewResult_WithListOfDisplayModelsDisplay()
+        public void IndexMethod_ReturnsAViewResult_WithAListOfModelDisplay()
         {
             // Arrange
             _mockRepositoryStudent.Setup(repository => repository.GetAll()).Returns(GetTestModels()).Verifiable();
@@ -75,7 +76,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void CreateMethod_CallInsertMethodRepository_RedirectToIndexMethodWith_ForCorrectModel()
+        public void CreateMethod_CallInsertMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectModel()
         {
             // Arrange
             var modelAdd = new StudentAdd { Surname = "test1", Name = "test1", Doublename = "test1" };
@@ -95,7 +96,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void DeleteGetMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        public void DeleteGetMethod_CallDeleteMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectArgument()
         {
             // Arrange
             const int deleteModelId = 1;
@@ -114,7 +115,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void DeletePostMethod_CallDeleteMethodRepository_RedirectToIndexMethod_ForCorrectArgument()
+        public void DeletePostMethod_CallDeleteMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectArgument()
         {
             // Arrange
             var modelModify = new StudentDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1" };
@@ -134,7 +135,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void EditPostMethod_CallUpdateMethodRepository_RedirectToIndexMethod_ForCorrectModel()
+        public void EditPostMethod_CallUpdateMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectModel()
         {
             // Arrange
             var modelModify = new StudentDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1" };
@@ -154,7 +155,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void EditGetMethod_CallGetByIdMethodRepository_ReturnsViewResultWithModel_ForCorrectArgument()
+        public void EditGetMethod_CallGetByIdMethodRepository_ReturnsViewAResultWithModel_WhenCorrectArgument()
         {
             // Arrange
             const int editModelId = 1;
@@ -175,7 +176,7 @@ namespace Faculty.UnitTests
         }
 
         [Fact]
-        public void EditGetMethod_RedirectToIndexMethod_ForNotFoundedModel()
+        public void EditGetMethod_ReturnsRedirectToIndexAction_WhenNotFoundedModel()
         {
             // Arrange
             const int editModelId = 1;

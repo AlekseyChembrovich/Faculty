@@ -3,11 +3,13 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Faculty.BusinessLayer.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Faculty.AspUI.ViewModels.Specialization;
 using Faculty.BusinessLayer.Dto.Specialization;
 
 namespace Faculty.AspUI.Controllers
 {
+    [Authorize(Policy = "Administrator")]
     public class SpecializationController : Controller
     {
         private readonly ISpecializationService _specializationService;
@@ -20,6 +22,7 @@ namespace Faculty.AspUI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var modelsDto = _specializationService.GetAll();
