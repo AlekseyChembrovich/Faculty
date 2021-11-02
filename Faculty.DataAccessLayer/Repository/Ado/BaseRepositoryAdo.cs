@@ -12,7 +12,7 @@ namespace Faculty.DataAccessLayer.Repository.Ado
         /// <summary>
         /// Field for establishing a connection to the database.
         /// </summary>
-        private readonly DatabaseContextAdo _context;
+        protected readonly DatabaseContextAdo Context;
 
         /// <summary>
         /// Connection context initialization constructor.
@@ -20,7 +20,7 @@ namespace Faculty.DataAccessLayer.Repository.Ado
         /// <param name="context">Database connection.</param>
         protected BaseRepositoryAdo(DatabaseContextAdo context)
         {
-            _context = context;
+            Context = context;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Faculty.DataAccessLayer.Repository.Ado
         public T Insert(T entity)
         {
             if (entity is null) return null;
-            using (var command = _context.SqlConnection.CreateCommand())
+            using (var command = Context.SqlConnection.CreateCommand())
             {
                 SetParametersInsertCommand(entity, command);
                 command.ExecuteNonQuery();
@@ -49,7 +49,7 @@ namespace Faculty.DataAccessLayer.Repository.Ado
         {
             if (entity is null) return 0;
             var count = 0;
-            using (var command = _context.SqlConnection.CreateCommand())
+            using (var command = Context.SqlConnection.CreateCommand())
             {
                 SetParametersUpdateCommand(entity, command);
                 count = command.ExecuteNonQuery();
@@ -67,7 +67,7 @@ namespace Faculty.DataAccessLayer.Repository.Ado
         {
             if (entity is null) return 0;
             var count = 0;
-            using (var command = _context.SqlConnection.CreateCommand())
+            using (var command = Context.SqlConnection.CreateCommand())
             {
                 SetParametersDeleteCommand(entity, command);
                 count = command.ExecuteNonQuery();
@@ -83,7 +83,7 @@ namespace Faculty.DataAccessLayer.Repository.Ado
         public IEnumerable<T> GetAll()
         {
             List<T> result = null;
-            using (var command = _context.SqlConnection.CreateCommand())
+            using (var command = Context.SqlConnection.CreateCommand())
             {
                 result = SetParametersSelectCommandModels(command);
             }
@@ -99,7 +99,7 @@ namespace Faculty.DataAccessLayer.Repository.Ado
         public T GetById(int id)
         {
             T result = null;
-            using (var command = _context.SqlConnection.CreateCommand())
+            using (var command = Context.SqlConnection.CreateCommand())
             {
                 result = SetParametersSelectCommandModel(id, command);
             }
