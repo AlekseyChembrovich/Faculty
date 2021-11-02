@@ -13,7 +13,7 @@ namespace Faculty.DataAccessLayer.Repository
         /// </summary>
         /// <param name="entity">Entity model.</param>
         /// <returns>Count added models.</returns>
-        int Insert(T entity);
+        T Insert(T entity);
 
         /// <summary>
         /// Method for changing data to the database.
