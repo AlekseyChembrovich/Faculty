@@ -104,8 +104,8 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            var modelDto = _mapper.Map<FacultyAdd, FacultyAddDto>(modelAdd);
-            var model = _mapper.Map<FacultyAddDto, DataAccessLayer.Models.Faculty>(modelDto);
+            var modelDto = _mapper.Map<FacultyAdd, FacultyDto>(modelAdd);
+            var model = _mapper.Map<FacultyDto, DataAccessLayer.Models.Faculty>(modelDto);
             _mockRepositoryFaculty.Setup(repository => repository.Insert(model)).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object, _mapper);
             var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
@@ -159,8 +159,8 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            var modelDto = _mapper.Map<FacultyModify, FacultyModifyDto>(modelModify);
-            var model = _mapper.Map<FacultyModifyDto, DataAccessLayer.Models.Faculty>(modelDto);
+            var modelDto = _mapper.Map<FacultyModify, FacultyDto>(modelModify);
+            var model = _mapper.Map<FacultyDto, DataAccessLayer.Models.Faculty>(modelDto);
             _mockRepositoryFaculty.Setup(repository => repository.Delete(model)).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object, _mapper);
             var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
@@ -187,8 +187,8 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            var modelDto = _mapper.Map<FacultyModify, FacultyModifyDto>(modelModify);
-            var model = _mapper.Map<FacultyModifyDto, DataAccessLayer.Models.Faculty>(modelDto);
+            var modelDto = _mapper.Map<FacultyModify, FacultyDto>(modelModify);
+            var model = _mapper.Map<FacultyDto, DataAccessLayer.Models.Faculty>(modelDto);
             _mockRepositoryFaculty.Setup(repository => repository.Update(model)).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object, _mapper);
             var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
@@ -216,8 +216,8 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            var modelDto = _mapper.Map<FacultyModify, FacultyModifyDto>(modelModify);
-            var model = _mapper.Map<FacultyModifyDto, DataAccessLayer.Models.Faculty>(modelDto);
+            var modelDto = _mapper.Map<FacultyModify, FacultyDto>(modelModify);
+            var model = _mapper.Map<FacultyDto, DataAccessLayer.Models.Faculty>(modelDto);
             _mockRepositoryFaculty.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
             var facultyService = new FacultyService(_mockRepositoryFaculty.Object, _mapper);
             var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);

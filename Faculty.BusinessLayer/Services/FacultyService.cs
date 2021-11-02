@@ -46,10 +46,10 @@ namespace Faculty.BusinessLayer.Services
         /// Method for creating a new entity.
         /// </summary>
         /// <param name="dto">Add Dto.</param>
-        public FacultyAddDto Create(FacultyAddDto dto)
+        public FacultyDto Create(FacultyDto dto)
         {
-            var faculty = _repositoryFaculty.Insert(_mapper.Map<FacultyAddDto, DataAccessLayer.Models.Faculty>(dto));
-            var facultyDto = _mapper.Map<DataAccessLayer.Models.Faculty, FacultyAddDto>(faculty);
+            var faculty = _repositoryFaculty.Insert(_mapper.Map<FacultyDto, DataAccessLayer.Models.Faculty>(dto));
+            var facultyDto = _mapper.Map<DataAccessLayer.Models.Faculty, FacultyDto>(faculty);
             return facultyDto;
         }
 
@@ -69,19 +69,19 @@ namespace Faculty.BusinessLayer.Services
         /// </summary>
         /// <param name="id">Id exist entity.</param>
         /// <returns>Modify Dto.</returns>
-        public FacultyModifyDto GetById(int id)
+        public FacultyDto GetById(int id)
         {
             var model = _repositoryFaculty.GetById(id);
-            return _mapper.Map<DataAccessLayer.Models.Faculty, FacultyModifyDto>(model);
+            return _mapper.Map<DataAccessLayer.Models.Faculty, FacultyDto>(model);
         }
 
         /// <summary>
         /// Method for changing a exist entity.
         /// </summary>
         /// <param name="dto">Modify Dto.</param>
-        public void Edit(FacultyModifyDto dto)
+        public void Edit(FacultyDto dto)
         {
-            _repositoryFaculty.Update(_mapper.Map<FacultyModifyDto, DataAccessLayer.Models.Faculty>(dto));
+            _repositoryFaculty.Update(_mapper.Map<FacultyDto, DataAccessLayer.Models.Faculty>(dto));
         }
     }
 }

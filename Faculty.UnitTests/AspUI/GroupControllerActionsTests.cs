@@ -81,8 +81,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var modelAdd = new GroupAdd { Name = "test1", SpecializationId = 1 };
-            var modelDto = _mapper.Map<GroupAdd, GroupAddDto>(modelAdd);
-            var model = _mapper.Map<GroupAddDto, Group>(modelDto);
+            var modelDto = _mapper.Map<GroupAdd, GroupDto>(modelAdd);
+            var model = _mapper.Map<GroupDto, Group>(modelDto);
             _mockRepositoryGroup.Setup(repository => repository.Insert(model)).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object, _mapper);
             var modelController = new GroupController(groupService, _specializationService, _mapper);
@@ -120,8 +120,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var modelModify = new GroupModify { Id = 1, Name = "test1", SpecializationId = 1 };
-            var modelDto = _mapper.Map<GroupModify, GroupModifyDto>(modelModify);
-            var model = _mapper.Map<GroupModifyDto, Group>(modelDto);
+            var modelDto = _mapper.Map<GroupModify, GroupDto>(modelModify);
+            var model = _mapper.Map<GroupDto, Group>(modelDto);
             _mockRepositoryGroup.Setup(repository => repository.Delete(model)).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object, _mapper);
             var modelController = new GroupController(groupService, _specializationService, _mapper);
@@ -140,8 +140,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var modelModify = new GroupModify { Id = 1, Name = "test1", SpecializationId = 1 };
-            var modelDto = _mapper.Map<GroupModify, GroupModifyDto>(modelModify);
-            var model = _mapper.Map<GroupModifyDto, Group>(modelDto);
+            var modelDto = _mapper.Map<GroupModify, GroupDto>(modelModify);
+            var model = _mapper.Map<GroupDto, Group>(modelDto);
             _mockRepositoryGroup.Setup(repository => repository.Update(model)).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object, _mapper);
             var modelController = new GroupController(groupService, _specializationService, _mapper);
@@ -161,8 +161,8 @@ namespace Faculty.UnitTests.AspUI
             // Arrange
             const int editModelId = 1;
             var modelModify = new GroupModify { Id = editModelId, Name = "test1", SpecializationId = 1 };
-            var modelDto = _mapper.Map<GroupModify, GroupModifyDto>(modelModify);
-            var model = _mapper.Map<GroupModifyDto, Group>(modelDto);
+            var modelDto = _mapper.Map<GroupModify, GroupDto>(modelModify);
+            var model = _mapper.Map<GroupDto, Group>(modelDto);
             _mockRepositoryGroup.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
             var groupService = new GroupService(_mockRepositoryGroup.Object, _mapper);
             var modelController = new GroupController(groupService, _specializationService, _mapper);

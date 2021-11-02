@@ -3,8 +3,13 @@
     /// <summary>
     /// Dto Curator.
     /// </summary>
-    public class CuratorAddDto
+    public class CuratorDto
     {
+        /// <summary>
+        /// Unique identificator curator.
+        /// </summary>
+        public int Id { get; set; }
+
         /// <summary>
         /// Surname curator.
         /// </summary>

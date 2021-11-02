@@ -3,8 +3,13 @@
     /// <summary>
     /// Dto Specialization.
     /// </summary>
-    public class SpecializationAddDto
+    public class SpecializationDto
     {
+        /// <summary>
+        /// Unique identificator specialization.
+        /// </summary>
+        public int Id { get; set; }
+
         /// <summary>
         /// Name specialization.
         /// </summary>

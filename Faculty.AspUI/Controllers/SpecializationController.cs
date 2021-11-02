@@ -23,7 +23,7 @@ namespace Faculty.AspUI.Controllers
         public IActionResult Index()
         {
             var modelsDto = _specializationService.GetAll();
-            var models = _mapper.Map<IEnumerable<SpecializationDisplayModifyDto>, IEnumerable<SpecializationDisplayModify>>(modelsDto);
+            var models = _mapper.Map<IEnumerable<SpecializationDto>, IEnumerable<SpecializationDisplayModify>>(modelsDto);
             return View(models.ToList());
         }
 
@@ -37,7 +37,7 @@ namespace Faculty.AspUI.Controllers
         public IActionResult Create(SpecializationAdd model)
         {
             if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<SpecializationAdd, SpecializationAddDto>(model);
+            var modelDto = _mapper.Map<SpecializationAdd, SpecializationDto>(model);
             _specializationService.Create(modelDto);
             return RedirectToAction("Index");
         }
@@ -47,7 +47,7 @@ namespace Faculty.AspUI.Controllers
         {
             var modelDto = _specializationService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<SpecializationDisplayModifyDto, SpecializationDisplayModify>(modelDto);
+            var model = _mapper.Map<SpecializationDto, SpecializationDisplayModify>(modelDto);
             return View(model);
         }
 
@@ -63,7 +63,7 @@ namespace Faculty.AspUI.Controllers
         {
             var modelDto = _specializationService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<SpecializationDisplayModifyDto, SpecializationDisplayModify>(modelDto);
+            var model = _mapper.Map<SpecializationDto, SpecializationDisplayModify>(modelDto);
             return View(model);
         }
 
@@ -71,7 +71,7 @@ namespace Faculty.AspUI.Controllers
         public IActionResult Edit(SpecializationDisplayModify model)
         {
             if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(model);
+            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDto>(model);
             _specializationService.Edit(modelDto);
             return RedirectToAction("Index");
         }

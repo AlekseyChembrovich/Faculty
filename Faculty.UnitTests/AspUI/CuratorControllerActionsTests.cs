@@ -83,8 +83,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var modelAdd = new CuratorAdd { Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
-            var modelDto = _mapper.Map<CuratorAdd, CuratorAddDto>(modelAdd);
-            var model = _mapper.Map<CuratorAddDto, Curator>(modelDto);
+            var modelDto = _mapper.Map<CuratorAdd, CuratorDto>(modelAdd);
+            var model = _mapper.Map<CuratorDto, Curator>(modelDto);
             _mockRepositoryCurator.Setup(repository => repository.Insert(model)).Verifiable();
             var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
             var modelController = new CuratorController(modelService, _mapper);
@@ -122,8 +122,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var modelModify = new CuratorDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
-            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto);
+            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(modelModify);
+            var model = _mapper.Map<CuratorDto, Curator>(modelDto);
             _mockRepositoryCurator.Setup(repository => repository.Delete(model)).Verifiable();
             var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
             var modelController = new CuratorController(modelService, _mapper);
@@ -142,8 +142,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var modelModify = new CuratorDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
-            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto);
+            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(modelModify);
+            var model = _mapper.Map<CuratorDto, Curator>(modelDto);
             _mockRepositoryCurator.Setup(repository => repository.Update(model)).Verifiable();
             var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
             var modelController = new CuratorController(modelService, _mapper);
@@ -163,8 +163,8 @@ namespace Faculty.UnitTests.AspUI
             // Arrange
             const int editModelId = 1;
             var modelModify = new CuratorDisplayModify { Id = editModelId, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
-            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto);
+            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(modelModify);
+            var model = _mapper.Map<CuratorDto, Curator>(modelDto);
             _mockRepositoryCurator.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
             var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
             var modelController = new CuratorController(modelService, _mapper);

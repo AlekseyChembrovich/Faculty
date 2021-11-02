@@ -3,8 +3,13 @@
     /// <summary>
     /// Dto Student.
     /// </summary>
-    public class StudentAddDto
+    public class StudentDto
     {
+        /// <summary>
+        /// Unique identificator student.
+        /// </summary>
+        public int Id { get; set; }
+
         /// <summary>
         /// Surname student.
         /// </summary>

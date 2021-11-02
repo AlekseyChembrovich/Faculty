@@ -3,8 +3,13 @@
     /// <summary>
     /// Dto Group.
     /// </summary>
-    public class GroupAddDto
+    public class GroupDto
     {
+        /// <summary>
+        /// Unique identificator group.
+        /// </summary>
+        public int Id { get; set; }
+
         /// <summary>
         /// Name group.
         /// </summary>
