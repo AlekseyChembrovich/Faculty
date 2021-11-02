@@ -44,7 +44,7 @@ namespace Faculty.AspUI.Controllers
         {
             FillViewBag();
             if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<GroupAdd, GroupAddDto>(model);
+            var modelDto = _mapper.Map<GroupAdd, GroupDto>(model);
             _groupService.Create(modelDto);
             return RedirectToAction("Index");
         }
@@ -54,7 +54,7 @@ namespace Faculty.AspUI.Controllers
         {
             var modelDto = _groupService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<GroupModifyDto, GroupModify>(modelDto);
+            var model = _mapper.Map<GroupDto, GroupModify>(modelDto);
             FillViewBag();
             return View(model);
         }
@@ -71,7 +71,7 @@ namespace Faculty.AspUI.Controllers
         {
             var modelDto = _groupService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<GroupModifyDto, GroupModify>(modelDto);
+            var model = _mapper.Map<GroupDto, GroupModify>(modelDto);
             FillViewBag();
             return View(model);
         }
@@ -81,7 +81,7 @@ namespace Faculty.AspUI.Controllers
         {
             FillViewBag();
             if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<GroupModify, GroupModifyDto>(model);
+            var modelDto = _mapper.Map<GroupModify, GroupDto>(model);
             _groupService.Edit(modelDto);
             return RedirectToAction("Index");
         }

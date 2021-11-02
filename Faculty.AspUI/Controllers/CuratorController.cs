@@ -26,7 +26,7 @@ namespace Faculty.AspUI.Controllers
         public IActionResult Index()
         {
             var modelsDto = _curatorService.GetAll();
-            var models = _mapper.Map<IEnumerable<CuratorDisplayModifyDto>, IEnumerable<CuratorDisplayModify>>(modelsDto);
+            var models = _mapper.Map<IEnumerable<CuratorDto>, IEnumerable<CuratorDisplayModify>>(modelsDto);
             return View(models.ToList());
         }
 
@@ -40,7 +40,7 @@ namespace Faculty.AspUI.Controllers
         public IActionResult Create(CuratorAdd model)
         {
             if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<CuratorAdd, CuratorAddDto>(model);
+            var modelDto = _mapper.Map<CuratorAdd, CuratorDto>(model);
             _curatorService.Create(modelDto);
             return RedirectToAction("Index");
         }
@@ -50,7 +50,7 @@ namespace Faculty.AspUI.Controllers
         {
             var modelDto = _curatorService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<CuratorDisplayModifyDto, CuratorDisplayModify>(modelDto);
+            var model = _mapper.Map<CuratorDto, CuratorDisplayModify>(modelDto);
             return View(model);
         }
 
@@ -66,7 +66,7 @@ namespace Faculty.AspUI.Controllers
         {
             var modelDto = _curatorService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<CuratorDisplayModifyDto, CuratorDisplayModify>(modelDto);
+            var model = _mapper.Map<CuratorDto, CuratorDisplayModify>(modelDto);
             return View(model);
         }
 
@@ -74,7 +74,7 @@ namespace Faculty.AspUI.Controllers
         public IActionResult Edit(CuratorDisplayModify model)
         {
             if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(model);
+            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(model);
             _curatorService.Edit(modelDto);
             return RedirectToAction("Index");
         }
