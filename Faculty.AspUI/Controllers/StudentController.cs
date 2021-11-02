@@ -26,7 +26,7 @@ namespace Faculty.AspUI.Controllers
         public IActionResult Index()
         {
             var modelsDto = _studentService.GetAll();
-            var models = _mapper.Map<IEnumerable<StudentDisplayModifyDto>, IEnumerable<StudentDisplayModify>>(modelsDto);
+            var models = _mapper.Map<IEnumerable<StudentDto>, IEnumerable<StudentDisplayModify>>(modelsDto);
             return View(models.ToList());
         }
 
@@ -40,7 +40,7 @@ namespace Faculty.AspUI.Controllers
         public IActionResult Create(StudentAdd model)
         {
             if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<StudentAdd, StudentAddDto>(model);
+            var modelDto = _mapper.Map<StudentAdd, StudentDto>(model);
             _studentService.Create(modelDto);
             return RedirectToAction("Index");
         }
@@ -50,7 +50,7 @@ namespace Faculty.AspUI.Controllers
         {
             var modelDto = _studentService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<StudentDisplayModifyDto, StudentDisplayModify>(modelDto);
+            var model = _mapper.Map<StudentDto, StudentDisplayModify>(modelDto);
             return View(model);
         }
 
@@ -66,7 +66,7 @@ namespace Faculty.AspUI.Controllers
         {
             var modelDto = _studentService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<StudentDisplayModifyDto, StudentDisplayModify>(modelDto);
+            var model = _mapper.Map<StudentDto, StudentDisplayModify>(modelDto);
             return View(model);
         }
 
@@ -74,7 +74,7 @@ namespace Faculty.AspUI.Controllers
         public IActionResult Edit(StudentDisplayModify model)
         {
             if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<StudentDisplayModify, StudentDisplayModifyDto>(model);
+            var modelDto = _mapper.Map<StudentDisplayModify, StudentDto>(model);
             _studentService.Edit(modelDto);
             return RedirectToAction("Index");
         }

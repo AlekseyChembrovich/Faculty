@@ -5,8 +5,13 @@ namespace Faculty.BusinessLayer.Dto.Faculty
     /// <summary>
     /// Dto Faculty.
     /// </summary>
-    public class FacultyAddDto
+    public class FacultyDto
     {
+        /// <summary>
+        /// Unique identificator faculty.
+        /// </summary>
+        public int Id { get; set; }
+
         /// <summary>
         /// Date start education student. 
         /// </summary>

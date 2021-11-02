@@ -80,8 +80,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var modelAdd = new StudentAdd { Surname = "test1", Name = "test1", Doublename = "test1" };
-            var modelDto = _mapper.Map<StudentAdd, StudentAddDto>(modelAdd);
-            var model = _mapper.Map<StudentAddDto, Student>(modelDto);
+            var modelDto = _mapper.Map<StudentAdd, StudentDto>(modelAdd);
+            var model = _mapper.Map<StudentDto, Student>(modelDto);
             _mockRepositoryStudent.Setup(repository => repository.Insert(model)).Verifiable();
             var modelService = new StudentService(_mockRepositoryStudent.Object, _mapper);
             var modelController = new StudentController(modelService, _mapper);
@@ -119,8 +119,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var modelModify = new StudentDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1" };
-            var modelDto = _mapper.Map<StudentDisplayModify, StudentDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<StudentDisplayModifyDto, Student>(modelDto);
+            var modelDto = _mapper.Map<StudentDisplayModify, StudentDto>(modelModify);
+            var model = _mapper.Map<StudentDto, Student>(modelDto);
             _mockRepositoryStudent.Setup(repository => repository.Delete(model)).Verifiable();
             var modelService = new StudentService(_mockRepositoryStudent.Object, _mapper);
             var modelController = new StudentController(modelService, _mapper);
@@ -139,8 +139,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var modelModify = new StudentDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1" };
-            var modelDto = _mapper.Map<StudentDisplayModify, StudentDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<StudentDisplayModifyDto, Student>(modelDto);
+            var modelDto = _mapper.Map<StudentDisplayModify, StudentDto>(modelModify);
+            var model = _mapper.Map<StudentDto, Student>(modelDto);
             _mockRepositoryStudent.Setup(repository => repository.Update(model)).Verifiable();
             var modelService = new StudentService(_mockRepositoryStudent.Object, _mapper);
             var modelController = new StudentController(modelService, _mapper);
@@ -160,8 +160,8 @@ namespace Faculty.UnitTests.AspUI
             // Arrange
             const int editModelId = 1;
             var modelModify = new StudentDisplayModify { Id = editModelId, Surname = "test1", Name = "test1", Doublename = "test1" };
-            var modelDto = _mapper.Map<StudentDisplayModify, StudentDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<StudentDisplayModifyDto, Student>(modelDto);
+            var modelDto = _mapper.Map<StudentDisplayModify, StudentDto>(modelModify);
+            var model = _mapper.Map<StudentDto, Student>(modelDto);
             _mockRepositoryStudent.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
             var modelService = new StudentService(_mockRepositoryStudent.Object, _mapper);
             var modelController = new StudentController(modelService, _mapper);

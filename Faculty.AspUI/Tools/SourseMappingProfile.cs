@@ -23,20 +23,14 @@ namespace Faculty.AspUI.Tools
         /// </summary>
         public SourceMappingProfile()
         {
-            CreateMap<Curator, CuratorDisplayModifyDto>()
+            CreateMap<Curator, CuratorDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
                 .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename))
                 .ForMember(dest => dest.Phone, opt => opt.MapFrom(x => x.Phone));
-            CreateMap<CuratorDisplayModifyDto, Curator>()
+            CreateMap<CuratorDto, Curator>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
-                .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
-                .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename))
-                .ForMember(dest => dest.Phone, opt => opt.MapFrom(x => x.Phone));
-            CreateMap<CuratorAddDto, Curator>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
                 .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename))
@@ -49,22 +43,15 @@ namespace Faculty.AspUI.Tools
                 .ForMember(dest => dest.CuratorSurname, opt => opt.MapFrom(x => x.Curator.Surname))
                 .ForMember(dest => dest.StudentSurname, opt => opt.MapFrom(x => x.Student.Surname))
                 .ForMember(dest => dest.GroupName, opt => opt.MapFrom(x => x.Group.Name));
-            CreateMap<DataAccessLayer.Models.Faculty, FacultyModifyDto>()
+            CreateMap<DataAccessLayer.Models.Faculty, FacultyDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
                 .ForMember(dest => dest.StartDateEducation, opt => opt.MapFrom(x => x.StartDateEducation))
                 .ForMember(dest => dest.CountYearEducation, opt => opt.MapFrom(x => x.CountYearEducation))
                 .ForMember(dest => dest.CuratorId, opt => opt.MapFrom(x => x.CuratorId))
                 .ForMember(dest => dest.StudentId, opt => opt.MapFrom(x => x.StudentId))
                 .ForMember(dest => dest.GroupId, opt => opt.MapFrom(x => x.GroupId));
-            CreateMap<FacultyModifyDto, DataAccessLayer.Models.Faculty>()
+            CreateMap<FacultyDto, DataAccessLayer.Models.Faculty>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
-                .ForMember(dest => dest.StartDateEducation, opt => opt.MapFrom(x => x.StartDateEducation))
-                .ForMember(dest => dest.CountYearEducation, opt => opt.MapFrom(x => x.CountYearEducation))
-                .ForMember(dest => dest.CuratorId, opt => opt.MapFrom(x => x.CuratorId))
-                .ForMember(dest => dest.StudentId, opt => opt.MapFrom(x => x.StudentId))
-                .ForMember(dest => dest.GroupId, opt => opt.MapFrom(x => x.GroupId));
-            CreateMap<FacultyAddDto, DataAccessLayer.Models.Faculty>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.StartDateEducation, opt => opt.MapFrom(x => x.StartDateEducation))
                 .ForMember(dest => dest.CountYearEducation, opt => opt.MapFrom(x => x.CountYearEducation))
                 .ForMember(dest => dest.CuratorId, opt => opt.MapFrom(x => x.CuratorId))
@@ -75,67 +62,123 @@ namespace Faculty.AspUI.Tools
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
                 .ForMember(dest => dest.SpecializationName, opt => opt.MapFrom(x => x.Specialization.Name));
-            CreateMap<Group, GroupModifyDto>()
+            CreateMap<Group, GroupDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
                 .ForMember(dest => dest.SpecializationId, opt => opt.MapFrom(x => x.SpecializationId));
-            CreateMap<GroupModifyDto, Group>()
+            CreateMap<GroupDto, Group>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
-                .ForMember(dest => dest.SpecializationId, opt => opt.MapFrom(x => x.SpecializationId));
-            CreateMap<GroupAddDto, Group>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
                 .ForMember(dest => dest.SpecializationId, opt => opt.MapFrom(x => x.SpecializationId));
 
-            CreateMap<Specialization, SpecializationDisplayModifyDto>()
+            CreateMap<Specialization, SpecializationDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name));
-            CreateMap<SpecializationDisplayModifyDto, Specialization>()
+            CreateMap<SpecializationDto, Specialization>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name));
-            CreateMap<SpecializationAddDto, Specialization>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name));
 
-            CreateMap<Student, StudentDisplayModifyDto>()
+            CreateMap<Student, StudentDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
                 .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename));
-            CreateMap<StudentDisplayModifyDto, Student>()
+            CreateMap<StudentDto, Student>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
                 .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename));
-            CreateMap<StudentAddDto, Student>()
+
+            CreateMap<CuratorDto, CuratorDisplayModify>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
+                .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename))
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(x => x.Phone));
+            CreateMap<CuratorDisplayModify, CuratorDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
+                .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename))
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(x => x.Phone));
+            CreateMap<CuratorAdd, CuratorDto>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
+                .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename))
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(x => x.Phone));
+
+            CreateMap<FacultyDisplayDto, FacultyDisplay>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.StartDateEducation, opt => opt.MapFrom(x => x.StartDateEducation))
+                .ForMember(dest => dest.CountYearEducation, opt => opt.MapFrom(x => x.CountYearEducation))
+                .ForMember(dest => dest.CuratorSurname, opt => opt.MapFrom(x => x.CuratorSurname))
+                .ForMember(dest => dest.StudentSurname, opt => opt.MapFrom(x => x.StudentSurname))
+                .ForMember(dest => dest.GroupName, opt => opt.MapFrom(x => x.GroupName));
+            CreateMap<FacultyDto, FacultyModify>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.StartDateEducation, opt => opt.MapFrom(x => x.StartDateEducation))
+                .ForMember(dest => dest.CountYearEducation, opt => opt.MapFrom(x => x.CountYearEducation))
+                .ForMember(dest => dest.CuratorId, opt => opt.MapFrom(x => x.CuratorId))
+                .ForMember(dest => dest.StudentId, opt => opt.MapFrom(x => x.StudentId))
+                .ForMember(dest => dest.GroupId, opt => opt.MapFrom(x => x.GroupId));
+            CreateMap<FacultyModify, FacultyDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.StartDateEducation, opt => opt.MapFrom(x => x.StartDateEducation))
+                .ForMember(dest => dest.CountYearEducation, opt => opt.MapFrom(x => x.CountYearEducation))
+                .ForMember(dest => dest.CuratorId, opt => opt.MapFrom(x => x.CuratorId))
+                .ForMember(dest => dest.StudentId, opt => opt.MapFrom(x => x.StudentId))
+                .ForMember(dest => dest.GroupId, opt => opt.MapFrom(x => x.GroupId));
+            CreateMap<FacultyAdd, FacultyDto>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.StartDateEducation, opt => opt.MapFrom(x => x.StartDateEducation))
+                .ForMember(dest => dest.CountYearEducation, opt => opt.MapFrom(x => x.CountYearEducation))
+                .ForMember(dest => dest.CuratorId, opt => opt.MapFrom(x => x.CuratorId))
+                .ForMember(dest => dest.StudentId, opt => opt.MapFrom(x => x.StudentId))
+                .ForMember(dest => dest.GroupId, opt => opt.MapFrom(x => x.GroupId));
+
+            CreateMap<GroupDisplayDto, GroupDisplay>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
+                .ForMember(dest => dest.SpecializationName, opt => opt.MapFrom(x => x.SpecializationName));
+            CreateMap<GroupDto, GroupModify>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
+                .ForMember(dest => dest.SpecializationId, opt => opt.MapFrom(x => x.SpecializationId));
+            CreateMap<GroupModify, GroupDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
+                .ForMember(dest => dest.SpecializationId, opt => opt.MapFrom(x => x.SpecializationId));
+            CreateMap<GroupAdd, GroupDto>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
+                .ForMember(dest => dest.SpecializationId, opt => opt.MapFrom(x => x.SpecializationId));
+
+            CreateMap<SpecializationDto, SpecializationDisplayModify>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name));
+            CreateMap<SpecializationDisplayModify, SpecializationDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name));
+            CreateMap<SpecializationAdd, SpecializationDto>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name));
+
+            CreateMap<StudentDto, StudentDisplayModify>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
+                .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename));
+            CreateMap<StudentDisplayModify, StudentDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
+                .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename));
+            CreateMap<StudentAdd, StudentDto>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
                 .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename));
-
-
-            CreateMap<CuratorDisplayModifyDto, CuratorDisplayModify>();
-            CreateMap<CuratorDisplayModify, CuratorDisplayModifyDto>();
-            CreateMap<CuratorAdd, CuratorAddDto>();
-
-            CreateMap<FacultyDisplayDto, FacultyDisplay>();
-            CreateMap<FacultyModifyDto, FacultyModify>();
-            CreateMap<FacultyModify, FacultyModifyDto>();
-            CreateMap<FacultyAdd, FacultyAddDto>();
-
-            CreateMap<GroupDisplayDto, GroupDisplay>();
-            CreateMap<GroupModifyDto, GroupModify>();
-            CreateMap<GroupModify, GroupModifyDto>();
-            CreateMap<GroupAdd, GroupAddDto>();
-
-            CreateMap<SpecializationDisplayModifyDto, SpecializationDisplayModify>();
-            CreateMap<SpecializationDisplayModify, SpecializationDisplayModifyDto>();
-            CreateMap<SpecializationAdd, SpecializationAddDto>();
-
-            CreateMap<StudentDisplayModifyDto, StudentDisplayModify>();
-            CreateMap<StudentDisplayModify, StudentDisplayModifyDto>();
-            CreateMap<StudentAdd, StudentAddDto>();
         }
     }
 }

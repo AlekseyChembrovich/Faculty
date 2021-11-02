@@ -49,7 +49,7 @@ namespace Faculty.AspUI.Controllers
         {
             FillViewBag();
             if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<FacultyAdd, FacultyAddDto>(model);
+            var modelDto = _mapper.Map<FacultyAdd, FacultyDto>(model);
             _facultyService.Create(modelDto);
             return RedirectToAction("Index");
         }
@@ -59,7 +59,7 @@ namespace Faculty.AspUI.Controllers
         {
             var modelDto = _facultyService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<FacultyModifyDto, FacultyModify>(modelDto);
+            var model = _mapper.Map<FacultyDto, FacultyModify>(modelDto);
             FillViewBag();
             return View(model);
         }
@@ -76,7 +76,7 @@ namespace Faculty.AspUI.Controllers
         {
             var modelDto = _facultyService.GetById(id);
             if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<FacultyModifyDto, FacultyModify>(modelDto);
+            var model = _mapper.Map<FacultyDto, FacultyModify>(modelDto);
             FillViewBag();
             return View(model);
         }
@@ -86,7 +86,7 @@ namespace Faculty.AspUI.Controllers
         {
             FillViewBag();
             if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<FacultyModify, FacultyModifyDto>(model);
+            var modelDto = _mapper.Map<FacultyModify, FacultyDto>(model);
             _facultyService.Edit(modelDto);
             return RedirectToAction("Index");
         }

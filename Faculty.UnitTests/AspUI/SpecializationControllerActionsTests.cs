@@ -74,8 +74,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var modelAdd = new SpecializationAdd { Name = "test1" };
-            var modelDto = _mapper.Map<SpecializationAdd, SpecializationAddDto>(modelAdd);
-            var model = _mapper.Map<SpecializationAddDto, Specialization>(modelDto);
+            var modelDto = _mapper.Map<SpecializationAdd, SpecializationDto>(modelAdd);
+            var model = _mapper.Map<SpecializationDto, Specialization>(modelDto);
             _mockRepositorySpecialization.Setup(repository => repository.Insert(model)).Verifiable();
             var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
@@ -113,8 +113,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var modelModify = new SpecializationDisplayModify { Id = 1, Name = "test1" };
-            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<SpecializationDisplayModifyDto, Specialization>(modelDto);
+            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDto>(modelModify);
+            var model = _mapper.Map<SpecializationDto, Specialization>(modelDto);
             _mockRepositorySpecialization.Setup(repository => repository.Delete(model)).Verifiable();
             var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
@@ -133,8 +133,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var modelModify = new SpecializationDisplayModify { Id = 1, Name = "test1" };
-            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<SpecializationDisplayModifyDto, Specialization>(modelDto);
+            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDto>(modelModify);
+            var model = _mapper.Map<SpecializationDto, Specialization>(modelDto);
             _mockRepositorySpecialization.Setup(repository => repository.Update(model)).Verifiable();
             var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
@@ -154,8 +154,8 @@ namespace Faculty.UnitTests.AspUI
             // Arrange
             const int editModelId = 1;
             var modelModify = new SpecializationDisplayModify { Id = editModelId, Name = "test1" };
-            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<SpecializationDisplayModifyDto, Specialization>(modelDto);
+            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDto>(modelModify);
+            var model = _mapper.Map<SpecializationDto, Specialization>(modelDto);
             _mockRepositorySpecialization.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
             var modelService = new SpecializationService(_mockRepositorySpecialization.Object, _mapper);
             var modelController = new SpecializationController(modelService, _mapper);
