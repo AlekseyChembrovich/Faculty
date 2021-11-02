@@ -7,8 +7,14 @@ using Faculty.AspUI.ViewModels.LoginRegister;
 
 namespace Faculty.AspUI.Services
 {
+    /// <summary>
+    /// Authentication service.
+    /// </summary>
     public class AuthService : IAuthService
     {
+        /// <summary>
+        /// Http Client for sending request. 
+        /// </summary>
         private readonly HttpClient _userClient;
 
         public AuthService(HttpClient httpClient)

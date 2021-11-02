@@ -13,8 +13,14 @@ using Faculty.BusinessLayer.Dto.Specialization;
 
 namespace Faculty.AspUI.Tools
 {
+    /// <summary>
+    /// Mapping source.
+    /// </summary>
     public class SourceMappingProfile : Profile
     {
+        /// <summary>
+        /// Constructor for set up mapping.
+        /// </summary>
         public SourceMappingProfile()
         {
             CreateMap<Curator, CuratorDisplayModifyDto>()
