@@ -78,8 +78,8 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var changedCurator = _mapper.Map(curatorModify, curatorDto);
-            _curatorService.Edit(changedCurator);
+            var changedCuratorDto = _mapper.Map(curatorModify, curatorDto);
+            _curatorService.Edit(changedCuratorDto);
             return NoContent();
         }
     }
