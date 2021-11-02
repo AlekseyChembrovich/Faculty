@@ -29,7 +29,7 @@ namespace Faculty.AspUI.Tools
         /// <summary>
         /// Constructor for init options.
         /// </summary>
-        /// <param name="configuration"></param>
+        /// <param name="configuration">Configuration with file app settings.</param>
         public AuthOptions(IConfiguration configuration)
         {
             Issuer = configuration["AuthOptions:Issuer"];
@@ -41,7 +41,7 @@ namespace Faculty.AspUI.Tools
         /// <summary>
         /// Method for conversion secret key in flow bytes.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>An instance of the SymmetricSecurityKey class.</returns>
         public SymmetricSecurityKey GetSymmetricSecurityKey()
         {
             return new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Key));

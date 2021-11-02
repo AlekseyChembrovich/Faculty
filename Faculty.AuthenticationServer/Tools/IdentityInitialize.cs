@@ -5,8 +5,17 @@ using Faculty.AuthenticationServer.Models;
 
 namespace Faculty.AuthenticationServer.Tools
 {
+    /// <summary>
+    /// Identity initialize for set up default value.
+    /// </summary>
     public class IdentityInitialize
     {
+        /// <summary>
+        /// Method for init admin user.
+        /// </summary>
+        /// <param name="userManager">User manager identity.</param>
+        /// <param name="roleManager">Role manager identity.</param>
+        /// <returns>An instance of the Task class.</returns>
         public static async Task InitializeAsync(UserManager<CustomUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             const string login = "Admin12345";
