@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Faculty.DataAccessLayer.Models;
 
-namespace Faculty.DataAccessLayer.RepositoryEntityFramework
+namespace Faculty.DataAccessLayer.Repository.EntityFramework
 {
     /// <summary>
     /// Context database.

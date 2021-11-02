@@ -2,10 +2,10 @@
 using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
-using Faculty.DataAccessLayer;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Faculty.DataAccessLayer.RepositoryEntityFramework;
+using Faculty.DataAccessLayer.Repository;
+using Faculty.DataAccessLayer.Repository.EntityFramework;
 
 namespace Faculty.IntegrationTests.RepositoryEntityFrameworkTests
 {

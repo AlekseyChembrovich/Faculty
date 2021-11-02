@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
+using System.Collections.Generic;
 
-namespace Faculty.DataAccessLayer.RepositoryAdo
+namespace Faculty.DataAccessLayer.Repository.Ado
 {
     /// <summary>
     /// Implementing the repository pattern (Ado).
@@ -28,17 +28,16 @@ namespace Faculty.DataAccessLayer.RepositoryAdo
         /// </summary>
         /// <param name="entity">Entity model.</param>
         /// <returns>Count added models.</returns>
-        public int Insert(T entity)
+        public T Insert(T entity)
         {
-            if (entity is null) return 0;
-            var count = 0;
+            if (entity is null) return null;
             using (var command = _context.SqlConnection.CreateCommand())
             {
                 SetParametersInsertCommand(entity, command);
-                count = command.ExecuteNonQuery();
+                command.ExecuteNonQuery();
             }
 
-            return count;
+            return entity;
         }
 
         /// <summary>

@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
+using System.Collections.Generic;
 
-namespace Faculty.DataAccessLayer.RepositoryAdo
+namespace Faculty.DataAccessLayer.Repository.Ado
 {
     /// <summary>
     /// Implementation of the repository pattern for the Faculty data model.

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace Faculty.DataAccessLayer.RepositoryEntityFramework
+namespace Faculty.DataAccessLayer.Repository.EntityFramework
 {
     /// <summary>
     /// Implementing the repository pattern (Entity Framework).
@@ -29,21 +29,21 @@ namespace Faculty.DataAccessLayer.RepositoryEntityFramework
         /// </summary>
         /// <param name="entity">Entity model.</param>
         /// <returns>Count added models.</returns>
-        public int Insert(T entity)
+        public T Insert(T entity)
         {
-            if (entity is null) return 0;
+            if (entity is null) return null;
             _context.Set<T>().Add(entity);
             try
             {
-                var count = _context.SaveChanges();
-                return count;
+                _context.SaveChanges();
+                return entity;
             }
             catch (DbUpdateConcurrencyException)
             {
 
             }
 
-            return 0;
+            return null;
         }
 
         /// <summary>
