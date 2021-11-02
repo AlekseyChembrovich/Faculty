@@ -12,7 +12,7 @@ namespace Faculty.BusinessLayer.Interfaces
         /// Method for creating a new entity.
         /// </summary>
         /// <param name="dto">Add Dto.</param>
-        void Create(GroupAddDto dto);
+        GroupAddDto Create(GroupAddDto dto);
 
         /// <summary>
         /// Method for deleting a exist entity.

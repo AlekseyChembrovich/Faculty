@@ -49,9 +49,11 @@ namespace Faculty.BusinessLayer.Services
         /// Method for creating a new entity.
         /// </summary>
         /// <param name="dto">Add Dto.</param>
-        public void Create(CuratorAddDto dto)
+        public CuratorAddDto Create(CuratorAddDto dto)
         {
-            _repositoryCurator.Insert(_mapper.Map<CuratorAddDto, Curator>(dto));
+            var curator = _repositoryCurator.Insert(_mapper.Map<CuratorAddDto, Curator>(dto));
+            var curatorDto = _mapper.Map<Curator, CuratorAddDto>(curator);
+            return curatorDto;
         }
 
         /// <summary>
