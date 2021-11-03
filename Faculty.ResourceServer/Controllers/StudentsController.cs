@@ -4,12 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.BusinessLayer.Dto.Student;
+using Microsoft.AspNetCore.Authorization;
 using Faculty.ResourceServer.Models.Student;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.ResourceServer.Controllers
 {
     [ApiController]
     [Route("api/students")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class StudentsController : Controller
     {
         private readonly IStudentService _studentService;
@@ -21,7 +24,9 @@ namespace Faculty.ResourceServer.Controllers
             _mapper = mapper;
         }
 
+        // GET api/students
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<StudentDisplayModify>> GetStudents()
         {
             var studentsDto = _studentService.GetAll();
@@ -31,10 +36,11 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var listCurators = _mapper.Map<List<StudentDisplayModifyDto>, List<StudentDisplayModify>>(listStudentsDto);
-            return Ok(listCurators);
+            var listStudents = _mapper.Map<List<StudentDto>, List<StudentDisplayModify>>(listStudentsDto);
+            return Ok(listStudents);
         }
 
+        // GET api/students/{id}
         [HttpGet("{id:int}")]
         public ActionResult<StudentDisplayModify> GetStudents(int id)
         {
@@ -44,17 +50,23 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var curator = _mapper.Map<StudentDisplayModifyDto, StudentDisplayModify>(curatorDto);
-            return Ok(curator);
+            var student = _mapper.Map<StudentDto, StudentDisplayModify>(curatorDto);
+            return Ok(student);
         }
 
+        // POST api/students
         [HttpPost]
-        public ActionResult<StudentDisplayModify> Create()
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
+        public ActionResult<StudentDisplayModify> Create(StudentAdd studentAdd)
         {
-            return View();
+            var studentDto = _mapper.Map<StudentAdd, StudentDto>(studentAdd);
+            studentDto = _studentService.Create(studentDto);
+            return CreatedAtAction(nameof(GetStudents), new { id = studentDto.Id }, studentAdd);
         }
 
+        // DELETE api/students/{id}
         [HttpDelete("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
         public ActionResult Delete(int id)
         {
             var studentDto = _studentService.GetById(id);
@@ -67,7 +79,9 @@ namespace Faculty.ResourceServer.Controllers
             return NoContent();
         }
 
+        // PUT api/students
         [HttpPut]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
         public ActionResult Edit(StudentDisplayModify studentModify)
         {
             var studentDto = _studentService.GetById(studentModify.Id);

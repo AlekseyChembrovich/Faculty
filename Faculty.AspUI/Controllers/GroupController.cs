@@ -1,10 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Net;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Faculty.AspUI.ViewModels.Group;
-using Faculty.BusinessLayer.Dto.Group;
-using Faculty.BusinessLayer.Interfaces;
+using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Faculty.AspUI.Controllers
@@ -14,81 +15,156 @@ namespace Faculty.AspUI.Controllers
     {
         private readonly IGroupService _groupService;
         private readonly ISpecializationService _specializationService;
-        private readonly IMapper _mapper;
 
-        public GroupController(IGroupService groupService, ISpecializationService specializationService, IMapper mapper)
+        public GroupController(IGroupService groupService, ISpecializationService specializationService)
         {
             _groupService = groupService;
             _specializationService = specializationService;
-            _mapper = mapper;
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var modelsDto = _groupService.GetAll();
-            var models = _mapper.Map<IEnumerable<GroupDisplayDto>, IEnumerable<GroupDisplay>>(modelsDto);
-            return View(models.ToList());
+            IEnumerable<GroupDisplay> groupDisplays = default;
+            try
+            {
+                groupDisplays = await _groupService.GetGroups();
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(groupDisplays.ToList());
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<ActionResult> Create()
         {
-            FillViewBag();
+            try
+            {
+                await FillViewBag();
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(GroupAdd model)
+        public async Task<ActionResult> Create(GroupAdd groupAdd)
         {
-            FillViewBag();
-            if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<GroupAdd, GroupDto>(model);
-            _groupService.Create(modelDto);
+            try
+            {
+                await FillViewBag();
+                if (ModelState.IsValid == false) return View(groupAdd);
+                await _groupService.CreateGroup(groupAdd);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var modelDto = _groupService.GetById(id);
-            if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<GroupDto, GroupModify>(modelDto);
-            FillViewBag();
-            return View(model);
+            GroupModify groupModify = default;
+            try
+            {
+                groupModify = await _groupService.GetGroup(id);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(groupModify);
         }
 
         [HttpPost]
-        public IActionResult Delete(GroupModify model)
+        public async Task<ActionResult> Delete(GroupModify groupModify)
         {
-            _groupService.Delete(model.Id);
+            try
+            {
+                await _groupService.DeleteGroup(groupModify.Id);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            var modelDto = _groupService.GetById(id);
-            if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<GroupDto, GroupModify>(modelDto);
-            FillViewBag();
-            return View(model);
+            GroupModify groupModify = default;
+            try
+            {
+                groupModify = await _groupService.GetGroup(id);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(groupModify);
         }
 
         [HttpPost]
-        public IActionResult Edit(GroupModify model)
+        public async Task<ActionResult> Edit(GroupModify groupModify)
         {
-            FillViewBag();
-            if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<GroupModify, GroupDto>(model);
-            _groupService.Edit(modelDto);
+            try
+            {
+                if (ModelState.IsValid == false) return View(groupModify);
+                await _groupService.EditGroup(groupModify);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
-        public void FillViewBag()
+        public async Task FillViewBag()
         {
-            ViewBag.Specializations = _specializationService.GetAll();
+            ViewBag.Specializations = await _specializationService.GetSpecializations();
         }
     }
 }

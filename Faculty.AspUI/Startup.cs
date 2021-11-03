@@ -1,5 +1,4 @@
 using System;
-using AutoMapper;
 using Faculty.AspUI.Tools;
 using System.Globalization;
 using System.Security.Claims;
@@ -8,19 +7,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.EntityFrameworkCore;
-using Faculty.DataAccessLayer.Models;
-using Faculty.BusinessLayer.Services;
-using Faculty.BusinessLayer.Interfaces;
 using Faculty.AspUI.HttpMessageHandlers;
 using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
-using Faculty.DataAccessLayer.Repository;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Faculty.DataAccessLayer.Repository.EntityFramework;
-using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
 namespace Faculty.AspUI
 {
@@ -36,15 +28,11 @@ namespace Faculty.AspUI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().AddDataAnnotationsLocalization().AddViewLocalization();
-            services.AddDatabaseContext(Configuration);
             services.AddAuthenticationWithCookies(Configuration);
             services.AddAuthorizationWithRole();
             services.AddHttpContextAccessor();
             services.AddRequestLocalization();
-            services.AddControllerServices();
             services.AddUsersHttpClients(Configuration);
-            services.AddRepositories();
-            services.AddMapper();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RequestLocalizationOptions> localizationOptions)
@@ -79,38 +67,6 @@ namespace Faculty.AspUI
                 options.SupportedCultures = cultures;
                 options.SupportedUICultures = cultures;
             });
-        }
-
-        public static void AddDatabaseContext(this IServiceCollection services, IConfiguration configuration)
-        {
-            var connectionString = configuration.GetSection("ConnectionString").GetValue(typeof(string), "ConStr")?.ToString() ?? string.Empty;
-            services.AddDbContext<DatabaseContextEntityFramework>(option => option.UseSqlServer(connectionString));
-        }
-
-        public static void AddRepositories(this IServiceCollection services)
-        {
-            services.AddScoped<IRepository<Student>, BaseRepositoryEntityFramework<Student>>();
-            services.AddScoped<IRepository<Curator>, BaseRepositoryEntityFramework<Curator>>();
-            services.AddScoped<IRepository<Specialization>, BaseRepositoryEntityFramework<Specialization>>();
-            services.AddScoped<IRepositoryGroup, RepositoryEntityFrameworkGroup>();
-            services.AddScoped<IRepositoryFaculty, RepositoryEntityFrameworkFaculty>();
-        }
-
-        public static void AddControllerServices(this IServiceCollection services)
-        {
-            services.AddScoped<IStudentService, StudentService>();
-            services.AddScoped<ICuratorService, CuratorService>();
-            services.AddScoped<ISpecializationService, SpecializationService>();
-            services.AddScoped<IGroupService, GroupService>();
-            services.AddScoped<IFacultyService, FacultyService>();
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IUserService, UserService>();
-        }
-
-        public static void AddMapper(this IServiceCollection services)
-        {
-            services.AddSingleton<AutoMapper.IConfigurationProvider>(x => new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile())));
-            services.AddSingleton<IMapper, Mapper>();
         }
 
         public static void AddAuthenticationWithCookies(this IServiceCollection services, IConfiguration configuration)
@@ -150,6 +106,7 @@ namespace Faculty.AspUI
         public static void AddUsersHttpClients(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<AuthMessageHandler>();
+
             services.AddHttpClient<IAuthService, AuthService>( client =>
             {
                 client.BaseAddress = new Uri(configuration["Url:AuthenticationServer"]);
@@ -157,6 +114,27 @@ namespace Faculty.AspUI
             services.AddHttpClient<IUserService, UserService>(client =>
             {
                 client.BaseAddress = new Uri(configuration["Url:AuthenticationServer"]);
+            }).AddHttpMessageHandler<AuthMessageHandler>();
+
+            services.AddHttpClient<ICuratorService, CuratorService>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["Url:ResourceServer"]);
+            }).AddHttpMessageHandler<AuthMessageHandler>();
+            services.AddHttpClient<IFacultyService, FacultyService>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["Url:ResourceServer"]);
+            }).AddHttpMessageHandler<AuthMessageHandler>();
+            services.AddHttpClient<IGroupService, GroupService>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["Url:ResourceServer"]);
+            }).AddHttpMessageHandler<AuthMessageHandler>();
+            services.AddHttpClient<ISpecializationService, SpecializationService>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["Url:ResourceServer"]);
+            }).AddHttpMessageHandler<AuthMessageHandler>();
+            services.AddHttpClient<IStudentService, StudentService>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["Url:ResourceServer"]);
             }).AddHttpMessageHandler<AuthMessageHandler>();
         }
     }

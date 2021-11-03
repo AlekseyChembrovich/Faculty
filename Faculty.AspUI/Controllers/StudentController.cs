@@ -1,10 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Net;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Faculty.AspUI.ViewModels.Student;
-using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.Dto.Student;
+using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Faculty.AspUI.Controllers
@@ -13,69 +14,135 @@ namespace Faculty.AspUI.Controllers
     public class StudentController : Controller
     {
         private readonly IStudentService _studentService;
-        private readonly IMapper _mapper;
 
-        public StudentController(IStudentService studentService, IMapper mapper)
+        public StudentController(IStudentService studentService)
         {
             _studentService = studentService;
-            _mapper = mapper;
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var modelsDto = _studentService.GetAll();
-            var models = _mapper.Map<IEnumerable<StudentDto>, IEnumerable<StudentDisplayModify>>(modelsDto);
-            return View(models.ToList());
+            IEnumerable<StudentDisplayModify> studentsDisplay = default;
+            try
+            {
+                studentsDisplay = await _studentService.GetStudents();
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(studentsDisplay.ToList());
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public ActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(StudentAdd model)
+        public async Task<ActionResult> Create(StudentAdd studentAdd)
         {
-            if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<StudentAdd, StudentDto>(model);
-            _studentService.Create(modelDto);
+            try
+            {
+                if (ModelState.IsValid == false) return View(studentAdd);
+                await _studentService.CreateStudent(studentAdd);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var modelDto = _studentService.GetById(id);
-            if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<StudentDto, StudentDisplayModify>(modelDto);
-            return View(model);
+            StudentDisplayModify studentModify = default;
+            try
+            {
+                studentModify = await _studentService.GetStudent(id);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(studentModify);
         }
 
         [HttpPost]
-        public IActionResult Delete(StudentDisplayModify model)
+        public async Task<ActionResult> Delete(StudentDisplayModify studentModify)
         {
-            _studentService.Delete(model.Id);
+            try
+            {
+                await _studentService.DeleteStudent(studentModify.Id);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            var modelDto = _studentService.GetById(id);
-            if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<StudentDto, StudentDisplayModify>(modelDto);
-            return View(model);
+            StudentDisplayModify specializationModify = default;
+            try
+            {
+                specializationModify = await _studentService.GetStudent(id);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(specializationModify);
         }
 
         [HttpPost]
-        public IActionResult Edit(StudentDisplayModify model)
+        public async Task<ActionResult> Edit(StudentDisplayModify studentModify)
         {
-            if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<StudentDisplayModify, StudentDto>(model);
-            _studentService.Edit(modelDto);
+            try
+            {
+                if (ModelState.IsValid == false) return View(studentModify);
+                await _studentService.EditStudent(studentModify);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
     }

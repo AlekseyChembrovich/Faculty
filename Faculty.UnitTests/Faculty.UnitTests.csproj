@@ -35,4 +35,8 @@
     <ProjectReference Include="..\Faculty.BusinessLayer\Faculty.BusinessLayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ResourceServer\" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,5 @@
 using AutoMapper;
+using System.Security.Claims;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
@@ -7,10 +8,12 @@ using Faculty.ResourceServer.Tools;
 using Microsoft.EntityFrameworkCore;
 using Faculty.BusinessLayer.Services;
 using Faculty.DataAccessLayer.Models;
+using Microsoft.IdentityModel.Tokens;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.DataAccessLayer.Repository;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Faculty.DataAccessLayer.Repository.EntityFramework;
 using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
@@ -29,6 +32,8 @@ namespace Faculty.ResourceServer
         {
             services.AddDatabaseContext(Configuration);
             services.AddRepositories();
+            services.AddAuthenticationWithJwtToken(Configuration);
+            services.AddAuthorizationWithRole();
             services.AddControllerServices();
             services.AddMapper();
             services.AddSwaggerConfiguration();
@@ -52,6 +57,7 @@ namespace Faculty.ResourceServer
                 .AllowAnyHeader()
             );
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
@@ -125,6 +131,44 @@ namespace Faculty.ResourceServer
                         },
                         new string[]{}
                     }
+                });
+            });
+        }
+
+        public static void AddAuthenticationWithJwtToken(this IServiceCollection services, IConfiguration configuration)
+        {
+            var authOption = new AuthOptions(configuration);
+            services.AddSingleton(options => new AuthOptions(configuration));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(
+                    options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.SaveToken = true;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = authOption?.Issuer,
+                            ValidateAudience = true,
+                            ValidAudience = authOption?.Audience,
+                            IssuerSigningKey = authOption?.GetSymmetricSecurityKey(),
+                            ValidateIssuerSigningKey = true
+                        };
+                    });
+        }
+
+        public static void AddAuthorizationWithRole(this IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Administrator", builder =>
+                {
+                    builder.RequireClaim(ClaimTypes.Role, "administrator");
+                });
+
+                options.AddPolicy("Employee", builder =>
+                {
+                    builder.RequireClaim(ClaimTypes.Role, "employee");
                 });
             });
         }

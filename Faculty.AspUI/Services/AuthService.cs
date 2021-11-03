@@ -10,20 +10,15 @@ namespace Faculty.AspUI.Services
     /// <summary>
     /// Authentication service.
     /// </summary>
-    public class AuthService : IAuthService
+    public class AuthService : BaseHttpService, IAuthService
     {
-        /// <summary>
-        /// Http Client for sending request on authentication server.
-        /// </summary>
-        private readonly HttpClient _userClient;
-
         /// <summary>
         /// Constructor for init Http Client.
         /// </summary>
         /// <param name="httpClient"></param>
-        public AuthService(HttpClient httpClient)
+        public AuthService(HttpClient httpClient) : base(httpClient)
         {
-            _userClient = httpClient;
+
         }
 
         /// <summary>
@@ -33,7 +28,7 @@ namespace Faculty.AspUI.Services
         /// <returns>An instance of the Task class typed by HttpResponseMessage class.</returns>
         public async Task<HttpResponseMessage> Login(LoginUser loginUser)
         {
-            var response = await _userClient.PostAsync("api/auth/login", new StringContent(JsonConvert.SerializeObject(loginUser), Encoding.UTF8, "application/json"));
+            var response = await HttpClient.PostAsync("api/auth/login", new StringContent(JsonConvert.SerializeObject(loginUser), Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
             return response;
         }
@@ -45,7 +40,7 @@ namespace Faculty.AspUI.Services
         /// <returns>An instance of the Task class typed by HttpResponseMessage class.</returns>
         public async Task<HttpResponseMessage> Register(RegisterUser registerUser)
         {
-            var response = await _userClient.PostAsync("api/auth/register", new StringContent(JsonConvert.SerializeObject(registerUser), Encoding.UTF8, "application/json"));
+            var response = await HttpClient.PostAsync("api/auth/register", new StringContent(JsonConvert.SerializeObject(registerUser), Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
             return response;
         }
