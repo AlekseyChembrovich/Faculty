@@ -29,10 +29,6 @@ namespace Faculty.AspUI.Controllers
             {
                 curatorsDisplay = await _curatorService.GetCurators();
             }
-            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                return RedirectToAction("Login", "Home");
-            }
             catch (HttpRequestException)
             {
                 return RedirectToAction("Error", "Home");

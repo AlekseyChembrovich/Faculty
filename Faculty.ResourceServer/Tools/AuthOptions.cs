@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
 
 namespace Faculty.ResourceServer.Tools
 {

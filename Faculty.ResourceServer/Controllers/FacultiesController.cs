@@ -30,6 +30,11 @@ namespace Faculty.ResourceServer.Controllers
         public ActionResult<IEnumerable<FacultyDisplay>> GetFaculties()
         {
             var facultiesDto = _facultyService.GetAll();
+            if (facultiesDto == null)
+            {
+                return NotFound();
+            }
+
             var listFacultiesDto = facultiesDto.ToList();
             if (!listFacultiesDto.Any())
             {

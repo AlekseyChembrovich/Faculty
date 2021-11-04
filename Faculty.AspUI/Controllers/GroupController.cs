@@ -89,6 +89,7 @@ namespace Faculty.AspUI.Controllers
             GroupModify groupModify = default;
             try
             {
+                await FillViewBag();
                 groupModify = await _groupService.GetGroup(id);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
@@ -128,6 +129,7 @@ namespace Faculty.AspUI.Controllers
             GroupModify groupModify = default;
             try
             {
+                await FillViewBag();
                 groupModify = await _groupService.GetGroup(id);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
@@ -147,6 +149,7 @@ namespace Faculty.AspUI.Controllers
         {
             try
             {
+                await FillViewBag();
                 if (ModelState.IsValid == false) return View(groupModify);
                 await _groupService.EditGroup(groupModify);
             }

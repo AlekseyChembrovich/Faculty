@@ -32,11 +32,11 @@ namespace Faculty.ResourceServer
         {
             services.AddDatabaseContext(Configuration);
             services.AddRepositories();
-            services.AddAuthenticationWithJwtToken(Configuration);
-            services.AddAuthorizationWithRole();
             services.AddControllerServices();
             services.AddMapper();
             services.AddSwaggerConfiguration();
+            services.AddAuthenticationWithJwtToken(Configuration);
+            services.AddAuthorizationWithRole();
             services.AddControllers();
             services.AddCors();
         }
@@ -85,11 +85,11 @@ namespace Faculty.ResourceServer
 
         public static void AddControllerServices(this IServiceCollection services)
         {
-            services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<ICuratorService, CuratorService>();
-            services.AddScoped<ISpecializationService, SpecializationService>();
-            services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IFacultyService, FacultyService>();
+            services.AddScoped<IGroupService, GroupService>();
+            services.AddScoped<ISpecializationService, SpecializationService>();
+            services.AddScoped<IStudentService, StudentService>();
         }
 
         public static void AddMapper(this IServiceCollection services)

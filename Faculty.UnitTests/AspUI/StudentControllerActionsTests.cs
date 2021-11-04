@@ -1,53 +1,46 @@
 using Moq;
 using Xunit;
-using AutoMapper;
+using System.Net;
 using System.Linq;
-using FluentAssertions;
-using Faculty.AspUI.Tools;
+using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
-using Faculty.BusinessLayer.Services;
-using Faculty.DataAccessLayer.Models;
 using Faculty.AspUI.ViewModels.Student;
-using Faculty.BusinessLayer.Dto.Student;
-using Faculty.DataAccessLayer.Repository;
+using Faculty.AspUI.Services.Interfaces;
 
 namespace Faculty.UnitTests.AspUI
 {
     public class StudentControllerActionsTests
     {
-        private readonly Mock<IRepository<Student>> _mockRepositoryStudent;
-        private readonly IMapper _mapper;
+        private readonly Mock<IStudentService> _mockStudentService;
 
         public StudentControllerActionsTests()
         {
-            _mockRepositoryStudent = new Mock<IRepository<Student>>();
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            _mapper = new Mapper(mapperConfiguration);
+            _mockStudentService = new Mock<IStudentService>();
         }
 
+        #region Index
+
         [Fact]
-        public void IndexMethod_ReturnsAViewResult_WithAListOfModelDisplay()
+        public void IndexMethod_ReturnsAViewResult_WithAListOfStudentDisplay()
         {
             // Arrange
-            _mockRepositoryStudent.Setup(repository => repository.GetAll()).Returns(GetTestModels()).Verifiable();
-            var modelService = new StudentService(_mockRepositoryStudent.Object, _mapper);
-            var modelController = new StudentController(modelService, _mapper);
+            _mockStudentService.Setup(service => service.GetStudents()).ReturnsAsync(GetStudentsDisplay());
+            var studentController = new StudentController(_mockStudentService.Object);
 
             // Act
-            var result = modelController.Index();
+            var result = studentController.Index().Result;
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var models = Assert.IsAssignableFrom<IEnumerable<StudentDisplayModify>>(viewResult.ViewData.Model);
             Assert.Equal(3, models.Count());
-            _mockRepositoryStudent.Verify(r => r.GetAll());
         }
 
-        private static IEnumerable<Student> GetTestModels()
+        private static IEnumerable<StudentDisplayModify> GetStudentsDisplay()
         {
-            var models = new List<Student>()
+            var studentsDisplay = new List<StudentDisplayModify>()
             {
                 new ()
                 {
@@ -72,125 +65,293 @@ namespace Faculty.UnitTests.AspUI
                 }
             };
 
-            return models;
+            return studentsDisplay;
         }
 
         [Fact]
-        public void CreateMethod_CallInsertMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectModel()
+        public void IndexMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
         {
             // Arrange
-            var modelAdd = new StudentAdd { Surname = "test1", Name = "test1", Doublename = "test1" };
-            var modelDto = _mapper.Map<StudentAdd, StudentDto>(modelAdd);
-            var model = _mapper.Map<StudentDto, Student>(modelDto);
-            _mockRepositoryStudent.Setup(repository => repository.Insert(model)).Verifiable();
-            var modelService = new StudentService(_mockRepositoryStudent.Object, _mapper);
-            var modelController = new StudentController(modelService, _mapper);
+            _mockStudentService.Setup(service => service.GetStudents()).Throws(new HttpRequestException());
+            var studentController = new StudentController(_mockStudentService.Object);
 
             // Act
-            var result = modelController.Create(modelAdd);
+            var result = studentController.Index().Result;
 
             // Assert
-            var redirectToAction = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToAction.ActionName);
-            _mockRepositoryStudent.Verify(r => r.Insert(It.IsAny<Student>()), Times.Once);
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
         }
 
+        #endregion
+
+        #region Create
+
         [Fact]
-        public void DeleteGetMethod_CallDeleteMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectArgument()
+        public void CreateMethod_ReturnsRedirectToIndexAction_WhenCorrectModel()
         {
             // Arrange
-            const int deleteModelId = 1;
-            var model = new Student { Id = deleteModelId, Surname = "test1", Name = "test1", Doublename = "test1" };
-            _mockRepositoryStudent.Setup(repository => repository.GetById(deleteModelId)).Returns(model).Verifiable();
-            var modelService = new StudentService(_mockRepositoryStudent.Object, _mapper);
-            var modelController = new StudentController(modelService, _mapper);
+            var studentAdd = new StudentAdd
+            {
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1"
+            };
+            _mockStudentService.Setup(service => service.CreateStudent(studentAdd))
+                .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.Created });
+            var studentController = new StudentController(_mockStudentService.Object);
 
             // Act
-            var result = modelController.Delete(deleteModelId);
+            var result = studentController.Create(studentAdd).Result;
 
             // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            model.Should().BeEquivalentTo(viewResult.Model);
-            _mockRepositoryStudent.Verify(r => r.GetById(It.IsAny<int>()), Times.Once);
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirect.ActionName);
         }
 
         [Fact]
-        public void DeletePostMethod_CallDeleteMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectArgument()
+        public void CreateMethod_ReturnsAViewResult_WithAModelStudentAdd_WhenInvalidModel()
         {
             // Arrange
-            var modelModify = new StudentDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1" };
-            var modelDto = _mapper.Map<StudentDisplayModify, StudentDto>(modelModify);
-            var model = _mapper.Map<StudentDto, Student>(modelDto);
-            _mockRepositoryStudent.Setup(repository => repository.Delete(model)).Verifiable();
-            var modelService = new StudentService(_mockRepositoryStudent.Object, _mapper);
-            var modelController = new StudentController(modelService, _mapper);
+            var studentAdd = new StudentAdd
+            {
+                Surname = "test1",
+                Name = null,
+                Doublename = "test1"
+            };
+            _mockStudentService.Setup(service => service.CreateStudent(studentAdd)).ReturnsAsync(new HttpResponseMessage());
+            var studentController = new StudentController(_mockStudentService.Object);
+            studentController.ModelState.AddModelError(string.Empty, "Invalid name.");
 
             // Act
-            var result = modelController.Delete(modelModify);
-
-            // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            _mockRepositoryStudent.Verify(r => r.Delete(It.IsAny<Student>()), Times.Once);
-        }
-
-        [Fact]
-        public void EditPostMethod_CallUpdateMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectModel()
-        {
-            // Arrange
-            var modelModify = new StudentDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1" };
-            var modelDto = _mapper.Map<StudentDisplayModify, StudentDto>(modelModify);
-            var model = _mapper.Map<StudentDto, Student>(modelDto);
-            _mockRepositoryStudent.Setup(repository => repository.Update(model)).Verifiable();
-            var modelService = new StudentService(_mockRepositoryStudent.Object, _mapper);
-            var modelController = new StudentController(modelService, _mapper);
-
-            // Act
-            var result = modelController.Edit(modelModify);
-
-            // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            _mockRepositoryStudent.Verify(r => r.Update(It.IsAny<Student>()), Times.Once);
-        }
-
-        [Fact]
-        public void EditGetMethod_CallGetByIdMethodRepository_ReturnsViewAResultWithModel_WhenCorrectArgument()
-        {
-            // Arrange
-            const int editModelId = 1;
-            var modelModify = new StudentDisplayModify { Id = editModelId, Surname = "test1", Name = "test1", Doublename = "test1" };
-            var modelDto = _mapper.Map<StudentDisplayModify, StudentDto>(modelModify);
-            var model = _mapper.Map<StudentDto, Student>(modelDto);
-            _mockRepositoryStudent.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
-            var modelService = new StudentService(_mockRepositoryStudent.Object, _mapper);
-            var modelController = new StudentController(modelService, _mapper);
-
-            // Act
-            var result = modelController.Edit(editModelId);
+            var result = studentController.Create(studentAdd).Result;
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            modelModify.Should().BeEquivalentTo(viewResult.Model);
-            _mockRepositoryStudent.Verify(r => r.GetById(It.IsAny<int>()), Times.Once);
+            var model = Assert.IsAssignableFrom<StudentAdd>(viewResult.Model);
+            Assert.Equal(studentAdd, model);
         }
 
         [Fact]
-        public void EditGetMethod_ReturnsRedirectToIndexAction_WhenNotFoundedModel()
+        public void CreateMethod_ReturnsRedirectToLoginActionHomeController_WhenHttpStatusCodeUnauthorized()
         {
             // Arrange
-            const int editModelId = 1;
-            Student model = default;
-            _mockRepositoryStudent.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
-            var modelService = new StudentService(_mockRepositoryStudent.Object, _mapper);
-            var modelController = new StudentController(modelService, _mapper);
+            var studentAdd = new StudentAdd
+            {
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1"
+            };
+            _mockStudentService.Setup(service => service.CreateStudent(studentAdd))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var studentController = new StudentController(_mockStudentService.Object);
 
             // Act
-            var result = modelController.Edit(editModelId);
+            var result = studentController.Create(studentAdd).Result;
 
             // Assert
-            var redirectToAction = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToAction.ActionName);
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Login", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
         }
+
+        [Fact]
+        public void CreateMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
+        {
+            // Arrange
+            var studentAdd = new StudentAdd
+            {
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1"
+            };
+            _mockStudentService.Setup(service => service.CreateStudent(studentAdd)).Throws(new HttpRequestException());
+            var studentController = new StudentController(_mockStudentService.Object);
+
+            // Act
+            var result = studentController.Create(studentAdd).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        #endregion
+
+        #region Delete
+
+        [Fact]
+        public void DeleteMethod_ReturnsRedirectToIndexAction_WhenCorrectArgument()
+        {
+            // Arrange
+            const int idExistStudent = 1;
+            var studentModify = new StudentDisplayModify
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1"
+            };
+            _mockStudentService.Setup(service => service.DeleteStudent(idExistStudent))
+                .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+            var studentController = new StudentController(_mockStudentService.Object);
+
+            // Act
+            var result = studentController.Delete(studentModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirect.ActionName);
+        }
+
+        [Fact]
+        public void DeleteMethod_ReturnsRedirectToLoginActionHomeController_WhenHttpStatusCodeUnauthorized()
+        {
+            // Arrange
+            const int idExistStudent = 1;
+            var studentModify = new StudentDisplayModify
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1"
+            };
+            _mockStudentService.Setup(service => service.DeleteStudent(idExistStudent))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var studentController = new StudentController(_mockStudentService.Object);
+
+            // Act
+            var result = studentController.Delete(studentModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Login", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        [Fact]
+        public void DeleteMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
+        {
+            // Arrange
+            var studentModify = new StudentDisplayModify
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1"
+            };
+            _mockStudentService.Setup(service => service.DeleteStudent(It.IsAny<int>())).Throws(new HttpRequestException());
+            var studentController = new StudentController(_mockStudentService.Object);
+
+            // Act
+            var result = studentController.Delete(studentModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        #endregion
+
+        #region Edit
+
+        [Fact]
+        public void EditMethod_ReturnsRedirectToIndexAction_WhenCorrectModel()
+        {
+            // Arrange
+            var studentModify = new StudentDisplayModify
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1"
+            };
+            _mockStudentService.Setup(service => service.EditStudent(studentModify))
+                .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+            var studentController = new StudentController(_mockStudentService.Object);
+
+            // Act
+            var result = studentController.Edit(studentModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirect.ActionName);
+        }
+
+        [Fact]
+        public void EditMethod_ReturnsAViewResult_WithAModelStudentModify_WhenInvalidModel()
+        {
+            // Arrange
+            var studentModify = new StudentDisplayModify
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = null,
+                Doublename = "test1"
+            };
+            _mockStudentService.Setup(service => service.EditStudent(studentModify)).ReturnsAsync(new HttpResponseMessage());
+            var studentController = new StudentController(_mockStudentService.Object);
+            studentController.ModelState.AddModelError(string.Empty, "Invalid name.");
+
+            // Act
+            var result = studentController.Edit(studentModify).Result;
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsAssignableFrom<StudentDisplayModify>(viewResult.Model);
+            Assert.Equal(studentModify, model);
+        }
+
+        [Fact]
+        public void EditMethod_ReturnsRedirectToLoginActionHomeController_WhenHttpStatusCodeUnauthorized()
+        {
+            // Arrange
+            var studentModify = new StudentDisplayModify
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1"
+            };
+            _mockStudentService.Setup(service => service.EditStudent(studentModify))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var studentController = new StudentController(_mockStudentService.Object);
+
+            // Act
+            var result = studentController.Edit(studentModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Login", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        [Fact]
+        public void EditMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
+        {
+            // Arrange
+            var studentModify = new StudentDisplayModify
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1"
+            };
+            _mockStudentService.Setup(service => service.EditStudent(studentModify)).Throws(new HttpRequestException());
+            var studentController = new StudentController(_mockStudentService.Object);
+
+            // Act
+            var result = studentController.Edit(studentModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        #endregion
     }
 }

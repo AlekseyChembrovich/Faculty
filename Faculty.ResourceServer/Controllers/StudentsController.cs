@@ -30,6 +30,11 @@ namespace Faculty.ResourceServer.Controllers
         public ActionResult<IEnumerable<StudentDisplayModify>> GetStudents()
         {
             var studentsDto = _studentService.GetAll();
+            if (studentsDto == null)
+            {
+                return NotFound();
+            }
+
             var listStudentsDto = studentsDto.ToList();
             if (!listStudentsDto.Any())
             {

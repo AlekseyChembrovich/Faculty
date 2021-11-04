@@ -97,6 +97,7 @@ namespace Faculty.AspUI.Controllers
             FacultyModify facultyModify = default;
             try
             {
+                await FillViewBag();
                 facultyModify = await _facultyService.GetFaculty(id);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
@@ -116,7 +117,7 @@ namespace Faculty.AspUI.Controllers
         {
             try
             {
-                await _curatorService.DeleteCurator(facultyModify.Id);
+                await _facultyService.DeleteFaculty(facultyModify.Id);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -136,6 +137,7 @@ namespace Faculty.AspUI.Controllers
             FacultyModify facultyModify = default;
             try
             {
+                await FillViewBag();
                 facultyModify = await _facultyService.GetFaculty(id);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
@@ -155,6 +157,7 @@ namespace Faculty.AspUI.Controllers
         {
             try
             {
+                await FillViewBag();
                 if (ModelState.IsValid == false) return View(facultyModify);
                 await _facultyService.EditFaculty(facultyModify);
             }

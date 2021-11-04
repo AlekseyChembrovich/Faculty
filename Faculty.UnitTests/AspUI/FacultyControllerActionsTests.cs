@@ -1,156 +1,220 @@
 using Moq;
 using Xunit;
 using System;
-using AutoMapper;
+using System.Net;
 using System.Linq;
-using FluentAssertions;
-using Faculty.AspUI.Tools;
+using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
-using Faculty.BusinessLayer.Services;
-using Faculty.DataAccessLayer.Models;
 using Faculty.AspUI.ViewModels.Faculty;
-using Faculty.BusinessLayer.Dto.Faculty;
-using Faculty.DataAccessLayer.Repository;
-using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
+using Faculty.AspUI.Services.Interfaces;
 
 namespace Faculty.UnitTests.AspUI
 {
     public class FacultyControllerActionsTests
     {
-        private readonly Mock<IRepositoryFaculty> _mockRepositoryFaculty;
-        private readonly GroupService _groupService;
-        private readonly StudentService _studentService;
-        private readonly CuratorService _curatorService;
-        private readonly IMapper _mapper;
+        private readonly Mock<IFacultyService> _mockFacultyService;
+        private readonly Mock<IGroupService> _mockGroupService;
+        private readonly Mock<IStudentService> _mockStudentService;
+        private readonly Mock<ICuratorService> _mockCuratorService;
 
         public FacultyControllerActionsTests()
         {
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            _mapper = new Mapper(mapperConfiguration);
-            _mockRepositoryFaculty = new Mock<IRepositoryFaculty>();
-            var mockRepositoryGroup = new Mock<IRepositoryGroup>();
-            var mockRepositoryStudent = new Mock<IRepository<Student>>();
-            var mockRepositoryCurator = new Mock<IRepository<Curator>>();
-            _groupService = new GroupService(mockRepositoryGroup.Object, _mapper);
-            _studentService = new StudentService(mockRepositoryStudent.Object, _mapper);
-            _curatorService = new CuratorService(mockRepositoryCurator.Object, _mapper);
+            _mockFacultyService = new Mock<IFacultyService>();
+            _mockGroupService = new Mock<IGroupService>();
+            _mockStudentService = new Mock<IStudentService>();
+            _mockCuratorService = new Mock<ICuratorService>();
         }
 
+        #region Index
+
         [Fact]
-        public void IndexMethod_ReturnsAViewResult_WithAListOfModelDisplay()
+        public void IndexMethod_ReturnsAViewResult_WithAListOfFacultyDisplay()
         {
             // Arrange
-            _mockRepositoryFaculty.Setup(repository => repository.GetAllIncludeForeignKey()).Returns(GetTestModels()).Verifiable();
-            var facultyService = new FacultyService(_mockRepositoryFaculty.Object, _mapper);
-            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
+            _mockFacultyService.Setup(service => service.GetFaculties()).ReturnsAsync(GetFacultiesDisplay());
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
 
             // Act
-            var result = modelController.Index();
+            var result = facultyController.Index().Result;
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var models = Assert.IsAssignableFrom<IEnumerable<FacultyDisplay>>(viewResult.ViewData.Model);
             Assert.Equal(3, models.Count());
-            _mockRepositoryFaculty.Verify(r => r.GetAllIncludeForeignKey());
         }
 
-        private static IEnumerable<DataAccessLayer.Models.Faculty> GetTestModels()
+        private static IEnumerable<FacultyDisplay> GetFacultiesDisplay()
         {
-            var models = new List<DataAccessLayer.Models.Faculty>()
+            var facultiesDisplay = new List<FacultyDisplay>()
             {
                 new ()
                 {
                     Id = 1,
                     StartDateEducation = DateTime.Now,
                     CountYearEducation = 5,
-                    StudentId = 1,
-                    CuratorId = 1,
-                    GroupId = 1
+                    StudentSurname = "test1",
+                    CuratorSurname = "test1",
+                    GroupName = "test1"
                 },
                 new ()
                 {
                     Id = 2,
                     StartDateEducation = DateTime.Now,
                     CountYearEducation = 4,
-                    StudentId = 2,
-                    CuratorId = 2,
-                    GroupId = 2
+                    StudentSurname = "test4",
+                    CuratorSurname = "test4",
+                    GroupName = "test4"
                 },
                 new ()
                 {
                     Id = 3,
                     StartDateEducation = DateTime.Now,
                     CountYearEducation = 5,
-                    StudentId = 3,
-                    CuratorId = 3,
-                    GroupId = 3
+                    StudentSurname = "test5",
+                    CuratorSurname = "test5",
+                    GroupName = "test5"
                 }
             };
 
-            return models;
+            return facultiesDisplay;
         }
 
         [Fact]
-        public void CreateMethod_CallInsertMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectModel()
+        public void IndexMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
         {
             // Arrange
-            var modelAdd = new FacultyAdd
-            {
-                StartDateEducation = DateTime.Now,
-                CountYearEducation = 5,
-                StudentId = 1,
-                CuratorId = 1,
-                GroupId = 1
-            };
-            var modelDto = _mapper.Map<FacultyAdd, FacultyDto>(modelAdd);
-            var model = _mapper.Map<FacultyDto, DataAccessLayer.Models.Faculty>(modelDto);
-            _mockRepositoryFaculty.Setup(repository => repository.Insert(model)).Verifiable();
-            var facultyService = new FacultyService(_mockRepositoryFaculty.Object, _mapper);
-            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
+            _mockFacultyService.Setup(service => service.GetFaculties()).Throws(new HttpRequestException());
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
 
             // Act
-            var result = modelController.Create(modelAdd);
+            var result = facultyController.Index().Result;
 
             // Assert
-            var redirectToAction = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToAction.ActionName);
-            _mockRepositoryFaculty.Verify(r => r.Insert(It.IsAny<DataAccessLayer.Models.Faculty>()), Times.Once);
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
         }
 
+        #endregion
+
+        #region Create
+
         [Fact]
-        public void DeleteGetMethod_CallDeleteMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectArgument()
+        public void CreateMethod_ReturnsRedirectToIndexAction_WhenCorrectModel()
         {
             // Arrange
-            const int deleteModelId = 1;
-            var model = new DataAccessLayer.Models.Faculty
+            var facultyAdd = new FacultyAdd
             {
-                Id = deleteModelId,
                 StartDateEducation = DateTime.Now,
                 CountYearEducation = 5,
                 StudentId = 1,
                 CuratorId = 1,
                 GroupId = 1
             };
-            _mockRepositoryFaculty.Setup(repository => repository.GetById(deleteModelId)).Returns(model).Verifiable();
-            var facultyService = new FacultyService(_mockRepositoryFaculty.Object, _mapper);
-            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
+            _mockFacultyService.Setup(service => service.CreateFaculty(facultyAdd))
+                .ReturnsAsync(new HttpResponseMessage {StatusCode = HttpStatusCode.Created});
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
 
             // Act
-            var result = modelController.Delete(deleteModelId);
+            var result = facultyController.Create(facultyAdd).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirect.ActionName);
+        }
+
+        [Fact]
+        public void CreateMethod_ReturnsAViewResult_WithAModelFacultyAdd_WhenInvalidModel()
+        {
+            // Arrange
+            var facultyAdd = new FacultyAdd
+            {
+                StartDateEducation = DateTime.Now,
+                CountYearEducation = 0,
+                StudentId = 1,
+                CuratorId = 1,
+                GroupId = 1
+            };
+            _mockFacultyService.Setup(service => service.CreateFaculty(facultyAdd)).ReturnsAsync(new HttpResponseMessage());
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
+            facultyController.ModelState.AddModelError(string.Empty, "Invalid count year education.");
+
+            // Act
+            var result = facultyController.Create(facultyAdd).Result;
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            model.Should().BeEquivalentTo(viewResult.Model);
-            _mockRepositoryFaculty.Verify(r => r.GetById(It.IsAny<int>()), Times.Once);
+            var model = Assert.IsAssignableFrom<FacultyAdd>(viewResult.Model);
+            Assert.Equal(facultyAdd, model);
         }
 
         [Fact]
-        public void DeletePostMethod_CallDeleteMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectArgument()
+        public void CreateMethod_ReturnsRedirectToLoginActionHomeController_WhenHttpStatusCodeUnauthorized()
         {
             // Arrange
-            var modelModify = new FacultyModify
+            var facultyAdd = new FacultyAdd
+            {
+                StartDateEducation = DateTime.Now,
+                CountYearEducation = 5,
+                StudentId = 1,
+                CuratorId = 1,
+                GroupId = 1
+            };
+            _mockFacultyService.Setup(service => service.CreateFaculty(facultyAdd))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
+
+            // Act
+            var result = facultyController.Create(facultyAdd).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Login", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        [Fact]
+        public void CreateMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
+        {
+            // Arrange
+            var facultyAdd = new FacultyAdd
+            {
+                StartDateEducation = DateTime.Now,
+                CountYearEducation = 5,
+                StudentId = 1,
+                CuratorId = 1,
+                GroupId = 1
+            };
+            _mockFacultyService.Setup(service => service.CreateFaculty(facultyAdd)).Throws(new HttpRequestException());
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
+
+            // Act
+            var result = facultyController.Create(facultyAdd).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        #endregion
+
+        #region Delete
+
+        [Fact]
+        public void DeleteMethod_ReturnsRedirectToIndexAction_WhenCorrectArgument()
+        {
+            // Arrange
+            const int idExistFaculty = 1;
+            var facultyModify = new FacultyModify
             {
                 Id = 1,
                 StartDateEducation = DateTime.Now,
@@ -159,26 +223,25 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            var modelDto = _mapper.Map<FacultyModify, FacultyDto>(modelModify);
-            var model = _mapper.Map<FacultyDto, DataAccessLayer.Models.Faculty>(modelDto);
-            _mockRepositoryFaculty.Setup(repository => repository.Delete(model)).Verifiable();
-            var facultyService = new FacultyService(_mockRepositoryFaculty.Object, _mapper);
-            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
+            _mockFacultyService.Setup(service => service.DeleteFaculty(idExistFaculty))
+                .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
 
             // Act
-            var result = modelController.Delete(modelModify);
+            var result = facultyController.Delete(facultyModify).Result;
 
             // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            _mockRepositoryFaculty.Verify(r => r.Delete(It.IsAny<DataAccessLayer.Models.Faculty>()), Times.Once);
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirect.ActionName);
         }
 
         [Fact]
-        public void EditPostMethod_CallUpdateMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectModel()
+        public void DeleteMethod_ReturnsRedirectToLoginActionHomeController_WhenHttpStatusCodeUnauthorized()
         {
             // Arrange
-            var modelModify = new FacultyModify
+            const int idExistFaculty = 1;
+            var facultyModify = new FacultyModify
             {
                 Id = 1,
                 StartDateEducation = DateTime.Now,
@@ -187,66 +250,157 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            var modelDto = _mapper.Map<FacultyModify, FacultyDto>(modelModify);
-            var model = _mapper.Map<FacultyDto, DataAccessLayer.Models.Faculty>(modelDto);
-            _mockRepositoryFaculty.Setup(repository => repository.Update(model)).Verifiable();
-            var facultyService = new FacultyService(_mockRepositoryFaculty.Object, _mapper);
-            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
+            _mockFacultyService.Setup(service => service.DeleteFaculty(idExistFaculty))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
 
             // Act
-            var result = modelController.Edit(modelModify);
+            var result = facultyController.Delete(facultyModify).Result;
 
             // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            _mockRepositoryFaculty.Verify(r => r.Update(It.IsAny<DataAccessLayer.Models.Faculty>()), Times.Once);
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Login", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
         }
 
         [Fact]
-        public void EditGetMethod_CallGetByIdMethodRepository_ReturnsAViewResultWithModel_WhenCorrectArgument()
+        public void DeleteMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
         {
             // Arrange
-            const int editModelId = 1;
-            var modelModify = new FacultyModify
+            var facultyModify = new FacultyModify
             {
-                Id = editModelId,
+                Id = 1,
                 StartDateEducation = DateTime.Now,
                 CountYearEducation = 5,
                 StudentId = 1,
                 CuratorId = 1,
                 GroupId = 1
             };
-            var modelDto = _mapper.Map<FacultyModify, FacultyDto>(modelModify);
-            var model = _mapper.Map<FacultyDto, DataAccessLayer.Models.Faculty>(modelDto);
-            _mockRepositoryFaculty.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
-            var facultyService = new FacultyService(_mockRepositoryFaculty.Object, _mapper);
-            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
+            _mockFacultyService.Setup(service => service.DeleteFaculty(It.IsAny<int>())).Throws(new HttpRequestException());
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
 
             // Act
-            var result = modelController.Edit(editModelId);
+            var result = facultyController.Delete(facultyModify).Result;
 
             // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            modelModify.Should().BeEquivalentTo(viewResult.Model);
-            _mockRepositoryFaculty.Verify(r => r.GetById(It.IsAny<int>()), Times.Once);
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        #endregion
+
+        #region Edit
+
+        [Fact]
+        public void EditMethod_ReturnsRedirectToIndexAction_WhenCorrectModel()
+        {
+            // Arrange
+            var facultyModify = new FacultyModify
+            {
+                Id = 1,
+                StartDateEducation = DateTime.Now,
+                CountYearEducation = 5,
+                StudentId = 1,
+                CuratorId = 1,
+                GroupId = 1
+            };
+            _mockFacultyService.Setup(service => service.EditFaculty(facultyModify))
+                .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
+
+            // Act
+            var result = facultyController.Edit(facultyModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirect.ActionName);
         }
 
         [Fact]
-        public void EditGetMethod_ReturnsRedirectToIndexAction_WhenNotFoundedModel()
+        public void EditMethod_ReturnsAViewResult_WithAModelFacultyModify_WhenInvalidModel()
         {
             // Arrange
-            const int editModelId = 1;
-            DataAccessLayer.Models.Faculty model = default;
-            _mockRepositoryFaculty.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
-            var facultyService = new FacultyService(_mockRepositoryFaculty.Object, _mapper);
-            var modelController = new FacultyController(facultyService, _groupService, _studentService, _curatorService, _mapper);
+            var facultyModify = new FacultyModify
+            {
+                Id = 1,
+                StartDateEducation = DateTime.Now,
+                CountYearEducation = 0,
+                StudentId = 1,
+                CuratorId = 1,
+                GroupId = 1
+            };
+            _mockFacultyService.Setup(service => service.EditFaculty(facultyModify))
+                .ReturnsAsync(new HttpResponseMessage());
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
+            facultyController.ModelState.AddModelError(string.Empty, "Invalid count year education.");
 
             // Act
-            var result = modelController.Edit(editModelId);
+            var result = facultyController.Edit(facultyModify).Result;
 
             // Assert
-            var redirectToAction = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToAction.ActionName);
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsAssignableFrom<FacultyModify>(viewResult.Model);
+            Assert.Equal(facultyModify, model);
         }
+
+        [Fact]
+        public void EditMethod_ReturnsRedirectToLoginActionHomeController_WhenHttpStatusCodeUnauthorized()
+        {
+            // Arrange
+            var facultyModify = new FacultyModify
+            {
+                Id = 1,
+                StartDateEducation = DateTime.Now,
+                CountYearEducation = 5,
+                StudentId = 1,
+                CuratorId = 1,
+                GroupId = 1
+            };
+            _mockFacultyService.Setup(service => service.EditFaculty(facultyModify))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
+
+            // Act
+            var result = facultyController.Edit(facultyModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Login", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        [Fact]
+        public void EditMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
+        {
+            // Arrange
+            var facultyModify = new FacultyModify
+            {
+                Id = 1,
+                StartDateEducation = DateTime.Now,
+                CountYearEducation = 5,
+                StudentId = 1,
+                CuratorId = 1,
+                GroupId = 1
+            };
+            _mockFacultyService.Setup(service => service.EditFaculty(facultyModify)).Throws(new HttpRequestException());
+            var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
+                _mockStudentService.Object, _mockCuratorService.Object);
+
+            // Act
+            var result = facultyController.Edit(facultyModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        #endregion
     }
 }

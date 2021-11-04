@@ -30,6 +30,11 @@ namespace Faculty.ResourceServer.Controllers
         public ActionResult<IEnumerable<CuratorDisplayModify>> GetCurators()
         {
             var curatorsDto = _curatorService.GetAll();
+            if (curatorsDto == null)
+            {
+                return NotFound();
+            }
+
             var listCuratorsDto = curatorsDto.ToList();
             if (!listCuratorsDto.Any())
             {

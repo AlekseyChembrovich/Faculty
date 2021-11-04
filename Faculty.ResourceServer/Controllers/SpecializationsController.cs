@@ -30,6 +30,11 @@ namespace Faculty.ResourceServer.Controllers
         public ActionResult<IEnumerable<SpecializationDisplayModify>> GetSpecializations()
         {
             var specializationsDto = _specializationService.GetAll();
+            if (specializationsDto == null)
+            {
+                return NotFound();
+            }
+
             var listSpecializationsDto = specializationsDto.ToList();
             if (!listSpecializationsDto.Any())
             {

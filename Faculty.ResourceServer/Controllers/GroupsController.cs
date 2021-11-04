@@ -30,6 +30,11 @@ namespace Faculty.ResourceServer.Controllers
         public ActionResult<IEnumerable<GroupDisplay>> GetGroups()
         {
             var groupsDto = _groupService.GetAll();
+            if (groupsDto == null)
+            {
+                return NotFound();
+            }
+
             var listGroupsDto = groupsDto.ToList();
             if (!listGroupsDto.Any())
             {
