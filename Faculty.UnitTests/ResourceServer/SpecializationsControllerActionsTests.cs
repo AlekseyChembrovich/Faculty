@@ -7,9 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Faculty.ResourceServer.Tools;
 using Faculty.BusinessLayer.Interfaces;
+using Faculty.Common.Dto.Specialization;
 using Faculty.ResourceServer.Controllers;
-using Faculty.BusinessLayer.Dto.Specialization;
-using Faculty.ResourceServer.Models.Specialization;
 
 namespace Faculty.UnitTests.ResourceServer
 {
@@ -30,18 +29,17 @@ namespace Faculty.UnitTests.ResourceServer
         {
             // Arrange
             var specializationsDto = GetSpecializationsDto();
-            var specializationsDisplay = _mapper.Map<IEnumerable<SpecializationDisplayModify>>(specializationsDto);
             _mockSpecializationService.Setup(x => x.GetAll()).Returns(specializationsDto);
-            var specializationsController = new SpecializationsController(_mockSpecializationService.Object, _mapper);
+            var specializationsController = new SpecializationsController(_mockSpecializationService.Object);
 
             // Act
             var result = specializationsController.GetSpecializations();
 
             // Assert
             var viewResult = Assert.IsType<OkObjectResult>(result.Result);
-            var models = Assert.IsAssignableFrom<IEnumerable<SpecializationDisplayModify>>(viewResult.Value);
+            var models = Assert.IsAssignableFrom<IEnumerable<SpecializationDto>>(viewResult.Value);
             Assert.Equal(3, models.Count());
-            specializationsDisplay.Should().BeEquivalentTo(models);
+            specializationsDto.Should().BeEquivalentTo(models);
         }
 
         [Fact]
@@ -49,7 +47,7 @@ namespace Faculty.UnitTests.ResourceServer
         {
             // Arrange
             _mockSpecializationService.Setup(x => x.GetAll()).Returns(It.IsAny<IEnumerable<SpecializationDto>>());
-            var specializationsController = new SpecializationsController(_mockSpecializationService.Object, _mapper);
+            var specializationsController = new SpecializationsController(_mockSpecializationService.Object);
 
             // Act
             var result = specializationsController.GetSpecializations();
@@ -87,17 +85,16 @@ namespace Faculty.UnitTests.ResourceServer
         {
             // Arrange
             const int idNewSpecialization = 1;
-            var specializationAdd = new SpecializationAdd
+            var specializationDto = new SpecializationDto
             {
+                Id = idNewSpecialization,
                 Name = "test1"
             };
-            var specializationDto = _mapper.Map<SpecializationAdd, SpecializationDto>(specializationAdd);
-            specializationDto.Id = idNewSpecialization;
             _mockSpecializationService.Setup(x => x.Create(It.IsAny<SpecializationDto>())).Returns(specializationDto);
-            var specializationsController = new SpecializationsController(_mockSpecializationService.Object, _mapper);
+            var specializationsController = new SpecializationsController(_mockSpecializationService.Object);
 
             // Act
-            var result = specializationsController.Create(specializationAdd);
+            var result = specializationsController.Create(specializationDto);
 
             // Assert
             Assert.IsType<CreatedAtActionResult>(result.Result);
@@ -115,7 +112,7 @@ namespace Faculty.UnitTests.ResourceServer
             };
             _mockSpecializationService.Setup(x => x.GetById(idExistSpecialization)).Returns(specializationDto);
             _mockSpecializationService.Setup(x => x.Delete(idExistSpecialization));
-            var specializationsController = new SpecializationsController(_mockSpecializationService.Object, _mapper);
+            var specializationsController = new SpecializationsController(_mockSpecializationService.Object);
 
             // Act
             var result = specializationsController.Delete(idExistSpecialization);
@@ -130,7 +127,7 @@ namespace Faculty.UnitTests.ResourceServer
             // Arrange
             const int idExistSpecialization = 1;
             _mockSpecializationService.Setup(x => x.GetById(idExistSpecialization)).Returns(It.IsAny<SpecializationDto>());
-            var specializationsController = new SpecializationsController(_mockSpecializationService.Object, _mapper);
+            var specializationsController = new SpecializationsController(_mockSpecializationService.Object);
 
             // Act
             var result = specializationsController.Delete(idExistSpecialization);
@@ -149,17 +146,12 @@ namespace Faculty.UnitTests.ResourceServer
                 Id = 1,
                 Name = "test1"
             };
-            var specializationModify = new SpecializationDisplayModify()
-            {
-                Id = 1,
-                Name = "test2"
-            };
             _mockSpecializationService.Setup(x => x.GetById(idExistSpecialization)).Returns(specializationDto);
             _mockSpecializationService.Setup(x => x.Edit(It.IsAny<SpecializationDto>()));
-            var specializationsController = new SpecializationsController(_mockSpecializationService.Object, _mapper);
+            var specializationsController = new SpecializationsController(_mockSpecializationService.Object);
 
             // Act
-            var result = specializationsController.Edit(specializationModify);
+            var result = specializationsController.Edit(specializationDto);
 
             // Assert
             Assert.IsType<NoContentResult>(result);
@@ -170,16 +162,16 @@ namespace Faculty.UnitTests.ResourceServer
         {
             // Arrange
             const int idExistSpecialization = 1;
-            var specializationModify = new SpecializationDisplayModify
+            var specializationDto = new SpecializationDto
             {
                 Id = 1,
                 Name = "test2"
             };
             _mockSpecializationService.Setup(x => x.GetById(idExistSpecialization)).Returns(It.IsAny<SpecializationDto>());
-            var specializationsController = new SpecializationsController(_mockSpecializationService.Object, _mapper);
+            var specializationsController = new SpecializationsController(_mockSpecializationService.Object);
 
             // Act
-            var result = specializationsController.Edit(specializationModify);
+            var result = specializationsController.Edit(specializationDto);
 
             // Assert
             Assert.IsType<NotFoundResult>(result);

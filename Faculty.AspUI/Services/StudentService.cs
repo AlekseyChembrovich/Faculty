@@ -3,7 +3,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Faculty.AspUI.ViewModels.Student;
+using Faculty.Common.Dto.Student;
 using Faculty.AspUI.Services.Interfaces;
 
 namespace Faculty.AspUI.Services
@@ -15,27 +15,27 @@ namespace Faculty.AspUI.Services
 
         }
 
-        public async Task<IEnumerable<StudentDisplayModify>> GetStudents()
+        public async Task<IEnumerable<StudentDto>> GetStudents()
         {
             var message = new HttpRequestMessage(HttpMethod.Get, "api/students");
             var response = await HttpClient.SendAsync(message);
             response.EnsureSuccessStatusCode();
-            var studentsDisplay = await ConvertHttpResponseTo<IEnumerable<StudentDisplayModify>>(response);
-            return studentsDisplay;
+            var studentDto = await ConvertHttpResponseTo<IEnumerable<StudentDto>>(response);
+            return studentDto;
         }
 
-        public async Task<StudentDisplayModify> GetStudent(int id)
+        public async Task<StudentDto> GetStudent(int id)
         {
             var message = new HttpRequestMessage(HttpMethod.Get, $"api/students/{id}");
             var response = await HttpClient.SendAsync(message);
             response.EnsureSuccessStatusCode();
-            var studentModify = await ConvertHttpResponseTo<StudentDisplayModify>(response);
-            return studentModify;
+            var studentDto = await ConvertHttpResponseTo<StudentDto>(response);
+            return studentDto;
         }
 
-        public async Task<HttpResponseMessage> CreateStudent(StudentAdd studentAdd)
+        public async Task<HttpResponseMessage> CreateStudent(StudentDto studentDto)
         {
-            var response = await HttpClient.PostAsync("api/students", new StringContent(JsonConvert.SerializeObject(studentAdd), Encoding.UTF8, "application/json"));
+            var response = await HttpClient.PostAsync("api/students", new StringContent(JsonConvert.SerializeObject(studentDto), Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
             return response;
         }
@@ -48,9 +48,9 @@ namespace Faculty.AspUI.Services
             return response;
         }
 
-        public async Task<HttpResponseMessage> EditStudent(StudentDisplayModify studentModify)
+        public async Task<HttpResponseMessage> EditStudent(StudentDto studentDto)
         {
-            var response = await HttpClient.PutAsync("api/students", new StringContent(JsonConvert.SerializeObject(studentModify), Encoding.UTF8, "application/json"));
+            var response = await HttpClient.PutAsync("api/students", new StringContent(JsonConvert.SerializeObject(studentDto), Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
             return response;
         }

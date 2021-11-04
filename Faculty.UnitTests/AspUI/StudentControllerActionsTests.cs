@@ -1,11 +1,14 @@
 using Moq;
 using Xunit;
 using System.Net;
+using AutoMapper;
 using System.Linq;
 using System.Net.Http;
+using Faculty.AspUI.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
+using Faculty.Common.Dto.Student;
 using Faculty.AspUI.ViewModels.Student;
 using Faculty.AspUI.Services.Interfaces;
 
@@ -14,9 +17,12 @@ namespace Faculty.UnitTests.AspUI
     public class StudentControllerActionsTests
     {
         private readonly Mock<IStudentService> _mockStudentService;
+        private readonly IMapper _mapper;
 
         public StudentControllerActionsTests()
         {
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            _mapper = new Mapper(mapperConfiguration);
             _mockStudentService = new Mock<IStudentService>();
         }
 
@@ -26,8 +32,8 @@ namespace Faculty.UnitTests.AspUI
         public void IndexMethod_ReturnsAViewResult_WithAListOfStudentDisplay()
         {
             // Arrange
-            _mockStudentService.Setup(service => service.GetStudents()).ReturnsAsync(GetStudentsDisplay());
-            var studentController = new StudentController(_mockStudentService.Object);
+            _mockStudentService.Setup(service => service.GetStudents()).ReturnsAsync(GetStudentsDto);
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
 
             // Act
             var result = studentController.Index().Result;
@@ -38,9 +44,9 @@ namespace Faculty.UnitTests.AspUI
             Assert.Equal(3, models.Count());
         }
 
-        private static IEnumerable<StudentDisplayModify> GetStudentsDisplay()
+        private static IEnumerable<StudentDto> GetStudentsDto()
         {
-            var studentsDisplay = new List<StudentDisplayModify>()
+            var studentsDto = new List<StudentDto>()
             {
                 new ()
                 {
@@ -65,7 +71,7 @@ namespace Faculty.UnitTests.AspUI
                 }
             };
 
-            return studentsDisplay;
+            return studentsDto;
         }
 
         [Fact]
@@ -73,7 +79,7 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             _mockStudentService.Setup(service => service.GetStudents()).Throws(new HttpRequestException());
-            var studentController = new StudentController(_mockStudentService.Object);
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
 
             // Act
             var result = studentController.Index().Result;
@@ -98,9 +104,10 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1",
                 Doublename = "test1"
             };
-            _mockStudentService.Setup(service => service.CreateStudent(studentAdd))
+            var studentDto = _mapper.Map<StudentAdd, StudentDto>(studentAdd);
+            _mockStudentService.Setup(service => service.CreateStudent(studentDto))
                 .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.Created });
-            var studentController = new StudentController(_mockStudentService.Object);
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
 
             // Act
             var result = studentController.Create(studentAdd).Result;
@@ -120,8 +127,9 @@ namespace Faculty.UnitTests.AspUI
                 Name = null,
                 Doublename = "test1"
             };
-            _mockStudentService.Setup(service => service.CreateStudent(studentAdd)).ReturnsAsync(new HttpResponseMessage());
-            var studentController = new StudentController(_mockStudentService.Object);
+            var studentDto = _mapper.Map<StudentAdd, StudentDto>(studentAdd);
+            _mockStudentService.Setup(service => service.CreateStudent(studentDto)).ReturnsAsync(new HttpResponseMessage());
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
             studentController.ModelState.AddModelError(string.Empty, "Invalid name.");
 
             // Act
@@ -143,9 +151,10 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1",
                 Doublename = "test1"
             };
-            _mockStudentService.Setup(service => service.CreateStudent(studentAdd))
+            var studentDto = _mapper.Map<StudentAdd, StudentDto>(studentAdd);
+            _mockStudentService.Setup(service => service.CreateStudent(It.IsAny<StudentDto>()))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var studentController = new StudentController(_mockStudentService.Object);
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
 
             // Act
             var result = studentController.Create(studentAdd).Result;
@@ -166,8 +175,9 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1",
                 Doublename = "test1"
             };
-            _mockStudentService.Setup(service => service.CreateStudent(studentAdd)).Throws(new HttpRequestException());
-            var studentController = new StudentController(_mockStudentService.Object);
+            var studentDto = _mapper.Map<StudentAdd, StudentDto>(studentAdd);
+            _mockStudentService.Setup(service => service.CreateStudent(It.IsAny<StudentDto>())).Throws(new HttpRequestException());
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
 
             // Act
             var result = studentController.Create(studentAdd).Result;
@@ -196,7 +206,7 @@ namespace Faculty.UnitTests.AspUI
             };
             _mockStudentService.Setup(service => service.DeleteStudent(idExistStudent))
                 .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
-            var studentController = new StudentController(_mockStudentService.Object);
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
 
             // Act
             var result = studentController.Delete(studentModify).Result;
@@ -220,7 +230,7 @@ namespace Faculty.UnitTests.AspUI
             };
             _mockStudentService.Setup(service => service.DeleteStudent(idExistStudent))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var studentController = new StudentController(_mockStudentService.Object);
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
 
             // Act
             var result = studentController.Delete(studentModify).Result;
@@ -243,7 +253,7 @@ namespace Faculty.UnitTests.AspUI
                 Doublename = "test1"
             };
             _mockStudentService.Setup(service => service.DeleteStudent(It.IsAny<int>())).Throws(new HttpRequestException());
-            var studentController = new StudentController(_mockStudentService.Object);
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
 
             // Act
             var result = studentController.Delete(studentModify).Result;
@@ -269,9 +279,10 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1",
                 Doublename = "test1"
             };
-            _mockStudentService.Setup(service => service.EditStudent(studentModify))
+            var studentDto = _mapper.Map<StudentDisplayModify, StudentDto>(studentModify);
+            _mockStudentService.Setup(service => service.EditStudent(studentDto))
                 .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
-            var studentController = new StudentController(_mockStudentService.Object);
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
 
             // Act
             var result = studentController.Edit(studentModify).Result;
@@ -292,8 +303,9 @@ namespace Faculty.UnitTests.AspUI
                 Name = null,
                 Doublename = "test1"
             };
-            _mockStudentService.Setup(service => service.EditStudent(studentModify)).ReturnsAsync(new HttpResponseMessage());
-            var studentController = new StudentController(_mockStudentService.Object);
+            var studentDto = _mapper.Map<StudentDisplayModify, StudentDto>(studentModify);
+            _mockStudentService.Setup(service => service.EditStudent(studentDto)).ReturnsAsync(new HttpResponseMessage());
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
             studentController.ModelState.AddModelError(string.Empty, "Invalid name.");
 
             // Act
@@ -316,9 +328,10 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1",
                 Doublename = "test1"
             };
-            _mockStudentService.Setup(service => service.EditStudent(studentModify))
+            var studentDto = _mapper.Map<StudentDisplayModify, StudentDto>(studentModify);
+            _mockStudentService.Setup(service => service.EditStudent(It.IsAny<StudentDto>()))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var studentController = new StudentController(_mockStudentService.Object);
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
 
             // Act
             var result = studentController.Edit(studentModify).Result;
@@ -340,8 +353,9 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1",
                 Doublename = "test1"
             };
-            _mockStudentService.Setup(service => service.EditStudent(studentModify)).Throws(new HttpRequestException());
-            var studentController = new StudentController(_mockStudentService.Object);
+            var studentDto = _mapper.Map<StudentDisplayModify, StudentDto>(studentModify);
+            _mockStudentService.Setup(service => service.EditStudent(It.IsAny<StudentDto>())).Throws(new HttpRequestException());
+            var studentController = new StudentController(_mockStudentService.Object, _mapper);
 
             // Act
             var result = studentController.Edit(studentModify).Result;

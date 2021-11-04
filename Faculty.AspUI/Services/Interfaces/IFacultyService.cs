@@ -1,20 +1,20 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Faculty.AspUI.ViewModels.Faculty;
+using Faculty.Common.Dto.Faculty;
 
 namespace Faculty.AspUI.Services.Interfaces
 {
     public interface IFacultyService
     {
-        Task<IEnumerable<FacultyDisplay>> GetFaculties();
+        Task<IEnumerable<FacultyDisplayDto>> GetFaculties();
 
-        Task<FacultyModify> GetFaculty(int id);
+        Task<FacultyDto> GetFaculty(int id);
 
-        Task<HttpResponseMessage> CreateFaculty(FacultyAdd facultyAdd);
+        Task<HttpResponseMessage> CreateFaculty(FacultyDto facultyDto);
 
         Task<HttpResponseMessage> DeleteFaculty(int id);
 
-        Task<HttpResponseMessage> EditFaculty(FacultyModify facultyModify);
+        Task<HttpResponseMessage> EditFaculty(FacultyDto facultyDto);
     }
 }

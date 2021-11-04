@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Faculty.Common.Dto.Student;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.Dto.Student;
 using Microsoft.AspNetCore.Authorization;
-using Faculty.ResourceServer.Models.Student;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.ResourceServer.Controllers
@@ -16,18 +14,16 @@ namespace Faculty.ResourceServer.Controllers
     public class StudentsController : Controller
     {
         private readonly IStudentService _studentService;
-        private readonly IMapper _mapper;
 
-        public StudentsController(IStudentService studentService, IMapper mapper)
+        public StudentsController(IStudentService studentService)
         {
             _studentService = studentService;
-            _mapper = mapper;
         }
 
         // GET api/students
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult<IEnumerable<StudentDisplayModify>> GetStudents()
+        public ActionResult<IEnumerable<StudentDto>> GetStudents()
         {
             var studentsDto = _studentService.GetAll();
             if (studentsDto == null)
@@ -35,19 +31,17 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var listStudentsDto = studentsDto.ToList();
-            if (!listStudentsDto.Any())
+            if (!studentsDto.Any())
             {
                 return NotFound();
             }
 
-            var listStudents = _mapper.Map<List<StudentDto>, List<StudentDisplayModify>>(listStudentsDto);
-            return Ok(listStudents);
+            return Ok(studentsDto);
         }
 
         // GET api/students/{id}
         [HttpGet("{id:int}")]
-        public ActionResult<StudentDisplayModify> GetStudents(int id)
+        public ActionResult<StudentDto> GetStudents(int id)
         {
             var curatorDto = _studentService.GetById(id);
             if (curatorDto == null)
@@ -55,18 +49,16 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var student = _mapper.Map<StudentDto, StudentDisplayModify>(curatorDto);
-            return Ok(student);
+            return Ok(curatorDto);
         }
 
         // POST api/students
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public ActionResult<StudentDisplayModify> Create(StudentAdd studentAdd)
+        public ActionResult<StudentDto> Create(StudentDto studentDto)
         {
-            var studentDto = _mapper.Map<StudentAdd, StudentDto>(studentAdd);
             studentDto = _studentService.Create(studentDto);
-            return CreatedAtAction(nameof(GetStudents), new { id = studentDto.Id }, studentAdd);
+            return CreatedAtAction(nameof(GetStudents), new { id = studentDto.Id }, studentDto);
         }
 
         // DELETE api/students/{id}
@@ -87,16 +79,15 @@ namespace Faculty.ResourceServer.Controllers
         // PUT api/students
         [HttpPut]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public ActionResult Edit(StudentDisplayModify studentModify)
+        public ActionResult Edit(StudentDto studentDto)
         {
-            var studentDto = _studentService.GetById(studentModify.Id);
-            if (studentDto == null)
+            var studentDtoFound = _studentService.GetById(studentDto.Id);
+            if (studentDtoFound == null)
             {
                 return NotFound();
             }
 
-            var changedStudentDto = _mapper.Map(studentModify, studentDto);
-            _studentService.Edit(changedStudentDto);
+            _studentService.Edit(studentDto);
             return NoContent();
         }
     }

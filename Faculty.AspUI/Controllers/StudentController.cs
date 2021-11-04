@@ -1,9 +1,11 @@
 ﻿using System.Net;
+using AutoMapper;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Faculty.Common.Dto.Student;
 using Faculty.AspUI.ViewModels.Student;
 using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -14,10 +16,12 @@ namespace Faculty.AspUI.Controllers
     public class StudentController : Controller
     {
         private readonly IStudentService _studentService;
+        private readonly IMapper _mapper;
 
-        public StudentController(IStudentService studentService)
+        public StudentController(IStudentService studentService, IMapper mapper)
         {
             _studentService = studentService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -27,7 +31,7 @@ namespace Faculty.AspUI.Controllers
             IEnumerable<StudentDisplayModify> studentsDisplay = default;
             try
             {
-                studentsDisplay = await _studentService.GetStudents();
+                studentsDisplay = _mapper.Map<IEnumerable<StudentDto>, IEnumerable<StudentDisplayModify>>(await _studentService.GetStudents());
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -53,7 +57,8 @@ namespace Faculty.AspUI.Controllers
             try
             {
                 if (ModelState.IsValid == false) return View(studentAdd);
-                await _studentService.CreateStudent(studentAdd);
+                var studentDto = _mapper.Map<StudentAdd, StudentDto>(studentAdd);
+                await _studentService.CreateStudent(studentDto);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -73,7 +78,7 @@ namespace Faculty.AspUI.Controllers
             StudentDisplayModify studentModify = default;
             try
             {
-                studentModify = await _studentService.GetStudent(id);
+                studentModify = _mapper.Map<StudentDto, StudentDisplayModify>(await _studentService.GetStudent(id));
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -112,7 +117,7 @@ namespace Faculty.AspUI.Controllers
             StudentDisplayModify specializationModify = default;
             try
             {
-                specializationModify = await _studentService.GetStudent(id);
+                specializationModify = _mapper.Map<StudentDto, StudentDisplayModify>(await _studentService.GetStudent(id));
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -132,7 +137,8 @@ namespace Faculty.AspUI.Controllers
             try
             {
                 if (ModelState.IsValid == false) return View(studentModify);
-                await _studentService.EditStudent(studentModify);
+                var studentDto = _mapper.Map<StudentDisplayModify, StudentDto>(studentModify);
+                await _studentService.EditStudent(studentDto);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {

@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace Faculty.BusinessLayer.Dto.Faculty
+namespace Faculty.Common.Dto.Faculty
 {
     /// <summary>
     /// Dto Faculty.
     /// </summary>
-    public class FacultyDto
+    public class FacultyDisplayDto
     {
         /// <summary>
-        /// Unique identificator faculty.
+        /// Unique faculty id.
         /// </summary>
         public int Id { get; set; }
 
@@ -23,18 +23,18 @@ namespace Faculty.BusinessLayer.Dto.Faculty
         public int CountYearEducation { get; set; }
 
         /// <summary>
-        /// Foreign key for student entity.
+        /// Surname student.
         /// </summary>
-        public int StudentId { get; set; }
+        public string StudentSurname { get; set; }
 
         /// <summary>
-        /// Foreign key for group entity.
+        /// Name group.
         /// </summary>
-        public int GroupId { get; set; }
+        public string GroupName { get; set; }
 
         /// <summary>
-        /// Foreign key for curator entity.
+        /// Surname curator.
         /// </summary>
-        public int CuratorId { get; set; }
+        public string CuratorSurname { get; set; }
     }
 }

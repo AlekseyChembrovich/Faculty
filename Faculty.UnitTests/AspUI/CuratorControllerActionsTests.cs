@@ -1,11 +1,14 @@
 using Moq;
 using Xunit;
 using System.Net;
+using AutoMapper;
 using System.Linq;
 using System.Net.Http;
+using Faculty.AspUI.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
+using Faculty.Common.Dto.Curator;
 using Faculty.AspUI.ViewModels.Curator;
 using Faculty.AspUI.Services.Interfaces;
 
@@ -14,9 +17,12 @@ namespace Faculty.UnitTests.AspUI
     public class CuratorControllerActionsTests
     {
         private readonly Mock<ICuratorService> _mockCuratorService;
+        private readonly IMapper _mapper;
 
         public CuratorControllerActionsTests()
         {
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            _mapper = new Mapper(mapperConfiguration);
             _mockCuratorService = new Mock<ICuratorService>();
         }
 
@@ -26,8 +32,8 @@ namespace Faculty.UnitTests.AspUI
         public void IndexMethod_ReturnsAViewResult_WithAListOfCuratorDisplay()
         {
             // Arrange
-            _mockCuratorService.Setup(service => service.GetCurators()).ReturnsAsync(GetCuratorsDisplay());
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            _mockCuratorService.Setup(service => service.GetCurators()).ReturnsAsync(GetCuratorsDto());
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
             var result = curatorController.Index().Result;
@@ -38,9 +44,9 @@ namespace Faculty.UnitTests.AspUI
             Assert.Equal(3, models.Count());
         }
 
-        private static IEnumerable<CuratorDisplayModify> GetCuratorsDisplay()
+        private static IEnumerable<CuratorDto> GetCuratorsDto()
         {
-            var curatorsDisplay = new List<CuratorDisplayModify>()
+            var curatorsDto = new List<CuratorDto>()
             {
                 new ()
                 {
@@ -68,7 +74,7 @@ namespace Faculty.UnitTests.AspUI
                 }
             };
 
-            return curatorsDisplay;
+            return curatorsDto;
         }
 
         [Fact]
@@ -76,7 +82,7 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             _mockCuratorService.Setup(service => service.GetCurators()).Throws(new HttpRequestException());
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
             var result = curatorController.Index().Result;
@@ -102,8 +108,9 @@ namespace Faculty.UnitTests.AspUI
                 Doublename = "test1",
                 Phone = "+375-29-557-06-11"
             };
-            _mockCuratorService.Setup(service => service.CreateCurator(curatorAdd)).ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.Created });
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            var curatorDto = _mapper.Map<CuratorAdd, CuratorDto>(curatorAdd);
+            _mockCuratorService.Setup(service => service.CreateCurator(curatorDto)).ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.Created });
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
             var result = curatorController.Create(curatorAdd).Result;
@@ -124,8 +131,9 @@ namespace Faculty.UnitTests.AspUI
                 Doublename = "test1",
                 Phone = "+375-29-557-06-11"
             };
-            _mockCuratorService.Setup(service => service.CreateCurator(curatorAdd)).ReturnsAsync(new HttpResponseMessage());
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            var curatorDto = _mapper.Map<CuratorAdd, CuratorDto>(curatorAdd);
+            _mockCuratorService.Setup(service => service.CreateCurator(curatorDto)).ReturnsAsync(new HttpResponseMessage());
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
             curatorController.ModelState.AddModelError(string.Empty, "Invalid name.");
 
             // Act
@@ -148,8 +156,9 @@ namespace Faculty.UnitTests.AspUI
                 Doublename = "test1",
                 Phone = "+375-29-557-06-11"
             };
-            _mockCuratorService.Setup(service => service.CreateCurator(curatorAdd)).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            var curatorDto = _mapper.Map<CuratorAdd, CuratorDto>(curatorAdd);
+            _mockCuratorService.Setup(service => service.CreateCurator(It.IsAny<CuratorDto>())).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
             var result = curatorController.Create(curatorAdd).Result;
@@ -171,8 +180,9 @@ namespace Faculty.UnitTests.AspUI
                 Doublename = "test1",
                 Phone = "+375-29-557-06-11"
             };
-            _mockCuratorService.Setup(service => service.CreateCurator(curatorAdd)).Throws(new HttpRequestException());
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            var curatorDto = _mapper.Map<CuratorAdd, CuratorDto>(curatorAdd);
+            _mockCuratorService.Setup(service => service.CreateCurator(It.IsAny<CuratorDto>())).Throws(new HttpRequestException());
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
             var result = curatorController.Create(curatorAdd).Result;
@@ -202,7 +212,7 @@ namespace Faculty.UnitTests.AspUI
             };
             _mockCuratorService.Setup(service => service.DeleteCurator(idExistCurator))
                 .ReturnsAsync(new HttpResponseMessage {StatusCode = HttpStatusCode.NoContent});
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
             var result = curatorController.Delete(curatorModify).Result;
@@ -227,7 +237,7 @@ namespace Faculty.UnitTests.AspUI
             };
             _mockCuratorService.Setup(service => service.DeleteCurator(idExistCurator))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
             var result = curatorController.Delete(curatorModify).Result;
@@ -252,7 +262,7 @@ namespace Faculty.UnitTests.AspUI
                 Phone = "+375-29-557-06-11"
             };
             _mockCuratorService.Setup(service => service.DeleteCurator(idExistCurator)).Throws(new HttpRequestException());
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
             var result = curatorController.Delete(curatorModify).Result;
@@ -279,9 +289,10 @@ namespace Faculty.UnitTests.AspUI
                 Doublename = "test1",
                 Phone = "+375-29-557-06-11"
             };
-            _mockCuratorService.Setup(service => service.EditCurator(curatorModify))
+            var curatorDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(curatorModify);
+            _mockCuratorService.Setup(service => service.EditCurator(curatorDto))
                 .ReturnsAsync(new HttpResponseMessage {StatusCode = HttpStatusCode.NoContent});
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
             var result = curatorController.Create(curatorModify).Result;
@@ -303,9 +314,10 @@ namespace Faculty.UnitTests.AspUI
                 Doublename = "test1",
                 Phone = "+375-29-557-06-11"
             };
-            _mockCuratorService.Setup(service => service.EditCurator(curatorModify))
+            var curatorDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(curatorModify);
+            _mockCuratorService.Setup(service => service.EditCurator(curatorDto))
                 .ReturnsAsync(new HttpResponseMessage());
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
             curatorController.ModelState.AddModelError(string.Empty, "Invalid name.");
 
             // Act
@@ -329,9 +341,10 @@ namespace Faculty.UnitTests.AspUI
                 Doublename = "test1",
                 Phone = "+375-29-557-06-11"
             };
-            _mockCuratorService.Setup(service => service.EditCurator(curatorModify))
+            var curatorDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(curatorModify);
+            _mockCuratorService.Setup(service => service.EditCurator(It.IsAny<CuratorDto>()))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
             var result = curatorController.Edit(curatorModify).Result;
@@ -354,8 +367,9 @@ namespace Faculty.UnitTests.AspUI
                 Doublename = "test1",
                 Phone = "+375-29-557-06-11"
             };
-            _mockCuratorService.Setup(service => service.EditCurator(curatorModify)).Throws(new HttpRequestException());
-            var curatorController = new CuratorController(_mockCuratorService.Object);
+            var curatorDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(curatorModify);
+            _mockCuratorService.Setup(service => service.EditCurator(It.IsAny<CuratorDto>())).Throws(new HttpRequestException());
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
             var result = curatorController.Edit(curatorModify).Result;

@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Faculty.Common.Dto.Group;
 using System.Collections.Generic;
-using Faculty.BusinessLayer.Dto.Group;
 using Faculty.BusinessLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Faculty.ResourceServer.Models.Group;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.ResourceServer.Controllers
@@ -16,18 +14,16 @@ namespace Faculty.ResourceServer.Controllers
     public class GroupsController : Controller
     {
         private readonly IGroupService _groupService;
-        private readonly IMapper _mapper;
 
-        public GroupsController(IGroupService groupService, IMapper mapper)
+        public GroupsController(IGroupService groupService)
         {
             _groupService = groupService;
-            _mapper = mapper;
         }
 
         // GET api/groups
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult<IEnumerable<GroupDisplay>> GetGroups()
+        public ActionResult<IEnumerable<GroupDto>> GetGroups()
         {
             var groupsDto = _groupService.GetAll();
             if (groupsDto == null)
@@ -35,19 +31,17 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var listGroupsDto = groupsDto.ToList();
-            if (!listGroupsDto.Any())
+            if (!groupsDto.Any())
             {
                 return NotFound();
             }
 
-            var listGroups = _mapper.Map<List<GroupDisplayDto>, List<GroupDisplay>>(listGroupsDto);
-            return Ok(listGroups);
+            return Ok(groupsDto);
         }
 
         // GET api/groups/{id}
         [HttpGet("{id:int}")]
-        public ActionResult<GroupModify> GetGroups(int id)
+        public ActionResult<GroupDto> GetGroups(int id)
         {
             var groupDto = _groupService.GetById(id);
             if (groupDto == null)
@@ -55,18 +49,16 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var group = _mapper.Map<GroupDto, GroupModify>(groupDto);
-            return Ok(group);
+            return Ok(groupDto);
         }
 
         // POST api/groups
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public ActionResult<GroupModify> Create(GroupAdd groupAdd)
+        public ActionResult<GroupDto> Create(GroupDto groupDto)
         {
-            var groupDto = _mapper.Map<GroupAdd, GroupDto>(groupAdd);
             groupDto = _groupService.Create(groupDto);
-            return CreatedAtAction(nameof(GetGroups), new { id = groupDto.Id }, groupAdd);
+            return CreatedAtAction(nameof(GetGroups), new { id = groupDto.Id }, groupDto);
         }
 
         // DELETE api/groups/{id}
@@ -87,16 +79,15 @@ namespace Faculty.ResourceServer.Controllers
         // PUT api/groups
         [HttpPut]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public ActionResult Edit(GroupModify groupModify)
+        public ActionResult Edit(GroupDto groupDto)
         {
-            var groupDto = _groupService.GetById(groupModify.Id);
-            if (groupDto == null)
+            var groupDtoFound = _groupService.GetById(groupDto.Id);
+            if (groupDtoFound == null)
             {
                 return NotFound();
             }
 
-            var changedGroupDto = _mapper.Map(groupModify, groupDto);
-            _groupService.Edit(changedGroupDto);
+            _groupService.Edit(groupDto);
             return NoContent();
         }
     }

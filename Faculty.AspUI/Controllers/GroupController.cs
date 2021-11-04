@@ -1,12 +1,16 @@
 ﻿using System.Net;
+using AutoMapper;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Faculty.Common.Dto.Group;
 using System.Collections.Generic;
 using Faculty.AspUI.ViewModels.Group;
+using Faculty.Common.Dto.Specialization;
 using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Faculty.AspUI.ViewModels.Specialization;
 
 namespace Faculty.AspUI.Controllers
 {
@@ -15,11 +19,13 @@ namespace Faculty.AspUI.Controllers
     {
         private readonly IGroupService _groupService;
         private readonly ISpecializationService _specializationService;
+        private readonly IMapper _mapper;
 
-        public GroupController(IGroupService groupService, ISpecializationService specializationService)
+        public GroupController(IGroupService groupService, ISpecializationService specializationService, IMapper mapper)
         {
             _groupService = groupService;
             _specializationService = specializationService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -29,7 +35,7 @@ namespace Faculty.AspUI.Controllers
             IEnumerable<GroupDisplay> groupDisplays = default;
             try
             {
-                groupDisplays = await _groupService.GetGroups();
+                groupDisplays = _mapper.Map<IEnumerable<GroupDisplayDto>, IEnumerable<GroupDisplay>>(await _groupService.GetGroups());
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -69,7 +75,8 @@ namespace Faculty.AspUI.Controllers
             {
                 await FillViewBag();
                 if (ModelState.IsValid == false) return View(groupAdd);
-                await _groupService.CreateGroup(groupAdd);
+                var groupDto = _mapper.Map<GroupAdd, GroupDto>(groupAdd);
+                await _groupService.CreateGroup(groupDto);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -90,7 +97,7 @@ namespace Faculty.AspUI.Controllers
             try
             {
                 await FillViewBag();
-                groupModify = await _groupService.GetGroup(id);
+                groupModify = _mapper.Map<GroupDto, GroupModify>(await _groupService.GetGroup(id));
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -130,7 +137,7 @@ namespace Faculty.AspUI.Controllers
             try
             {
                 await FillViewBag();
-                groupModify = await _groupService.GetGroup(id);
+                groupModify = _mapper.Map<GroupDto, GroupModify>(await _groupService.GetGroup(id));
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -151,7 +158,8 @@ namespace Faculty.AspUI.Controllers
             {
                 await FillViewBag();
                 if (ModelState.IsValid == false) return View(groupModify);
-                await _groupService.EditGroup(groupModify);
+                var groupDto = _mapper.Map<GroupModify, GroupDto>(groupModify);
+                await _groupService.EditGroup(groupDto);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -167,7 +175,7 @@ namespace Faculty.AspUI.Controllers
 
         public async Task FillViewBag()
         {
-            ViewBag.Specializations = await _specializationService.GetSpecializations();
+            ViewBag.Specializations = _mapper.Map<IEnumerable<SpecializationDto>, IEnumerable<SpecializationDisplayModify>>(await _specializationService.GetSpecializations());
         }
     }
 }

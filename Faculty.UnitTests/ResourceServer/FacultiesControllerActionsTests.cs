@@ -1,29 +1,22 @@
 using Moq;
 using Xunit;
 using System;
-using AutoMapper;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using Faculty.ResourceServer.Tools;
+using Faculty.Common.Dto.Faculty;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.Dto.Faculty;
 using Faculty.ResourceServer.Controllers;
-using Faculty.ResourceServer.Models.Curator;
-using Faculty.ResourceServer.Models.Faculty;
 
 namespace Faculty.UnitTests.ResourceServer
 {
     public class FacultiesControllerActionsTests
     {
         private readonly Mock<IFacultyService> _mockFacultyService;
-        private readonly IMapper _mapper;
 
         public FacultiesControllerActionsTests()
         {
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
-            _mapper = new Mapper(mapperConfiguration);
             _mockFacultyService = new Mock<IFacultyService>();
         }
 
@@ -32,18 +25,17 @@ namespace Faculty.UnitTests.ResourceServer
         {
             // Arrange
             var facultiesDto = GetFacultiesDto();
-            var facultiesDisplay = _mapper.Map<IEnumerable<FacultyDisplay>>(facultiesDto);
             _mockFacultyService.Setup(x => x.GetAll()).Returns(facultiesDto);
-            var facultiesController = new FacultiesController(_mockFacultyService.Object, _mapper);
+            var facultiesController = new FacultiesController(_mockFacultyService.Object);
 
             // Act
             var result = facultiesController.GetFaculties();
 
             // Assert
             var viewResult = Assert.IsType<OkObjectResult>(result.Result);
-            var models = Assert.IsAssignableFrom<IEnumerable<FacultyDisplay>>(viewResult.Value);
+            var models = Assert.IsAssignableFrom<IEnumerable<FacultyDisplayDto>>(viewResult.Value);
             Assert.Equal(3, models.Count());
-            facultiesDisplay.Should().BeEquivalentTo(models);
+            facultiesDto.Should().BeEquivalentTo(models);
         }
 
         [Fact]
@@ -51,7 +43,7 @@ namespace Faculty.UnitTests.ResourceServer
         {
             // Arrange
             _mockFacultyService.Setup(x => x.GetAll()).Returns(It.IsAny<IEnumerable<FacultyDisplayDto>>());
-            var facultiesController = new FacultiesController(_mockFacultyService.Object, _mapper);
+            var facultiesController = new FacultiesController(_mockFacultyService.Object);
 
             // Act
             var result = facultiesController.GetFaculties();
@@ -101,21 +93,20 @@ namespace Faculty.UnitTests.ResourceServer
         {
             // Arrange
             const int idNewFaculty = 1;
-            var facultyAdd = new FacultyAdd
+            var facultyDto = new FacultyDto
             {
+                Id = idNewFaculty,
                 StartDateEducation = DateTime.Now,
                 CountYearEducation = 5,
                 CuratorId = 1,
                 GroupId = 1,
                 StudentId = 1
             };
-            var facultyDto = _mapper.Map<FacultyAdd, FacultyDto>(facultyAdd);
-            facultyDto.Id = idNewFaculty;
             _mockFacultyService.Setup(x => x.Create(It.IsAny<FacultyDto>())).Returns(facultyDto);
-            var facultiesController = new FacultiesController(_mockFacultyService.Object, _mapper);
+            var facultiesController = new FacultiesController(_mockFacultyService.Object);
 
             // Act
-            var result = facultiesController.Create(facultyAdd);
+            var result = facultiesController.Create(facultyDto);
 
             // Assert
             Assert.IsType<CreatedAtActionResult>(result.Result);
@@ -137,7 +128,7 @@ namespace Faculty.UnitTests.ResourceServer
             };
             _mockFacultyService.Setup(x => x.GetById(idNewFaculty)).Returns(curatorDto);
             _mockFacultyService.Setup(x => x.Delete(idNewFaculty));
-            var facultiesController = new FacultiesController(_mockFacultyService.Object, _mapper);
+            var facultiesController = new FacultiesController(_mockFacultyService.Object);
 
             // Act
             var result = facultiesController.Delete(idNewFaculty);
@@ -152,7 +143,7 @@ namespace Faculty.UnitTests.ResourceServer
             // Arrange
             const int idExistCurator = 1;
             _mockFacultyService.Setup(x => x.GetById(idExistCurator)).Returns(It.IsAny<FacultyDto>());
-            var facultiesController = new FacultiesController(_mockFacultyService.Object, _mapper);
+            var facultiesController = new FacultiesController(_mockFacultyService.Object);
 
             // Act
             var result = facultiesController.Delete(idExistCurator);
@@ -175,21 +166,12 @@ namespace Faculty.UnitTests.ResourceServer
                 GroupId = 1,
                 StudentId = 1
             };
-            var facultyModify = new FacultyModify
-            {
-                Id = 1,
-                StartDateEducation = DateTime.Now,
-                CountYearEducation = 4,
-                CuratorId = 2,
-                GroupId = 2,
-                StudentId = 2
-            };
             _mockFacultyService.Setup(x => x.GetById(idExistFaculty)).Returns(curatorDto);
             _mockFacultyService.Setup(x => x.Edit(It.IsAny<FacultyDto>()));
-            var facultiesController = new FacultiesController(_mockFacultyService.Object, _mapper);
+            var facultiesController = new FacultiesController(_mockFacultyService.Object);
 
             // Act
-            var result = facultiesController.Edit(facultyModify);
+            var result = facultiesController.Edit(curatorDto);
 
             // Assert
             Assert.IsType<NoContentResult>(result);
@@ -200,7 +182,7 @@ namespace Faculty.UnitTests.ResourceServer
         {
             // Arrange
             const int idExistFaculty = 1;
-            var facultyModify = new FacultyModify
+            var facultyModify = new FacultyDto
             {
                 Id = 1,
                 StartDateEducation = DateTime.Now,
@@ -210,7 +192,7 @@ namespace Faculty.UnitTests.ResourceServer
                 StudentId = 2
             };
             _mockFacultyService.Setup(x => x.GetById(idExistFaculty)).Returns(It.IsAny<FacultyDto>());
-            var facultiesController = new FacultiesController(_mockFacultyService.Object, _mapper);
+            var facultiesController = new FacultiesController(_mockFacultyService.Object);
 
             // Act
             var result = facultiesController.Edit(facultyModify);

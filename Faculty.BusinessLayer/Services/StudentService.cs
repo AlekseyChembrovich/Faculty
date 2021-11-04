@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.Dto.Student;
+using Faculty.Common.Dto.Student;
 using Faculty.DataAccessLayer.Repository;
 
 namespace Faculty.BusinessLayer.Services

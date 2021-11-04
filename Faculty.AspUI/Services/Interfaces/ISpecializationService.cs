@@ -1,20 +1,20 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Faculty.AspUI.ViewModels.Specialization;
+using Faculty.Common.Dto.Specialization;
 
 namespace Faculty.AspUI.Services.Interfaces
 {
     public interface ISpecializationService
     {
-        Task<IEnumerable<SpecializationDisplayModify>> GetSpecializations();
+        Task<IEnumerable<SpecializationDto>> GetSpecializations();
 
-        Task<SpecializationDisplayModify> GetSpecialization(int id);
+        Task<SpecializationDto> GetSpecialization(int id);
 
-        Task<HttpResponseMessage> CreateSpecialization(SpecializationAdd specializationAdd);
+        Task<HttpResponseMessage> CreateSpecialization(SpecializationDto specializationDto);
 
         Task<HttpResponseMessage> DeleteSpecialization(int id);
 
-        Task<HttpResponseMessage> EditSpecialization(SpecializationDisplayModify specializationModify);
+        Task<HttpResponseMessage> EditSpecialization(SpecializationDto specializationDto);
     }
 }

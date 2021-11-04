@@ -1,12 +1,15 @@
 using Moq;
 using Xunit;
 using System.Net;
+using AutoMapper;
 using System.Linq;
 using System.Net.Http;
+using Faculty.AspUI.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
 using Faculty.AspUI.Services.Interfaces;
+using Faculty.Common.Dto.Specialization;
 using Faculty.AspUI.ViewModels.Specialization;
 
 namespace Faculty.UnitTests.AspUI
@@ -14,9 +17,12 @@ namespace Faculty.UnitTests.AspUI
     public class SpecializationControllerActionsTests
     {
         private readonly Mock<ISpecializationService> _mockSpecializationService;
+        private readonly IMapper _mapper;
 
         public SpecializationControllerActionsTests()
         {
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            _mapper = new Mapper(mapperConfiguration);
             _mockSpecializationService = new Mock<ISpecializationService>();
         }
 
@@ -26,8 +32,8 @@ namespace Faculty.UnitTests.AspUI
         public void IndexMethod_ReturnsAViewResult_WithAListOfSpecializationDisplay()
         {
             // Arrange
-            _mockSpecializationService.Setup(service => service.GetSpecializations()).ReturnsAsync(GetSpecializationsDisplay());
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            _mockSpecializationService.Setup(service => service.GetSpecializations()).ReturnsAsync(GetSpecializationsDto);
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
 
             // Act
             var result = specializationController.Index().Result;
@@ -38,9 +44,9 @@ namespace Faculty.UnitTests.AspUI
             Assert.Equal(3, models.Count());
         }
 
-        private static IEnumerable<SpecializationDisplayModify> GetSpecializationsDisplay()
+        private static IEnumerable<SpecializationDto> GetSpecializationsDto()
         {
-            var specializationsDisplay = new List<SpecializationDisplayModify>()
+            var specializationsDto = new List<SpecializationDto>()
             {
                 new ()
                 {
@@ -59,7 +65,7 @@ namespace Faculty.UnitTests.AspUI
                 }
             };
 
-            return specializationsDisplay;
+            return specializationsDto;
         }
 
         [Fact]
@@ -67,7 +73,7 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             _mockSpecializationService.Setup(service => service.GetSpecializations()).Throws(new HttpRequestException());
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
 
             // Act
             var result = specializationController.Index().Result;
@@ -90,9 +96,10 @@ namespace Faculty.UnitTests.AspUI
             {
                 Name = "test1",
             };
-            _mockSpecializationService.Setup(service => service.CreateSpecialization(specializationAdd))
+            var specializationDto = _mapper.Map<SpecializationAdd, SpecializationDto>(specializationAdd);
+            _mockSpecializationService.Setup(service => service.CreateSpecialization(specializationDto))
                 .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.Created });
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
 
             // Act
             var result = specializationController.Create(specializationAdd).Result;
@@ -110,8 +117,9 @@ namespace Faculty.UnitTests.AspUI
             {
                 Name = null,
             };
-            _mockSpecializationService.Setup(service => service.CreateSpecialization(specializationAdd)).ReturnsAsync(new HttpResponseMessage());
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            var specializationDto = _mapper.Map<SpecializationAdd, SpecializationDto>(specializationAdd);
+            _mockSpecializationService.Setup(service => service.CreateSpecialization(specializationDto)).ReturnsAsync(new HttpResponseMessage());
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
             specializationController.ModelState.AddModelError(string.Empty, "Invalid name.");
 
             // Act
@@ -131,9 +139,10 @@ namespace Faculty.UnitTests.AspUI
             {
                 Name = "test1",
             };
-            _mockSpecializationService.Setup(service => service.CreateSpecialization(specializationAdd))
+            var specializationDto = _mapper.Map<SpecializationAdd, SpecializationDto>(specializationAdd);
+            _mockSpecializationService.Setup(service => service.CreateSpecialization(It.IsAny<SpecializationDto>()))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
 
             // Act
             var result = specializationController.Create(specializationAdd).Result;
@@ -152,8 +161,9 @@ namespace Faculty.UnitTests.AspUI
             {
                 Name = "test1"
             };
-            _mockSpecializationService.Setup(service => service.CreateSpecialization(specializationAdd)).Throws(new HttpRequestException());
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            var specializationDto = _mapper.Map<SpecializationAdd, SpecializationDto>(specializationAdd);
+            _mockSpecializationService.Setup(service => service.CreateSpecialization(It.IsAny<SpecializationDto>())).Throws(new HttpRequestException());
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
 
             // Act
             var result = specializationController.Create(specializationAdd).Result;
@@ -180,7 +190,7 @@ namespace Faculty.UnitTests.AspUI
             };
             _mockSpecializationService.Setup(service => service.DeleteSpecialization(idExistSpecialization))
                 .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
 
             // Act
             var result = specializationController.Delete(specializationModify).Result;
@@ -202,7 +212,7 @@ namespace Faculty.UnitTests.AspUI
             };
             _mockSpecializationService.Setup(service => service.DeleteSpecialization(idExistSpecialization))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
 
             // Act
             var result = specializationController.Delete(specializationModify).Result;
@@ -223,7 +233,7 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1"
             };
             _mockSpecializationService.Setup(service => service.DeleteSpecialization(It.IsAny<int>())).Throws(new HttpRequestException());
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
 
             // Act
             var result = specializationController.Delete(specializationModify).Result;
@@ -247,9 +257,10 @@ namespace Faculty.UnitTests.AspUI
                 Id = 1,
                 Name = "test1"
             };
-            _mockSpecializationService.Setup(service => service.EditSpecialization(specializationModify))
+            var specializationDto = _mapper.Map<SpecializationDisplayModify, SpecializationDto>(specializationModify);
+            _mockSpecializationService.Setup(service => service.EditSpecialization(specializationDto))
                 .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
 
             // Act
             var result = specializationController.Edit(specializationModify).Result;
@@ -268,8 +279,9 @@ namespace Faculty.UnitTests.AspUI
                 Id = 1,
                 Name = null
             };
-            _mockSpecializationService.Setup(service => service.EditSpecialization(specializationModify)).ReturnsAsync(new HttpResponseMessage());
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            var specializationDto = _mapper.Map<SpecializationDisplayModify, SpecializationDto>(specializationModify);
+            _mockSpecializationService.Setup(service => service.EditSpecialization(specializationDto)).ReturnsAsync(new HttpResponseMessage());
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
             specializationController.ModelState.AddModelError(string.Empty, "Invalid name.");
 
             // Act
@@ -290,9 +302,10 @@ namespace Faculty.UnitTests.AspUI
                 Id = 1,
                 Name = "test1"
             };
-            _mockSpecializationService.Setup(service => service.EditSpecialization(specializationModify))
+            var specializationDto = _mapper.Map<SpecializationDisplayModify, SpecializationDto>(specializationModify);
+            _mockSpecializationService.Setup(service => service.EditSpecialization(It.IsAny<SpecializationDto>()))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
 
             // Act
             var result = specializationController.Edit(specializationModify).Result;
@@ -312,8 +325,9 @@ namespace Faculty.UnitTests.AspUI
                 Id = 1,
                 Name = "test1"
             };
-            _mockSpecializationService.Setup(service => service.EditSpecialization(specializationModify)).Throws(new HttpRequestException());
-            var specializationController = new SpecializationController(_mockSpecializationService.Object);
+            var specializationDto = _mapper.Map<SpecializationDisplayModify, SpecializationDto>(specializationModify);
+            _mockSpecializationService.Setup(service => service.EditSpecialization(It.IsAny<SpecializationDto>())).Throws(new HttpRequestException());
+            var specializationController = new SpecializationController(_mockSpecializationService.Object, _mapper);
 
             // Act
             var result = specializationController.Edit(specializationModify).Result;

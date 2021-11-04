@@ -1,4 +1,4 @@
-﻿namespace Faculty.BusinessLayer.Dto.Specialization
+﻿namespace Faculty.Common.Dto.Specialization
 {
     /// <summary>
     /// Dto Specialization.
@@ -6,7 +6,7 @@
     public class SpecializationDto
     {
         /// <summary>
-        /// Unique identificator specialization.
+        /// Unique specialization id.
         /// </summary>
         public int Id { get; set; }
 

@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Faculty.Common.Dto.Faculty;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.Dto.Faculty;
 using Microsoft.AspNetCore.Authorization;
-using Faculty.ResourceServer.Models.Faculty;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.ResourceServer.Controllers
@@ -16,18 +14,16 @@ namespace Faculty.ResourceServer.Controllers
     public class FacultiesController : Controller
     {
         private readonly IFacultyService _facultyService;
-        private readonly IMapper _mapper;
 
-        public FacultiesController(IFacultyService facultyService, IMapper mapper)
+        public FacultiesController(IFacultyService facultyService)
         {
             _facultyService = facultyService;
-            _mapper = mapper;
         }
 
         // GET api/faculties
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult<IEnumerable<FacultyDisplay>> GetFaculties()
+        public ActionResult<IEnumerable<FacultyDto>> GetFaculties()
         {
             var facultiesDto = _facultyService.GetAll();
             if (facultiesDto == null)
@@ -35,19 +31,17 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var listFacultiesDto = facultiesDto.ToList();
-            if (!listFacultiesDto.Any())
+            if (!facultiesDto.Any())
             {
                 return NotFound();
             }
 
-            var listFaculties = _mapper.Map<List<FacultyDisplayDto>, List<FacultyDisplay>>(listFacultiesDto);
-            return Ok(listFaculties);
+            return Ok(facultiesDto);
         }
 
         // GET api/faculties/{id}
         [HttpGet("{id:int}")]
-        public ActionResult<FacultyModify> GetFaculties(int id)
+        public ActionResult<FacultyDto> GetFaculties(int id)
         {
             var facultyDto = _facultyService.GetById(id);
             if (facultyDto == null)
@@ -55,18 +49,16 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var faculty = _mapper.Map<FacultyDto, FacultyModify>(facultyDto);
-            return Ok(faculty);
+            return Ok(facultyDto);
         }
 
         // POST api/faculties
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public ActionResult<FacultyModify> Create(FacultyAdd facultyAdd)
+        public ActionResult<FacultyDto> Create(FacultyDto facultyDto)
         {
-            var facultyDto = _mapper.Map<FacultyAdd, FacultyDto>(facultyAdd);
             facultyDto = _facultyService.Create(facultyDto);
-            return CreatedAtAction(nameof(GetFaculties), new { id = facultyDto.Id }, facultyAdd);
+            return CreatedAtAction(nameof(GetFaculties), new { id = facultyDto.Id }, facultyDto);
         }
 
         // DELETE api/faculties/{id}
@@ -87,16 +79,15 @@ namespace Faculty.ResourceServer.Controllers
         // PUT api/faculties
         [HttpPut]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public ActionResult Edit(FacultyModify facultyModify)
+        public ActionResult Edit(FacultyDto facultyDto)
         {
-            var facultyDto = _facultyService.GetById(facultyModify.Id);
-            if (facultyDto == null)
+            var facultyDtoFound = _facultyService.GetById(facultyDto.Id);
+            if (facultyDtoFound == null)
             {
                 return NotFound();
             }
 
-            var changedFacultyDto = _mapper.Map(facultyModify, facultyDto);
-            _facultyService.Edit(changedFacultyDto);
+            _facultyService.Edit(facultyDto);
             return NoContent();
         }
     }

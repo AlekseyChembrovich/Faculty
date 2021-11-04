@@ -1,9 +1,9 @@
-﻿namespace Faculty.ResourceServer.Models.Group
+﻿namespace Faculty.Common.Dto.Group
 {
     /// <summary>
-    /// ViewModel Group.
+    /// Dto Group.
     /// </summary>
-    public class GroupDisplay
+    public class GroupDisplayDto
     {
         /// <summary>
         /// Unique group id.

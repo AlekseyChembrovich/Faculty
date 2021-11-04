@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Faculty.BusinessLayer.Dto.Student;
+using Faculty.Common.Dto.Student;
 
 namespace Faculty.BusinessLayer.Interfaces
 {

@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Faculty.BusinessLayer.Interfaces;
+using Faculty.Common.Dto.Specialization;
 using Microsoft.AspNetCore.Authorization;
-using Faculty.BusinessLayer.Dto.Specialization;
-using Faculty.ResourceServer.Models.Specialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.ResourceServer.Controllers
@@ -16,18 +14,16 @@ namespace Faculty.ResourceServer.Controllers
     public class SpecializationsController : Controller
     {
         private readonly ISpecializationService _specializationService;
-        private readonly IMapper _mapper;
 
-        public SpecializationsController(ISpecializationService specializationService, IMapper mapper)
+        public SpecializationsController(ISpecializationService specializationService)
         {
             _specializationService = specializationService;
-            _mapper = mapper;
         }
 
         // GET api/specializations
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult<IEnumerable<SpecializationDisplayModify>> GetSpecializations()
+        public ActionResult<IEnumerable<SpecializationDto>> GetSpecializations()
         {
             var specializationsDto = _specializationService.GetAll();
             if (specializationsDto == null)
@@ -35,19 +31,17 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var listSpecializationsDto = specializationsDto.ToList();
-            if (!listSpecializationsDto.Any())
+            if (!specializationsDto.Any())
             {
                 return NotFound();
             }
 
-            var listSpecializations = _mapper.Map<List<SpecializationDto>, List<SpecializationDisplayModify>>(listSpecializationsDto);
-            return Ok(listSpecializations);
+            return Ok(specializationsDto);
         }
 
         // GET api/specializations/{id}
         [HttpGet("{id:int}")]
-        public ActionResult<SpecializationDisplayModify> GetSpecializations(int id)
+        public ActionResult<SpecializationDto> GetSpecializations(int id)
         {
             var specializationDto = _specializationService.GetById(id);
             if (specializationDto == null)
@@ -55,18 +49,16 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var specialization = _mapper.Map<SpecializationDto, SpecializationDisplayModify>(specializationDto);
-            return Ok(specialization);
+            return Ok(specializationDto);
         }
 
         // POST api/specializations
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public ActionResult<SpecializationDisplayModify> Create(SpecializationAdd specializationAdd)
+        public ActionResult<SpecializationDto> Create(SpecializationDto specializationDto)
         {
-            var specializationDto = _mapper.Map<SpecializationAdd, SpecializationDto>(specializationAdd);
             specializationDto = _specializationService.Create(specializationDto);
-            return CreatedAtAction(nameof(GetSpecializations), new { id = specializationDto.Id }, specializationAdd);
+            return CreatedAtAction(nameof(GetSpecializations), new { id = specializationDto.Id }, specializationDto);
         }
 
         // DELETE api/specializations/{id}
@@ -87,16 +79,15 @@ namespace Faculty.ResourceServer.Controllers
         // PUT api/specializations
         [HttpPut]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public ActionResult Edit(SpecializationDisplayModify specializationModify)
+        public ActionResult Edit(SpecializationDto specializationDto)
         {
-            var specializationDto = _specializationService.GetById(specializationModify.Id);
-            if (specializationDto == null)
+            var specializationDtoFound = _specializationService.GetById(specializationDto.Id);
+            if (specializationDtoFound == null)
             {
                 return NotFound();
             }
 
-            var changedSpecializationDto = _mapper.Map(specializationModify, specializationDto);
-            _specializationService.Edit(changedSpecializationDto);
+            _specializationService.Edit(specializationDto);
             return NoContent();
         }
     }

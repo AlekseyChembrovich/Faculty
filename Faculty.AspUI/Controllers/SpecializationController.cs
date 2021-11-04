@@ -1,9 +1,11 @@
 ﻿using System.Net;
+using AutoMapper;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Faculty.Common.Dto.Specialization;
 using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Faculty.AspUI.ViewModels.Specialization;
@@ -14,10 +16,12 @@ namespace Faculty.AspUI.Controllers
     public class SpecializationController : Controller
     {
         private readonly ISpecializationService _specializationService;
+        private readonly IMapper _mapper;
 
-        public SpecializationController(ISpecializationService specializationService)
+        public SpecializationController(ISpecializationService specializationService, IMapper mapper)
         {
             _specializationService = specializationService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -27,7 +31,7 @@ namespace Faculty.AspUI.Controllers
             IEnumerable<SpecializationDisplayModify> specializationsDisplay = default;
             try
             {
-                specializationsDisplay = await _specializationService.GetSpecializations();
+                specializationsDisplay = _mapper.Map<IEnumerable<SpecializationDto>, IEnumerable<SpecializationDisplayModify>>(await _specializationService.GetSpecializations());
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -53,7 +57,8 @@ namespace Faculty.AspUI.Controllers
             try
             {
                 if (ModelState.IsValid == false) return View(specializationAdd);
-                await _specializationService.CreateSpecialization(specializationAdd);
+                var specializationDto = _mapper.Map<SpecializationAdd, SpecializationDto>(specializationAdd);
+                await _specializationService.CreateSpecialization(specializationDto);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -73,7 +78,7 @@ namespace Faculty.AspUI.Controllers
             SpecializationDisplayModify specializationModify = default;
             try
             {
-                specializationModify = await _specializationService.GetSpecialization(id);
+                specializationModify = _mapper.Map<SpecializationDto, SpecializationDisplayModify>(await _specializationService.GetSpecialization(id));
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -112,7 +117,7 @@ namespace Faculty.AspUI.Controllers
             SpecializationDisplayModify specializationModify = default;
             try
             {
-                specializationModify = await _specializationService.GetSpecialization(id);
+                specializationModify = _mapper.Map<SpecializationDto, SpecializationDisplayModify>(await _specializationService.GetSpecialization(id));
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -132,7 +137,8 @@ namespace Faculty.AspUI.Controllers
             try
             {
                 if (ModelState.IsValid == false) return View(specializationModify);
-                await _specializationService.EditSpecialization(specializationModify);
+                var specializationDto = _mapper.Map<SpecializationDisplayModify, SpecializationDto>(specializationModify);
+                await _specializationService.EditSpecialization(specializationDto);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {

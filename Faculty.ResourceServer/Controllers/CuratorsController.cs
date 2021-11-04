@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Faculty.Common.Dto.Curator;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.Dto.Curator;
 using Microsoft.AspNetCore.Authorization;
-using Faculty.ResourceServer.Models.Curator;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Faculty.ResourceServer.Controllers
@@ -16,18 +14,16 @@ namespace Faculty.ResourceServer.Controllers
     public class CuratorsController : Controller
     {
         private readonly ICuratorService _curatorService;
-        private readonly IMapper _mapper;
 
-        public CuratorsController(ICuratorService curatorService, IMapper mapper)
+        public CuratorsController(ICuratorService curatorService)
         {
             _curatorService = curatorService;
-            _mapper = mapper;
         }
 
         // GET api/curators
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult<IEnumerable<CuratorDisplayModify>> GetCurators()
+        public ActionResult<IEnumerable<CuratorDto>> GetCurators()
         {
             var curatorsDto = _curatorService.GetAll();
             if (curatorsDto == null)
@@ -35,19 +31,17 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var listCuratorsDto = curatorsDto.ToList();
-            if (!listCuratorsDto.Any())
+            if (!curatorsDto.Any())
             {
                 return NotFound();
             }
 
-            var listCurators = _mapper.Map<List<CuratorDto>, List<CuratorDisplayModify>>(listCuratorsDto);
-            return Ok(listCurators);
+            return Ok(curatorsDto);
         }
 
         // GET api/curators/{id}
         [HttpGet("{id:int}")]
-        public ActionResult<CuratorDisplayModify> GetCurators(int id)
+        public ActionResult<CuratorDto> GetCurators(int id)
         {
             var curatorDto = _curatorService.GetById(id);
             if (curatorDto == null)
@@ -55,18 +49,16 @@ namespace Faculty.ResourceServer.Controllers
                 return NotFound();
             }
 
-            var curator = _mapper.Map<CuratorDto, CuratorDisplayModify>(curatorDto);
-            return Ok(curator);
+            return Ok(curatorDto);
         }
 
         // POST api/curators
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public ActionResult<CuratorDisplayModify> Create(CuratorAdd curatorAdd)
+        public ActionResult<CuratorDto> Create(CuratorDto curatorDto)
         {
-            var curatorDto = _mapper.Map<CuratorAdd, CuratorDto>(curatorAdd);
             curatorDto = _curatorService.Create(curatorDto);
-            return CreatedAtAction(nameof(GetCurators), new { id = curatorDto.Id }, curatorAdd);
+            return CreatedAtAction(nameof(GetCurators), new { id = curatorDto.Id }, curatorDto);
         }
 
         // DELETE api/curators/{id}
@@ -87,16 +79,15 @@ namespace Faculty.ResourceServer.Controllers
         // PUT api/curators
         [HttpPut]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public ActionResult Edit(CuratorDisplayModify curatorModify)
+        public ActionResult Edit(CuratorDto curatorDto)
         {
-            var curatorDto = _curatorService.GetById(curatorModify.Id);
-            if (curatorDto == null)
+            var curatorDtoFound = _curatorService.GetById(curatorDto.Id);
+            if (curatorDtoFound == null)
             {
                 return NotFound();
             }
 
-            var changedCuratorDto = _mapper.Map(curatorModify, curatorDto);
-            _curatorService.Edit(changedCuratorDto);
+            _curatorService.Edit(curatorDto);
             return NoContent();
         }
     }

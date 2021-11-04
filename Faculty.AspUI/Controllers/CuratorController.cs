@@ -1,9 +1,11 @@
 ﻿using System.Net;
+using AutoMapper;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Faculty.Common.Dto.Curator;
 using Faculty.AspUI.ViewModels.Curator;
 using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -14,10 +16,12 @@ namespace Faculty.AspUI.Controllers
     public class CuratorController : Controller
     {
         private readonly ICuratorService _curatorService;
+        private readonly IMapper _mapper;
 
-        public CuratorController(ICuratorService curatorService)
+        public CuratorController(ICuratorService curatorService, IMapper mapper)
         {
             _curatorService = curatorService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -27,7 +31,7 @@ namespace Faculty.AspUI.Controllers
             IEnumerable<CuratorDisplayModify> curatorsDisplay = default;
             try
             {
-                curatorsDisplay = await _curatorService.GetCurators();
+                curatorsDisplay = _mapper.Map<IEnumerable<CuratorDto>, IEnumerable<CuratorDisplayModify>>(await _curatorService.GetCurators());
             }
             catch (HttpRequestException)
             {
@@ -49,7 +53,8 @@ namespace Faculty.AspUI.Controllers
             try
             {
                 if (ModelState.IsValid == false) return View(curatorAdd);
-                await _curatorService.CreateCurator(curatorAdd);
+                var curatorDto = _mapper.Map<CuratorAdd, CuratorDto>(curatorAdd);
+                await _curatorService.CreateCurator(curatorDto);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -69,7 +74,7 @@ namespace Faculty.AspUI.Controllers
             CuratorDisplayModify curatorModify = default;
             try
             {
-                curatorModify = await _curatorService.GetCurator(id);
+                curatorModify = _mapper.Map<CuratorDto, CuratorDisplayModify>(await _curatorService.GetCurator(id));
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -108,7 +113,7 @@ namespace Faculty.AspUI.Controllers
             CuratorDisplayModify curatorModify = default;
             try
             {
-                curatorModify = await _curatorService.GetCurator(id);
+                curatorModify = _mapper.Map<CuratorDto, CuratorDisplayModify>(await _curatorService.GetCurator(id));
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -128,7 +133,8 @@ namespace Faculty.AspUI.Controllers
             try
             {
                 if (ModelState.IsValid == false) return View(curatorModify);
-                await _curatorService.EditCurator(curatorModify);
+                var curatorDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(curatorModify);
+                await _curatorService.EditCurator(curatorDto);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {

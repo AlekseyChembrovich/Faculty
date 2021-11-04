@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Faculty.BusinessLayer.Dto.Specialization;
+using Faculty.Common.Dto.Specialization;
 
 namespace Faculty.BusinessLayer.Interfaces
 {

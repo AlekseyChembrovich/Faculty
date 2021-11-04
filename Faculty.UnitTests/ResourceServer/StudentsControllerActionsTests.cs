@@ -5,11 +5,10 @@ using System.Linq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Faculty.Common.Dto.Student;
 using Faculty.ResourceServer.Tools;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.Dto.Student;
 using Faculty.ResourceServer.Controllers;
-using Faculty.ResourceServer.Models.Student;
 
 namespace Faculty.UnitTests.ResourceServer
 {
@@ -30,18 +29,17 @@ namespace Faculty.UnitTests.ResourceServer
         {
             // Arrange
             var studentsDto = GetStudentsDto();
-            var studentsDisplay = _mapper.Map<IEnumerable<StudentDisplayModify>>(studentsDto);
             _mockStudentService.Setup(x => x.GetAll()).Returns(studentsDto);
-            var studentsController = new StudentsController(_mockStudentService.Object, _mapper);
+            var studentsController = new StudentsController(_mockStudentService.Object);
 
             // Act
             var result = studentsController.GetStudents();
 
             // Assert
             var viewResult = Assert.IsType<OkObjectResult>(result.Result);
-            var models = Assert.IsAssignableFrom<IEnumerable<StudentDisplayModify>>(viewResult.Value);
+            var models = Assert.IsAssignableFrom<IEnumerable<StudentDto>>(viewResult.Value);
             Assert.Equal(3, models.Count());
-            studentsDisplay.Should().BeEquivalentTo(models);
+            studentsDto.Should().BeEquivalentTo(models);
         }
 
         [Fact]
@@ -49,7 +47,7 @@ namespace Faculty.UnitTests.ResourceServer
         {
             // Arrange
             _mockStudentService.Setup(x => x.GetAll()).Returns(It.IsAny<IEnumerable<StudentDto>>());
-            var studentsController = new StudentsController(_mockStudentService.Object, _mapper);
+            var studentsController = new StudentsController(_mockStudentService.Object);
 
             // Act
             var result = studentsController.GetStudents();
@@ -93,19 +91,18 @@ namespace Faculty.UnitTests.ResourceServer
         {
             // Arrange
             const int idNewStudent = 1;
-            var studentAdd = new StudentAdd
+            var studentDto = new StudentDto
             {
+                Id = idNewStudent,
                 Surname = "test1",
                 Name = "test1",
                 Doublename = "test1"
             };
-            var studentDto = _mapper.Map<StudentAdd, StudentDto>(studentAdd);
-            studentDto.Id = idNewStudent;
             _mockStudentService.Setup(x => x.Create(It.IsAny<StudentDto>())).Returns(studentDto);
-            var studentsController = new StudentsController(_mockStudentService.Object, _mapper);
+            var studentsController = new StudentsController(_mockStudentService.Object);
 
             // Act
-            var result = studentsController.Create(studentAdd);
+            var result = studentsController.Create(studentDto);
 
             // Assert
             Assert.IsType<CreatedAtActionResult>(result.Result);
@@ -125,7 +122,7 @@ namespace Faculty.UnitTests.ResourceServer
             };
             _mockStudentService.Setup(x => x.GetById(idExistStudent)).Returns(studentDto);
             _mockStudentService.Setup(x => x.Delete(idExistStudent));
-            var studentsController = new StudentsController(_mockStudentService.Object, _mapper);
+            var studentsController = new StudentsController(_mockStudentService.Object);
 
             // Act
             var result = studentsController.Delete(idExistStudent);
@@ -140,7 +137,7 @@ namespace Faculty.UnitTests.ResourceServer
             // Arrange
             const int idExistStudent = 1;
             _mockStudentService.Setup(x => x.GetById(idExistStudent)).Returns(It.IsAny<StudentDto>());
-            var studentsController = new StudentsController(_mockStudentService.Object, _mapper);
+            var studentsController = new StudentsController(_mockStudentService.Object);
 
             // Act
             var result = studentsController.Delete(idExistStudent);
@@ -161,19 +158,12 @@ namespace Faculty.UnitTests.ResourceServer
                 Name = "test1",
                 Doublename = "test1"
             };
-            var studentModify = new StudentDisplayModify
-            {
-                Id = 1,
-                Surname = "test2",
-                Name = "test2",
-                Doublename = "test2"
-            };
             _mockStudentService.Setup(x => x.GetById(idExistStudent)).Returns(studentDto);
             _mockStudentService.Setup(x => x.Edit(It.IsAny<StudentDto>()));
-            var studentsController = new StudentsController(_mockStudentService.Object, _mapper);
+            var studentsController = new StudentsController(_mockStudentService.Object);
 
             // Act
-            var result = studentsController.Edit(studentModify);
+            var result = studentsController.Edit(studentDto);
 
             // Assert
             Assert.IsType<NoContentResult>(result);
@@ -184,7 +174,7 @@ namespace Faculty.UnitTests.ResourceServer
         {
             // Arrange
             const int idExistStudent = 1;
-            var studentModify = new StudentDisplayModify
+            var studentDto = new StudentDto
             {
                 Id = 1,
                 Surname = "test2",
@@ -192,10 +182,10 @@ namespace Faculty.UnitTests.ResourceServer
                 Doublename = "test2"
             };
             _mockStudentService.Setup(x => x.GetById(idExistStudent)).Returns(It.IsAny<StudentDto>());
-            var studentsController = new StudentsController(_mockStudentService.Object, _mapper);
+            var studentsController = new StudentsController(_mockStudentService.Object);
 
             // Act
-            var result = studentsController.Edit(studentModify);
+            var result = studentsController.Edit(studentDto);
 
             // Assert
             Assert.IsType<NotFoundResult>(result);

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.DataAccessLayer.Repository;
-using Faculty.BusinessLayer.Dto.Specialization;
+using Faculty.Common.Dto.Specialization;
 
 namespace Faculty.BusinessLayer.Services
 {

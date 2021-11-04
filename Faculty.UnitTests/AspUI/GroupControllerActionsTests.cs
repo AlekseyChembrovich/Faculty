@@ -1,8 +1,11 @@
 using Moq;
 using Xunit;
 using System.Net;
+using AutoMapper;
 using System.Linq;
 using System.Net.Http;
+using Faculty.AspUI.Tools;
+using Faculty.Common.Dto.Group;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
@@ -15,9 +18,12 @@ namespace Faculty.UnitTests.AspUI
     {
         private readonly Mock<IGroupService> _mockGroupService;
         private readonly Mock<ISpecializationService> _mockSpecializationService;
+        private readonly IMapper _mapper;
 
         public GroupControllerActionsTests()
         {
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            _mapper = new Mapper(mapperConfiguration);
             _mockGroupService = new Mock<IGroupService>();
             _mockSpecializationService = new Mock<ISpecializationService>();
         }
@@ -28,8 +34,8 @@ namespace Faculty.UnitTests.AspUI
         public void IndexMethod_ReturnsAViewResult_WithAListOfGroupDisplay()
         {
             // Arrange
-            _mockGroupService.Setup(service => service.GetGroups()).ReturnsAsync(GetGroupsDisplay());
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            _mockGroupService.Setup(service => service.GetGroups()).ReturnsAsync(GetGroupsDto());
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
 
             // Act
             var result = groupController.Index().Result;
@@ -40,9 +46,9 @@ namespace Faculty.UnitTests.AspUI
             Assert.Equal(3, models.Count());
         }
 
-        private static IEnumerable<GroupDisplay> GetGroupsDisplay()
+        private static IEnumerable<GroupDisplayDto> GetGroupsDto()
         {
-            var groupsDisplay = new List<GroupDisplay>()
+            var groupsDto = new List<GroupDisplayDto>()
             {
                 new ()
                 {
@@ -64,7 +70,7 @@ namespace Faculty.UnitTests.AspUI
                 }
             };
 
-            return groupsDisplay;
+            return groupsDto;
         }
 
         [Fact]
@@ -72,7 +78,7 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             _mockGroupService.Setup(service => service.GetGroups()).Throws(new HttpRequestException());
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
 
             // Act
             var result = groupController.Index().Result;
@@ -96,9 +102,10 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1",
                 SpecializationId = 1
             };
-            _mockGroupService.Setup(service => service.CreateGroup(groupAdd))
+            var groupDto = _mapper.Map<GroupAdd, GroupDto>(groupAdd);
+            _mockGroupService.Setup(service => service.CreateGroup(groupDto))
                 .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.Created });
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
 
             // Act
             var result = groupController.Create(groupAdd).Result;
@@ -117,8 +124,9 @@ namespace Faculty.UnitTests.AspUI
                 Name = null,
                 SpecializationId = 1
             };
-            _mockGroupService.Setup(service => service.CreateGroup(groupAdd)).ReturnsAsync(new HttpResponseMessage());
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            var groupDto = _mapper.Map<GroupAdd, GroupDto>(groupAdd);
+            _mockGroupService.Setup(service => service.CreateGroup(groupDto)).ReturnsAsync(new HttpResponseMessage());
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
             groupController.ModelState.AddModelError(string.Empty, "Invalid name.");
 
             // Act
@@ -139,9 +147,10 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1",
                 SpecializationId = 1
             };
-            _mockGroupService.Setup(service => service.CreateGroup(groupAdd))
+            var groupDto = _mapper.Map<GroupAdd, GroupDto>(groupAdd);
+            _mockGroupService.Setup(service => service.CreateGroup(It.IsAny<GroupDto>()))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
 
             // Act
             var result = groupController.Create(groupAdd).Result;
@@ -161,8 +170,9 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1",
                 SpecializationId = 1
             };
-            _mockGroupService.Setup(service => service.CreateGroup(groupAdd)).Throws(new HttpRequestException());
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            var groupDto = _mapper.Map<GroupAdd, GroupDto>(groupAdd);
+            _mockGroupService.Setup(service => service.CreateGroup(It.IsAny<GroupDto>())).Throws(new HttpRequestException());
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
 
             // Act
             var result = groupController.Create(groupAdd).Result;
@@ -190,7 +200,7 @@ namespace Faculty.UnitTests.AspUI
             };
             _mockGroupService.Setup(service => service.DeleteGroup(idExistGroup))
                 .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
 
             // Act
             var result = groupController.Delete(groupModify).Result;
@@ -213,7 +223,7 @@ namespace Faculty.UnitTests.AspUI
             };
             _mockGroupService.Setup(service => service.DeleteGroup(idExistGroup))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
 
             // Act
             var result = groupController.Delete(groupModify).Result;
@@ -235,7 +245,7 @@ namespace Faculty.UnitTests.AspUI
                 SpecializationId = 1
             };
             _mockGroupService.Setup(service => service.DeleteGroup(It.IsAny<int>())).Throws(new HttpRequestException());
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
 
             // Act
             var result = groupController.Delete(groupModify).Result;
@@ -260,9 +270,10 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1",
                 SpecializationId = 1
             };
-            _mockGroupService.Setup(service => service.EditGroup(groupModify))
+            var groupDto = _mapper.Map<GroupModify, GroupDto>(groupModify);
+            _mockGroupService.Setup(service => service.EditGroup(groupDto))
                 .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
 
             // Act
             var result = groupController.Edit(groupModify).Result;
@@ -282,8 +293,9 @@ namespace Faculty.UnitTests.AspUI
                 Name = null,
                 SpecializationId = 1
             };
-            _mockGroupService.Setup(service => service.EditGroup(groupModify)).ReturnsAsync(new HttpResponseMessage());
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            var groupDto = _mapper.Map<GroupModify, GroupDto>(groupModify);
+            _mockGroupService.Setup(service => service.EditGroup(groupDto)).ReturnsAsync(new HttpResponseMessage());
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
             groupController.ModelState.AddModelError(string.Empty, "Invalid name.");
 
             // Act
@@ -305,9 +317,10 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1",
                 SpecializationId = 1
             };
-            _mockGroupService.Setup(service => service.EditGroup(groupModify))
+            var groupDto = _mapper.Map<GroupModify, GroupDto>(groupModify);
+            _mockGroupService.Setup(service => service.EditGroup(It.IsAny<GroupDto>()))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
 
             // Act
             var result = groupController.Edit(groupModify).Result;
@@ -328,8 +341,9 @@ namespace Faculty.UnitTests.AspUI
                 Name = "test1",
                 SpecializationId = 1
             };
-            _mockGroupService.Setup(service => service.EditGroup(groupModify)).Throws(new HttpRequestException());
-            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object);
+            var groupDto = _mapper.Map<GroupModify, GroupDto>(groupModify);
+            _mockGroupService.Setup(service => service.EditGroup(It.IsAny<GroupDto>())).Throws(new HttpRequestException());
+            var groupController = new GroupController(_mockGroupService.Object, _mockSpecializationService.Object, _mapper);
 
             // Act
             var result = groupController.Edit(groupModify).Result;

@@ -1,38 +1,33 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Faculty.ResourceServer.Models.Curator
+﻿namespace Faculty.Common.Dto.Curator
 {
     /// <summary>
-    /// ViewModel Curator.
+    /// Dto Curator.
     /// </summary>
-    public class CuratorAdd
+    public class CuratorDto
     {
+        /// <summary>
+        /// Unique curator id.
+        /// </summary>
+        public int Id { get; set; }
+
         /// <summary>
         /// Surname curator.
         /// </summary>
-        [Required]
-        [StringLength(50)]
         public string Surname { get; set; }
 
         /// <summary>
         /// Name curator.
         /// </summary>
-        [Required]
-        [StringLength(50)]
         public string Name { get; set; }
 
         /// <summary>
         /// Doublename curator.
         /// </summary>
-        [Required]
-        [StringLength(50)]
         public string Doublename { get; set; }
 
         /// <summary>
         /// Phone curator.
         /// </summary>
-        [Required]
-        [Phone]
         public string Phone { get; set; }
     }
 }

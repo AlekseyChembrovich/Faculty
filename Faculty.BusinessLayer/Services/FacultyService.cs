@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.Dto.Faculty;
+using Faculty.Common.Dto.Faculty;
 using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
 namespace Faculty.BusinessLayer.Services

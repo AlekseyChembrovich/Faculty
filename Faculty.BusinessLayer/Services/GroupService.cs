@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
-using Faculty.BusinessLayer.Dto.Group;
+using Faculty.Common.Dto.Group;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 

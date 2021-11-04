@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Faculty.BusinessLayer.Dto.Curator;
+using Faculty.Common.Dto.Curator;
 
 namespace Faculty.BusinessLayer.Interfaces
 {

@@ -1,4 +1,4 @@
-﻿namespace Faculty.BusinessLayer.Dto.Student
+﻿namespace Faculty.Common.Dto.Student
 {
     /// <summary>
     /// Dto Student.
@@ -6,7 +6,7 @@
     public class StudentDto
     {
         /// <summary>
-        /// Unique identificator student.
+        /// Unique student id.
         /// </summary>
         public int Id { get; set; }
 

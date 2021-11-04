@@ -1,10 +1,18 @@
 ﻿using System.Net;
+using AutoMapper;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Faculty.Common.Dto.Group;
 using System.Collections.Generic;
+using Faculty.Common.Dto.Faculty;
+using Faculty.Common.Dto.Curator;
+using Faculty.Common.Dto.Student;
+using Faculty.AspUI.ViewModels.Group;
 using Faculty.AspUI.ViewModels.Faculty;
+using Faculty.AspUI.ViewModels.Curator;
+using Faculty.AspUI.ViewModels.Student;
 using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
@@ -17,13 +25,15 @@ namespace Faculty.AspUI.Controllers
         private readonly IGroupService _groupService;
         private readonly IStudentService _studentService;
         private readonly ICuratorService _curatorService;
+        private readonly IMapper _mapper;
 
-        public FacultyController(IFacultyService facultyService, IGroupService groupService, IStudentService studentService, ICuratorService curatorService)
+        public FacultyController(IFacultyService facultyService, IGroupService groupService, IStudentService studentService, ICuratorService curatorService, IMapper mapper)
         {
             _facultyService = facultyService;
             _groupService = groupService;
             _studentService = studentService;
             _curatorService = curatorService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -33,7 +43,7 @@ namespace Faculty.AspUI.Controllers
             IEnumerable<FacultyDisplay> facultiesDisplay = default;
             try
             {
-                facultiesDisplay = await _facultyService.GetFaculties();
+                facultiesDisplay = _mapper.Map<IEnumerable<FacultyDisplayDto>, IEnumerable<FacultyDisplay>>(await _facultyService.GetFaculties());
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -77,7 +87,8 @@ namespace Faculty.AspUI.Controllers
             {
                 await FillViewBag();
                 if (ModelState.IsValid == false) return View(facultyAdd);
-                await _facultyService.CreateFaculty(facultyAdd);
+                var facultyDto = _mapper.Map<FacultyAdd, FacultyDto>(facultyAdd);
+                await _facultyService.CreateFaculty(facultyDto);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -98,7 +109,7 @@ namespace Faculty.AspUI.Controllers
             try
             {
                 await FillViewBag();
-                facultyModify = await _facultyService.GetFaculty(id);
+                facultyModify = _mapper.Map<FacultyDto, FacultyModify>(await _facultyService.GetFaculty(id));
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -138,7 +149,7 @@ namespace Faculty.AspUI.Controllers
             try
             {
                 await FillViewBag();
-                facultyModify = await _facultyService.GetFaculty(id);
+                facultyModify = _mapper.Map<FacultyDto, FacultyModify>(await _facultyService.GetFaculty(id));
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -159,7 +170,8 @@ namespace Faculty.AspUI.Controllers
             {
                 await FillViewBag();
                 if (ModelState.IsValid == false) return View(facultyModify);
-                await _facultyService.EditFaculty(facultyModify);
+                var facultyDto = _mapper.Map<FacultyModify, FacultyDto>(facultyModify);
+                await _facultyService.EditFaculty(facultyDto);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -175,9 +187,9 @@ namespace Faculty.AspUI.Controllers
 
         public async Task FillViewBag()
         {
-            ViewBag.Groups = await _groupService.GetGroups();
-            ViewBag.Students = await _studentService.GetStudents();
-            ViewBag.Curators = await _curatorService.GetCurators();
+            ViewBag.Groups = _mapper.Map<IEnumerable<GroupDisplayDto>, IEnumerable<GroupDisplay>>(await _groupService.GetGroups());
+            ViewBag.Students = _mapper.Map<IEnumerable<StudentDto>, IEnumerable<StudentDisplayModify>>(await _studentService.GetStudents());
+            ViewBag.Curators = _mapper.Map<IEnumerable<CuratorDto>, IEnumerable<CuratorDisplayModify>>(await _curatorService.GetCurators());
         }
     }
 }

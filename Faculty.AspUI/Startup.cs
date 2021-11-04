@@ -1,4 +1,5 @@
 using System;
+using AutoMapper;
 using Faculty.AspUI.Tools;
 using System.Globalization;
 using System.Security.Claims;
@@ -33,6 +34,7 @@ namespace Faculty.AspUI
             services.AddHttpContextAccessor();
             services.AddRequestLocalization();
             services.AddUsersHttpClients(Configuration);
+            services.AddMapper();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RequestLocalizationOptions> localizationOptions)
@@ -136,6 +138,12 @@ namespace Faculty.AspUI
             {
                 client.BaseAddress = new Uri(configuration["Url:ResourceServer"]);
             }).AddHttpMessageHandler<AuthMessageHandler>();
+        }
+
+        public static void AddMapper(this IServiceCollection services)
+        {
+            services.AddSingleton<AutoMapper.IConfigurationProvider>(x => new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile())));
+            services.AddSingleton<IMapper, Mapper>();
         }
     }
 }

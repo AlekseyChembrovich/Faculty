@@ -2,11 +2,14 @@ using Moq;
 using Xunit;
 using System;
 using System.Net;
+using AutoMapper;
 using System.Linq;
 using System.Net.Http;
+using Faculty.AspUI.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
+using Faculty.Common.Dto.Faculty;
 using Faculty.AspUI.ViewModels.Faculty;
 using Faculty.AspUI.Services.Interfaces;
 
@@ -18,9 +21,12 @@ namespace Faculty.UnitTests.AspUI
         private readonly Mock<IGroupService> _mockGroupService;
         private readonly Mock<IStudentService> _mockStudentService;
         private readonly Mock<ICuratorService> _mockCuratorService;
+        private readonly IMapper _mapper;
 
         public FacultyControllerActionsTests()
         {
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            _mapper = new Mapper(mapperConfiguration);
             _mockFacultyService = new Mock<IFacultyService>();
             _mockGroupService = new Mock<IGroupService>();
             _mockStudentService = new Mock<IStudentService>();
@@ -33,9 +39,9 @@ namespace Faculty.UnitTests.AspUI
         public void IndexMethod_ReturnsAViewResult_WithAListOfFacultyDisplay()
         {
             // Arrange
-            _mockFacultyService.Setup(service => service.GetFaculties()).ReturnsAsync(GetFacultiesDisplay());
+            _mockFacultyService.Setup(service => service.GetFaculties()).ReturnsAsync(GetFacultiesDto());
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
 
             // Act
             var result = facultyController.Index().Result;
@@ -46,9 +52,9 @@ namespace Faculty.UnitTests.AspUI
             Assert.Equal(3, models.Count());
         }
 
-        private static IEnumerable<FacultyDisplay> GetFacultiesDisplay()
+        private static IEnumerable<FacultyDisplayDto> GetFacultiesDto()
         {
-            var facultiesDisplay = new List<FacultyDisplay>()
+            var facultiesDto = new List<FacultyDisplayDto>()
             {
                 new ()
                 {
@@ -64,22 +70,22 @@ namespace Faculty.UnitTests.AspUI
                     Id = 2,
                     StartDateEducation = DateTime.Now,
                     CountYearEducation = 4,
-                    StudentSurname = "test4",
-                    CuratorSurname = "test4",
-                    GroupName = "test4"
+                    StudentSurname = "test2",
+                    CuratorSurname = "test2",
+                    GroupName = "test2"
                 },
                 new ()
                 {
                     Id = 3,
                     StartDateEducation = DateTime.Now,
                     CountYearEducation = 5,
-                    StudentSurname = "test5",
-                    CuratorSurname = "test5",
-                    GroupName = "test5"
+                    StudentSurname = "test3",
+                    CuratorSurname = "test3",
+                    GroupName = "test3"
                 }
             };
 
-            return facultiesDisplay;
+            return facultiesDto;
         }
 
         [Fact]
@@ -88,7 +94,7 @@ namespace Faculty.UnitTests.AspUI
             // Arrange
             _mockFacultyService.Setup(service => service.GetFaculties()).Throws(new HttpRequestException());
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
 
             // Act
             var result = facultyController.Index().Result;
@@ -115,10 +121,11 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            _mockFacultyService.Setup(service => service.CreateFaculty(facultyAdd))
+            var facultyDto = _mapper.Map<FacultyAdd, FacultyDto>(facultyAdd);
+            _mockFacultyService.Setup(service => service.CreateFaculty(facultyDto))
                 .ReturnsAsync(new HttpResponseMessage {StatusCode = HttpStatusCode.Created});
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
 
             // Act
             var result = facultyController.Create(facultyAdd).Result;
@@ -140,9 +147,10 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            _mockFacultyService.Setup(service => service.CreateFaculty(facultyAdd)).ReturnsAsync(new HttpResponseMessage());
+            var facultyDto = _mapper.Map<FacultyAdd, FacultyDto>(facultyAdd);
+            _mockFacultyService.Setup(service => service.CreateFaculty(facultyDto)).ReturnsAsync(new HttpResponseMessage());
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
             facultyController.ModelState.AddModelError(string.Empty, "Invalid count year education.");
 
             // Act
@@ -166,10 +174,11 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            _mockFacultyService.Setup(service => service.CreateFaculty(facultyAdd))
+            var facultyDto = _mapper.Map<FacultyAdd, FacultyDto>(facultyAdd);
+            _mockFacultyService.Setup(service => service.CreateFaculty(It.IsAny<FacultyDto>()))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
 
             // Act
             var result = facultyController.Create(facultyAdd).Result;
@@ -192,9 +201,10 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            _mockFacultyService.Setup(service => service.CreateFaculty(facultyAdd)).Throws(new HttpRequestException());
+            var facultyDto = _mapper.Map<FacultyAdd, FacultyDto>(facultyAdd);
+            _mockFacultyService.Setup(service => service.CreateFaculty(It.IsAny<FacultyDto>())).Throws(new HttpRequestException());
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
 
             // Act
             var result = facultyController.Create(facultyAdd).Result;
@@ -226,7 +236,7 @@ namespace Faculty.UnitTests.AspUI
             _mockFacultyService.Setup(service => service.DeleteFaculty(idExistFaculty))
                 .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
 
             // Act
             var result = facultyController.Delete(facultyModify).Result;
@@ -253,7 +263,7 @@ namespace Faculty.UnitTests.AspUI
             _mockFacultyService.Setup(service => service.DeleteFaculty(idExistFaculty))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
 
             // Act
             var result = facultyController.Delete(facultyModify).Result;
@@ -279,7 +289,7 @@ namespace Faculty.UnitTests.AspUI
             };
             _mockFacultyService.Setup(service => service.DeleteFaculty(It.IsAny<int>())).Throws(new HttpRequestException());
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
 
             // Act
             var result = facultyController.Delete(facultyModify).Result;
@@ -307,10 +317,11 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            _mockFacultyService.Setup(service => service.EditFaculty(facultyModify))
+            var facultyDto = _mapper.Map<FacultyModify, FacultyDto>(facultyModify);
+            _mockFacultyService.Setup(service => service.EditFaculty(facultyDto))
                 .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
 
             // Act
             var result = facultyController.Edit(facultyModify).Result;
@@ -333,10 +344,11 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            _mockFacultyService.Setup(service => service.EditFaculty(facultyModify))
+            var facultyDto = _mapper.Map<FacultyModify, FacultyDto>(facultyModify);
+            _mockFacultyService.Setup(service => service.EditFaculty(facultyDto))
                 .ReturnsAsync(new HttpResponseMessage());
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
             facultyController.ModelState.AddModelError(string.Empty, "Invalid count year education.");
 
             // Act
@@ -361,10 +373,11 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            _mockFacultyService.Setup(service => service.EditFaculty(facultyModify))
+            var facultyDto = _mapper.Map<FacultyModify, FacultyDto>(facultyModify);
+            _mockFacultyService.Setup(service => service.EditFaculty(It.IsAny<FacultyDto>()))
                 .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
 
             // Act
             var result = facultyController.Edit(facultyModify).Result;
@@ -388,9 +401,10 @@ namespace Faculty.UnitTests.AspUI
                 CuratorId = 1,
                 GroupId = 1
             };
-            _mockFacultyService.Setup(service => service.EditFaculty(facultyModify)).Throws(new HttpRequestException());
+            var facultyDto = _mapper.Map<FacultyModify, FacultyDto>(facultyModify);
+            _mockFacultyService.Setup(service => service.EditFaculty(It.IsAny<FacultyDto>())).Throws(new HttpRequestException());
             var facultyController = new FacultyController(_mockFacultyService.Object, _mockGroupService.Object,
-                _mockStudentService.Object, _mockCuratorService.Object);
+                _mockStudentService.Object, _mockCuratorService.Object, _mapper);
 
             // Act
             var result = facultyController.Edit(facultyModify).Result;

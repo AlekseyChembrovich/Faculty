@@ -1,20 +1,20 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Faculty.AspUI.ViewModels.Curator;
+using Faculty.Common.Dto.Curator;
 
 namespace Faculty.AspUI.Services.Interfaces
 {
     public interface ICuratorService
     {
-        Task<IEnumerable<CuratorDisplayModify>> GetCurators();
+        Task<IEnumerable<CuratorDto>> GetCurators();
 
-        Task<CuratorDisplayModify> GetCurator(int id);
+        Task<CuratorDto> GetCurator(int id);
 
-        Task<HttpResponseMessage> CreateCurator(CuratorAdd curatorAdd);
+        Task<HttpResponseMessage> CreateCurator(CuratorDto curatorDto);
 
         Task<HttpResponseMessage> DeleteCurator(int id);
 
-        Task<HttpResponseMessage> EditCurator(CuratorDisplayModify curatorModify);
+        Task<HttpResponseMessage> EditCurator(CuratorDto curatorDto);
     }
 }
