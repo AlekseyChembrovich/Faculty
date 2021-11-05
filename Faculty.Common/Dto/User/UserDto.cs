@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Faculty.AuthenticationServer.Models.User
+namespace Faculty.Common.Dto.User
 {
     /// <summary>
-    /// Model User for display.
+    /// Model User data transfer object.
     /// </summary>
-    public class UserDisplay
+    public class UserDto
     {
         /// <summary>
         /// User unique id.

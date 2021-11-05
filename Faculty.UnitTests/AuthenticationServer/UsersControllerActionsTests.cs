@@ -2,17 +2,19 @@
 using Xunit;
 using System;
 using System.IO;
+using AutoMapper;
 using System.Linq;
 using FluentAssertions;
 using Xunit.Abstractions;
+using Faculty.Common.Dto.User;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Faculty.AuthenticationServer.Tools;
 using Faculty.AuthenticationServer.Models;
+using Faculty.AuthenticationServer.Services;
 using Faculty.AuthenticationServer.Controllers;
-using Faculty.AuthenticationServer.Models.User;
 
 namespace Faculty.UnitTests.AuthenticationServer
 {
@@ -24,6 +26,7 @@ namespace Faculty.UnitTests.AuthenticationServer
         private readonly Mock<IPasswordValidator<CustomUser>> _mockPasswordValidator;
         private readonly Mock<IPasswordHasher<CustomUser>> _mockPasswordHasher;
         private readonly AuthOptions _authOptions;
+        private readonly IMapper _mapper;
 
         public UsersControllerActionsTests(ITestOutputHelper output)
         {
@@ -36,7 +39,12 @@ namespace Faculty.UnitTests.AuthenticationServer
             var configuration = new ConfigurationBuilder().AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json")).Build();
             _authOptions = new AuthOptions(configuration);
             _output = output;
+            _mockUserManager.Setup(x => x.GetRolesAsync(It.IsAny<CustomUser>())).ReturnsAsync(new List<string> { "administrator" });
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile(_mockUserManager.Object)));
+            _mapper = new Mapper(mapperConfiguration);
         }
+
+        #region GetUsers
 
         private static IQueryable<CustomUser> GetCustomUsers()
         {
@@ -61,46 +69,30 @@ namespace Faculty.UnitTests.AuthenticationServer
             return models.AsQueryable();
         }
 
-        #region GetUsers
-
         [Fact]
         public void GetUsersMethod_ReturnsOkObjectResult_WithListOfUsersDisplay_WhenListHaveValues()
         {
             // Arrange
-            var usersDisplay = new List<UserDisplay>
-            {
-                new () { Id = "1", Login = "User12345_1", Birthday = DateTime.Now.Date },
-                new () { Id = "2", Login = "User12345_2", Birthday = DateTime.Now.Date },
-                new () { Id = "3", Login = "User12345_3", Birthday = DateTime.Now.Date }
-            };
             _mockUserManager.Setup(x => x.Users).Returns(GetCustomUsers());
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
             var result = usersController.GetUsers().Result;
 
             // Assert
             var objectResult = Assert.IsType<OkObjectResult>(result);
-            var listUserDisplay = Assert.IsType<List<UserDisplay>>(objectResult.Value);
-            usersDisplay.Should().BeEquivalentTo(listUserDisplay,
-                option => option
-                    .Including(x => x.Id)
-                    .Including(x => x.Login)
-                    .Including(x => x.Birthday));
+            var listUserDisplay = Assert.IsType<List<UserDto>>(objectResult.Value);
+            Assert.Equal(3, listUserDisplay.Count);
         }
 
         [Fact]
         public void GetUsersMethod_ReturnsNotFoundResult_WhenListHaveNoValues()
         {
             // Arrange
-            var usersDisplay = new List<UserDisplay>
-            {
-                new () { Id = "1", Login = "User12345_1", Birthday = DateTime.Now.Date },
-                new () { Id = "2", Login = "User12345_2", Birthday = DateTime.Now.Date },
-                new () { Id = "3", Login = "User12345_3", Birthday = DateTime.Now.Date }
-            };
             _mockUserManager.Setup(x => x.Users).Returns(new List<CustomUser>().AsQueryable());
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
             var result = usersController.GetUsers().Result;
@@ -124,22 +116,18 @@ namespace Faculty.UnitTests.AuthenticationServer
                 UserName = "User12345_1",
                 Birthday = DateTime.Now.Date
             };
-            var userDisplay = new UserDisplay
-            {
-                Id = customUser.Id,
-                Login = customUser.UserName,
-                Birthday = customUser.Birthday
-            };
+            var userDto = _mapper.Map<CustomUser, UserDto>(customUser);
             _mockUserManager.Setup(x => x.FindByIdAsync(idExistedUser)).ReturnsAsync(customUser);
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
             var result = usersController.GetUsers(idExistedUser).Result;
 
             // Assert
             var objectResult = Assert.IsType<OkObjectResult>(result.Result as OkObjectResult);
-            var receiptsUserDisplay = Assert.IsType<UserDisplay>(objectResult.Value);
-            userDisplay.Should().BeEquivalentTo(receiptsUserDisplay,
+            var receiptsUserDto = Assert.IsType<UserDto>(objectResult.Value);
+            userDto.Should().BeEquivalentTo(receiptsUserDto,
                 option => option
                     .Including(x => x.Id)
                     .Including(x => x.Login)
@@ -152,7 +140,8 @@ namespace Faculty.UnitTests.AuthenticationServer
             // Arrange
             const string idNoExistedUser = "1";
             _mockUserManager.Setup(x => x.FindByIdAsync(idNoExistedUser)).ReturnsAsync(It.IsAny<CustomUser>());
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
             var result = usersController.GetUsers().Result;
@@ -169,7 +158,7 @@ namespace Faculty.UnitTests.AuthenticationServer
         public void CreateMethod_ReturnsCreatedAtActionResult_WhenSucceededIdentityResult()
         {
             // Arrange
-            var userAdd = new UserAdd
+            var userAddDto = new UserAddDto
             {
                 Login = "User12345_4",
                 Password = "User12345_4",
@@ -177,10 +166,11 @@ namespace Faculty.UnitTests.AuthenticationServer
                 Birthday = DateTime.Now
             };
             _mockUserManager.Setup(x => x.CreateAsync(It.IsAny<CustomUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
-            var result = usersController.Create(userAdd).Result;
+            var result = usersController.Create(userAddDto).Result;
 
             // Assert
             Assert.IsType<CreatedAtActionResult>(result.Result);
@@ -190,7 +180,7 @@ namespace Faculty.UnitTests.AuthenticationServer
         public void CreateMethod_ReturnsBadRequestResult_WhenFailedIdentityResult()
         {
             // Arrange
-            var userAdd = new UserAdd
+            var userAdd = new UserAddDto
             {
                 Login = "User12345_4",
                 Password = "User12345_4",
@@ -198,7 +188,8 @@ namespace Faculty.UnitTests.AuthenticationServer
                 Birthday = DateTime.Now
             };
             _mockUserManager.Setup(x => x.CreateAsync(It.IsAny<CustomUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
             var result = usersController.Create(userAdd).Result;
@@ -224,7 +215,8 @@ namespace Faculty.UnitTests.AuthenticationServer
             };
             _mockUserManager.Setup(x => x.FindByIdAsync(idExistingUser)).ReturnsAsync(customUser);
             _mockUserManager.Setup(x => x.DeleteAsync(It.IsAny<CustomUser>())).ReturnsAsync(IdentityResult.Success);
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
             var result = usersController.Delete(idExistingUser).Result;
@@ -239,7 +231,8 @@ namespace Faculty.UnitTests.AuthenticationServer
             // Arrange
             const string idNoExistingUser = "1";
             _mockUserManager.Setup(x => x.FindByIdAsync(idNoExistingUser)).ReturnsAsync(It.IsAny<CustomUser>());
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
             var result = usersController.Delete(idNoExistingUser).Result;
@@ -263,7 +256,7 @@ namespace Faculty.UnitTests.AuthenticationServer
                 UserName = "User12345_1",
                 Birthday = DateTime.Now.Date
             };
-            var userModify = new UserModify
+            var userDto = new UserDto
             {
                 Id = "1",
                 Login = "User12345_1",
@@ -272,35 +265,18 @@ namespace Faculty.UnitTests.AuthenticationServer
             };
             _mockUserManager.Setup(x => x.FindByIdAsync(idExistingUser)).ReturnsAsync(customUser);
             _mockUserManager.Setup(x => x.UpdateAsync(It.IsAny<CustomUser>())).ReturnsAsync(IdentityResult.Success);
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            _mockUserManager.Setup(x =>
+                x.RemoveFromRolesAsync(It.IsAny<CustomUser>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(IdentityResult.Success);
+            _mockUserManager.Setup(x =>
+                x.AddToRolesAsync(It.IsAny<CustomUser>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(IdentityResult.Success);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
-            var result = usersController.Edit(userModify).Result;
+            var result = usersController.Edit(userDto).Result;
 
             // Assert
             Assert.IsType<NoContentResult>(result);
-        }
-
-        [Fact]
-        public void EditMethod_ReturnsNotFoundResult_WhenModelWasNotFound()
-        {
-            // Arrange
-            const string idNotExistingUser = "1";
-            var userModify = new UserModify
-            {
-                Id = "1",
-                Login = "User12345_1",
-                Roles = new List<string> { "administrator" },
-                Birthday = DateTime.Now.Date
-            };
-            _mockUserManager.Setup(x => x.FindByIdAsync(idNotExistingUser)).ReturnsAsync(It.IsAny<CustomUser>());
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
-
-            // Act
-            var result = usersController.Edit(userModify).Result;
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -314,7 +290,7 @@ namespace Faculty.UnitTests.AuthenticationServer
                 UserName = "User12345_1",
                 Birthday = DateTime.Now.Date
             };
-            var userModify = new UserModify
+            var userDto = new UserDto
             {
                 Id = "1",
                 Login = "User12345_1",
@@ -322,11 +298,16 @@ namespace Faculty.UnitTests.AuthenticationServer
                 Birthday = DateTime.Now.Date
             };
             _mockUserManager.Setup(x => x.FindByIdAsync(idExistingUser)).ReturnsAsync(customUser);
+            _mockUserManager.Setup(x =>
+                x.RemoveFromRolesAsync(It.IsAny<CustomUser>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(IdentityResult.Success);
+            _mockUserManager.Setup(x =>
+                x.AddToRolesAsync(It.IsAny<CustomUser>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(IdentityResult.Success);
             _mockUserManager.Setup(x => x.UpdateAsync(It.IsAny<CustomUser>())).ReturnsAsync(IdentityResult.Failed());
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
-            var result = usersController.Edit(userModify).Result;
+            var result = usersController.Edit(userDto).Result;
 
             // Assert
             Assert.IsType<BadRequestResult>(result);
@@ -347,7 +328,7 @@ namespace Faculty.UnitTests.AuthenticationServer
                 UserName = "User12345_1",
                 Birthday = DateTime.Now.Date
             };
-            var userModifyPassword = new UserModifyPassword
+            var userModifyPasswordDto = new UserModifyPasswordDto
             {
                 Id = "1",
                 NewPassword = "password"
@@ -359,37 +340,18 @@ namespace Faculty.UnitTests.AuthenticationServer
             _mockPasswordHasher.Setup(x => x.HashPassword(customUser, It.IsAny<string>())).Returns(It.IsAny<string>());
             _mockUserManager.Object.PasswordHasher = _mockPasswordHasher.Object;
             _mockUserManager.Setup(x => x.UpdateAsync(It.IsAny<CustomUser>())).ReturnsAsync(IdentityResult.Success);
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
-            var result = usersController.EditPassword(userModifyPassword).Result;
+            var result = usersController.EditPassword(userModifyPasswordDto).Result;
 
             // Assert
             Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
-        public void EditPasswordMethod_ReturnsNotFoundResult_WhenModelWasNotFound()
-        {
-            // Arrange
-            const string idNotExistingUser = "1";
-            var userModifyPassword = new UserModifyPassword
-            {
-                Id = "1",
-                NewPassword = "password"
-            };
-            _mockUserManager.Setup(x => x.FindByIdAsync(idNotExistingUser)).ReturnsAsync(It.IsAny<CustomUser>());
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
-
-            // Act
-            var result = usersController.EditPassword(userModifyPassword).Result;
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
-        }
-
-        [Fact]
-        public void EditPasswordMethod_ReturnsBadRequestResult_WhenFailedResultValidationPassword()
+        public void EditPasswordMethod_ReturnsBadRequestResult_WhenFailedResult()
         {
             // Arrange
             const string idExistingUser = "1";
@@ -399,7 +361,7 @@ namespace Faculty.UnitTests.AuthenticationServer
                 UserName = "User12345_1",
                 Birthday = DateTime.Now.Date
             };
-            var userModifyPassword = new UserModifyPassword
+            var userModifyPasswordDto = new UserModifyPasswordDto
             {
                 Id = "1",
                 NewPassword = "password"
@@ -408,10 +370,11 @@ namespace Faculty.UnitTests.AuthenticationServer
             _mockPasswordValidator.Setup(x =>
                 x.ValidateAsync(_mockUserManager.Object, customUser, It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
             _mockUserManager.Object.PasswordValidators.Add(_mockPasswordValidator.Object);
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
-            var result = usersController.EditPassword(userModifyPassword).Result;
+            var result = usersController.EditPassword(userModifyPasswordDto).Result;
 
             // Assert
             Assert.IsType<BadRequestResult>(result);
@@ -428,7 +391,7 @@ namespace Faculty.UnitTests.AuthenticationServer
                 UserName = "User12345_1",
                 Birthday = DateTime.Now.Date
             };
-            var userModifyPassword = new UserModifyPassword
+            var userModifyPasswordDto = new UserModifyPasswordDto
             {
                 Id = "1",
                 NewPassword = "password"
@@ -440,10 +403,11 @@ namespace Faculty.UnitTests.AuthenticationServer
             _mockPasswordHasher.Setup(x => x.HashPassword(customUser, It.IsAny<string>())).Returns(It.IsAny<string>());
             _mockUserManager.Object.PasswordHasher = _mockPasswordHasher.Object;
             _mockUserManager.Setup(x => x.UpdateAsync(It.IsAny<CustomUser>())).ReturnsAsync(IdentityResult.Failed());
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
-            var result = usersController.EditPassword(userModifyPassword).Result;
+            var result = usersController.EditPassword(userModifyPasswordDto).Result;
 
             // Assert
             Assert.IsType<BadRequestResult>(result);
@@ -459,7 +423,8 @@ namespace Faculty.UnitTests.AuthenticationServer
             // Arrange
             var listNamesRole = new List<string> { "administrator", "employee" };
             _mockRoleManager.Setup(x => x.Roles).Returns(GetIdentityRoles());
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
             var result = usersController.GetRoles().Result;
@@ -475,7 +440,8 @@ namespace Faculty.UnitTests.AuthenticationServer
         {
             // Arrange
             _mockRoleManager.Setup(x => x.Roles).Returns(new List<IdentityRole>().AsQueryable());
-            var usersController = new UsersController(_mockUserManager.Object, _mockRoleManager.Object, _authOptions);
+            var userService = new UserService(_mockUserManager.Object, _mockRoleManager.Object, _mapper);
+            var usersController = new UsersController(userService);
 
             // Act
             var result = usersController.GetRoles().Result;

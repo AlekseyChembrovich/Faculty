@@ -1,9 +1,9 @@
-﻿namespace Faculty.AuthenticationServer.Models.User
+﻿namespace Faculty.Common.Dto.User
 {
     /// <summary>
-    /// Model User for modify password.
+    /// Model User data transfer object for modify password.
     /// </summary>
-    public class UserModifyPassword
+    public class UserModifyPasswordDto
     {
         /// <summary>
         /// User unique id.

@@ -1,9 +1,9 @@
-﻿namespace Faculty.AuthenticationServer.Models.LoginRegister
+﻿namespace Faculty.Common.Dto.LoginRegister
 {
     /// <summary>
-    /// Model User for login.
+    /// Model User for auth operation.
     /// </summary>
-    public class LoginUser
+    public class AuthUserDto
     {
         /// <summary>
         /// User login.

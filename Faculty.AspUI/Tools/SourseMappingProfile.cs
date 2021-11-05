@@ -6,9 +6,13 @@ using Faculty.Common.Dto.Student;
 using Faculty.AspUI.ViewModels.Group;
 using Faculty.AspUI.ViewModels.Curator;
 using Faculty.AspUI.ViewModels.Faculty;
+using Faculty.AspUI.ViewModels.LoginRegister;
 using Faculty.AspUI.ViewModels.Student;
 using Faculty.Common.Dto.Specialization;
 using Faculty.AspUI.ViewModels.Specialization;
+using Faculty.AspUI.ViewModels.User;
+using Faculty.Common.Dto.LoginRegister;
+using Faculty.Common.Dto.User;
 
 namespace Faculty.AspUI.Tools
 {
@@ -112,6 +116,41 @@ namespace Faculty.AspUI.Tools
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(x => x.Surname))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.Name))
                 .ForMember(dest => dest.Doublename, opt => opt.MapFrom(x => x.Doublename));
+
+            CreateMap<UserDto, UserDisplay>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.Login, opt => opt.MapFrom(x => x.Login))
+                .ForMember(dest => dest.Roles, opt => opt.MapFrom(x => x.Roles))
+                .ForMember(dest => dest.Birthday, opt => opt.MapFrom(x => x.Birthday.Date));
+            CreateMap<UserAdd, UserAddDto>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Password, opt => opt.MapFrom(x => x.Password))
+                .ForMember(dest => dest.Login, opt => opt.MapFrom(x => x.Login))
+                .ForMember(dest => dest.Roles, opt => opt.MapFrom(x => x.Roles))
+                .ForMember(dest => dest.Birthday, opt => opt.MapFrom(x => x.Birthday.Value.Date));
+            CreateMap<UserModify, UserDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.Login, opt => opt.MapFrom(x => x.Login))
+                .ForMember(dest => dest.Roles, opt => opt.MapFrom(x => x.Roles))
+                .ForMember(dest => dest.Birthday, opt => opt.MapFrom(x => x.Birthday.Value.Date));
+            CreateMap<UserDto, UserModify>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.Login, opt => opt.MapFrom(x => x.Login))
+                .ForMember(dest => dest.Roles, opt => opt.MapFrom(x => x.Roles))
+                .ForMember(dest => dest.Birthday, opt => opt.MapFrom(x => x.Birthday.Date));
+            CreateMap<UserModifyPassword, UserModifyPasswordDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.NewPassword, opt => opt.MapFrom(x => x.NewPassword));
+            CreateMap<UserModifyPasswordDto, UserModifyPassword>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.Id))
+                .ForMember(dest => dest.NewPassword, opt => opt.MapFrom(x => x.NewPassword));
+
+            CreateMap<LoginUser, AuthUserDto>()
+                .ForMember(dest => dest.Login, opt => opt.MapFrom(x => x.Login))
+                .ForMember(dest => dest.Password, opt => opt.MapFrom(x => x.Password));
+            CreateMap<RegisterUser, AuthUserDto>()
+                .ForMember(dest => dest.Login, opt => opt.MapFrom(x => x.Login))
+                .ForMember(dest => dest.Password, opt => opt.MapFrom(x => x.Password));
         }
     }
 }

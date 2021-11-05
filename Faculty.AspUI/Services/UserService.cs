@@ -2,8 +2,8 @@
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using Faculty.Common.Dto.User;
 using System.Collections.Generic;
-using Faculty.AspUI.ViewModels.User;
 using Faculty.AspUI.Services.Interfaces;
 
 namespace Faculty.AspUI.Services
@@ -26,13 +26,13 @@ namespace Faculty.AspUI.Services
         /// Method for getting all user list.
         /// </summary>
         /// <returns>An instance of the Task class typed by IEnumerable interface of user for display.</returns>
-        public async Task<IEnumerable<UserDisplay>> GetUsers()
+        public async Task<IEnumerable<UserDto>> GetUsers()
         {
             var message = new HttpRequestMessage(HttpMethod.Get, "api/users");
             var response = await HttpClient.SendAsync(message);
             response.EnsureSuccessStatusCode();
-            var usersDisplay = await ConvertHttpResponseTo<IEnumerable<UserDisplay>>(response);
-            return usersDisplay;
+            var usersDto = await ConvertHttpResponseTo<IEnumerable<UserDto>>(response);
+            return usersDto;
         }
 
         /// <summary>
@@ -40,23 +40,24 @@ namespace Faculty.AspUI.Services
         /// </summary>
         /// <param name="id">User id.</param>
         /// <returns>An instance of the Task class typed by UserModify class.</returns>
-        public async Task<UserModify> GetUser(string id)
+        public async Task<UserDto> GetUser(string id)
         {
             var message = new HttpRequestMessage(HttpMethod.Get, $"api/users/{id}");
             var response = await HttpClient.SendAsync(message);
             response.EnsureSuccessStatusCode();
-            var userModify = await ConvertHttpResponseTo<UserModify>(response);
-            return userModify;
+            var userDto = await ConvertHttpResponseTo<UserDto>(response);
+            return userDto;
         }
 
         /// <summary>
         /// Method for creating user.
         /// </summary>
-        /// <param name="userAdd">Model user for add.</param>
+        /// <param name="userAddDto">Model user for add.</param>
         /// <returns>An instance of the Task class typed by HttpResponseMessage class.</returns>
-        public async Task<HttpResponseMessage> CreateUser(UserAdd userAdd)
+        public async Task<HttpResponseMessage> CreateUser(UserAddDto userAddDto)
         {
-            var response = await HttpClient.PostAsync("api/users", new StringContent(JsonConvert.SerializeObject(userAdd), Encoding.UTF8, "application/json"));
+            var response = await HttpClient.PostAsync("api/users",
+                new StringContent(JsonConvert.SerializeObject(userAddDto), Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
             return response;
         }
@@ -77,11 +78,12 @@ namespace Faculty.AspUI.Services
         /// <summary>
         /// Method for editing user.
         /// </summary>
-        /// <param name="userModify">Model user for modify.</param>
+        /// <param name="userDto">Model user for modify.</param>
         /// <returns>An instance of the Task class typed by HttpResponseMessage class.</returns>
-        public async Task<HttpResponseMessage> EditUser(UserModify userModify)
+        public async Task<HttpResponseMessage> EditUser(UserDto userDto)
         {
-            var response = await HttpClient.PutAsync("api/users", new StringContent(JsonConvert.SerializeObject(userModify), Encoding.UTF8, "application/json"));
+            var response = await HttpClient.PutAsync("api/users",
+                new StringContent(JsonConvert.SerializeObject(userDto), Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
             return response;
         }
@@ -89,11 +91,13 @@ namespace Faculty.AspUI.Services
         /// <summary>
         /// Method for editing user password.
         /// </summary>
-        /// <param name="userEditPass">Model user for modify password.</param>
+        /// <param name="userModifyPasswordDto">Model user for modify password.</param>
         /// <returns>An instance of the Task class typed by HttpResponseMessage class.</returns>
-        public async Task<HttpResponseMessage> EditPasswordUser(UserModifyPassword userEditPass)
+        public async Task<HttpResponseMessage> EditPasswordUser(UserModifyPasswordDto userModifyPasswordDto)
         {
-            var response = await HttpClient.PatchAsync("api/users", new StringContent(JsonConvert.SerializeObject(userEditPass), Encoding.UTF8, "application/json"));
+            var response = await HttpClient.PatchAsync("api/users",
+                new StringContent(JsonConvert.SerializeObject(userModifyPasswordDto), Encoding.UTF8,
+                    "application/json"));
             response.EnsureSuccessStatusCode();
             return response;
         }
