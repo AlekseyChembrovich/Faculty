@@ -8,13 +8,24 @@ using Faculty.Common.Dto.Specialization;
 
 namespace Faculty.AspUI.Services
 {
+    /// <summary>
+    /// Specialization service.
+    /// </summary>
     public class SpecializationService : BaseHttpService, ISpecializationService
     {
+        /// <summary>
+        /// Constructor for init Http Client.
+        /// </summary>
+        /// <param name="httpClient">Http client.</param>
         public SpecializationService(HttpClient httpClient) : base(httpClient)
         {
 
         }
 
+        /// <summary>
+        /// Method for getting all specialization list.
+        /// </summary>
+        /// <returns>An instance of the Task class typed by IEnumerable interface of specialization for display.</returns>
         public async Task<IEnumerable<SpecializationDto>> GetSpecializations()
         {
             var message = new HttpRequestMessage(HttpMethod.Get, "api/specializations");
@@ -24,6 +35,11 @@ namespace Faculty.AspUI.Services
             return specializationDto;
         }
 
+        /// <summary>
+        /// Method for getting specialization by id.
+        /// </summary>
+        /// <param name="id">Specialization id.</param>
+        /// <returns>An instance of the Task class typed by SpecializationDto class.</returns>
         public async Task<SpecializationDto> GetSpecialization(int id)
         {
             var message = new HttpRequestMessage(HttpMethod.Get, $"api/specializations/{id}");
@@ -33,6 +49,11 @@ namespace Faculty.AspUI.Services
             return specializationDto;
         }
 
+        /// <summary>
+        /// Method for creating specialization.
+        /// </summary>
+        /// <param name="specializationDto">Specialization data transfer object.</param>
+        /// <returns>An instance of the Task class typed by HttpResponseMessage class.</returns>
         public async Task<HttpResponseMessage> CreateSpecialization(SpecializationDto specializationDto)
         {
             var response = await HttpClient.PostAsync("api/specializations",
@@ -41,6 +62,11 @@ namespace Faculty.AspUI.Services
             return response;
         }
 
+        /// <summary>
+        /// Method for deleting specialization.
+        /// </summary>
+        /// <param name="id">Specialization id.</param>
+        /// <returns>An instance of the Task class typed by HttpResponseMessage class.</returns>
         public async Task<HttpResponseMessage> DeleteSpecialization(int id)
         {
             var message = new HttpRequestMessage(HttpMethod.Delete, $"api/specializations/{id}");
@@ -49,6 +75,11 @@ namespace Faculty.AspUI.Services
             return response;
         }
 
+        /// <summary>
+        /// Method for editing specialization.
+        /// </summary>
+        /// <param name="specializationDto">Specialization data transfer object.</param>
+        /// <returns>An instance of the Task class typed by HttpResponseMessage class.</returns>
         public async Task<HttpResponseMessage> EditSpecialization(SpecializationDto specializationDto)
         {
             var response = await HttpClient.PutAsync("api/specializations",

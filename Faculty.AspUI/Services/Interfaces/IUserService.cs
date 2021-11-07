@@ -33,7 +33,7 @@ namespace Faculty.AspUI.Services.Interfaces
         /// <summary>
         /// Method for deleting user.
         /// </summary>
-        /// <param name="id">Model user for delete.</param>
+        /// <param name="id">User id.</param>
         /// <returns>An instance of the Task class typed by HttpResponseMessage class.</returns>
         Task<HttpResponseMessage> DeleteUser(string id);
 

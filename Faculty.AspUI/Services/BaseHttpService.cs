@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Faculty.AspUI.Services
 {
-    public class BaseHttpService
+    public abstract class BaseHttpService
     {
         /// <summary>
         /// Http Client for sending request on authentication server.
@@ -15,7 +15,7 @@ namespace Faculty.AspUI.Services
         /// Constructor for init Http Client.
         /// </summary>
         /// <param name="httpClient">Http client.</param>
-        public BaseHttpService(HttpClient httpClient)
+        protected BaseHttpService(HttpClient httpClient)
         {
             HttpClient = httpClient;
         }

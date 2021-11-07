@@ -1,4 +1,3 @@
-using System;
 using AutoMapper;
 using System.Security.Claims;
 using Microsoft.OpenApi.Models;
@@ -21,7 +20,6 @@ namespace Faculty.AuthenticationServer
     public class Startup
     {
         public IConfiguration Configuration { get; }
-        private IServiceProvider _serviceProvider;
 
         public Startup(IConfiguration configuration)
         {
@@ -38,8 +36,7 @@ namespace Faculty.AuthenticationServer
             services.AddControllers();
             services.AddCors();
             services.AddControllerServices();
-            _serviceProvider = services.BuildServiceProvider();
-            services.AddMapper(_serviceProvider);
+            services.AddMapper();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -169,8 +166,9 @@ namespace Faculty.AuthenticationServer
                 }).AddEntityFrameworkStores<CustomIdentityContext>();
         }
 
-        public static void AddMapper(this IServiceCollection services, IServiceProvider serviceProvider)
+        public static void AddMapper(this IServiceCollection services)
         {
+            var serviceProvider = services.BuildServiceProvider();
             var userManager = serviceProvider.GetService<UserManager<CustomUser>>();
             services.AddSingleton<AutoMapper.IConfigurationProvider>(x =>
                 new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile(userManager))));

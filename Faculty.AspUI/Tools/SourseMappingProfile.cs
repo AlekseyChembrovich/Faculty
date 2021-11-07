@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
+using Faculty.Common.Dto.User;
 using Faculty.Common.Dto.Group;
 using Faculty.Common.Dto.Curator;
 using Faculty.Common.Dto.Faculty;
 using Faculty.Common.Dto.Student;
+using Faculty.AspUI.ViewModels.User;
 using Faculty.AspUI.ViewModels.Group;
 using Faculty.AspUI.ViewModels.Curator;
 using Faculty.AspUI.ViewModels.Faculty;
-using Faculty.AspUI.ViewModels.LoginRegister;
 using Faculty.AspUI.ViewModels.Student;
-using Faculty.Common.Dto.Specialization;
-using Faculty.AspUI.ViewModels.Specialization;
-using Faculty.AspUI.ViewModels.User;
 using Faculty.Common.Dto.LoginRegister;
-using Faculty.Common.Dto.User;
+using Faculty.Common.Dto.Specialization;
+using Faculty.AspUI.ViewModels.LoginRegister;
+using Faculty.AspUI.ViewModels.Specialization;
 
 namespace Faculty.AspUI.Tools
 {

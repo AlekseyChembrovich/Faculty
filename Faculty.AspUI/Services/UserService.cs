@@ -65,7 +65,7 @@ namespace Faculty.AspUI.Services
         /// <summary>
         /// Method for deleting user.
         /// </summary>
-        /// <param name="id">Model user for delete.</param>
+        /// <param name="id">User id.</param>
         /// <returns>An instance of the Task class typed by HttpResponseMessage class.</returns>
         public async Task<HttpResponseMessage> DeleteUser(string id)
         {

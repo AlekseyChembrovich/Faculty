@@ -15,7 +15,7 @@ namespace Faculty.AspUI.Services
         /// <summary>
         /// Constructor for init Http Client.
         /// </summary>
-        /// <param name="httpClient"></param>
+        /// <param name="httpClient">Http client.</param>
         public AuthService(HttpClient httpClient) : base(httpClient)
         {
 
