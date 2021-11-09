@@ -1,0 +1,32 @@
+<h1>List curators</h1>
+
+<div class="container mb-3">
+  <a href="curator/create" class="btn btn-primary">Create</a>
+</div>
+
+<table class="table">
+  <thead>
+  <tr>
+    <th scope="col">Number</th>
+    <th scope="col">Surname</th>
+    <th scope="col">Name</th>
+    <th scope="col">Doublename</th>
+    <th scope="col">Phone</th>
+    <th scope="col"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let curator of curators; index as i">
+    <td>{{i + 1}}</td>
+    <td>{{curator.surname}}</td>
+    <td>{{curator.name}}</td>
+    <td>{{curator.doublename}}</td>
+    <td>{{curator.phone}}</td>
+    <td>
+      <a href="#" class="btn btn-primary me-2">Delete</a>
+      <a href="#" class="btn btn-primary">Edit</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
