@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.DataAccessLayer.Repository;
-using Faculty.BusinessLayer.Dto.Specialization;
+using Faculty.Common.Dto.Specialization;
 
 namespace Faculty.BusinessLayer.Services
 {
@@ -38,19 +38,21 @@ namespace Faculty.BusinessLayer.Services
         /// Method for receive set of entity.
         /// </summary>
         /// <returns>Dto set.</returns>
-        public IEnumerable<SpecializationDisplayModifyDto> GetAll()
+        public IEnumerable<SpecializationDto> GetAll()
         {
             var models = _repositorySpecialization.GetAll().ToList();
-            return _mapper.Map<IEnumerable<Specialization>, IEnumerable<SpecializationDisplayModifyDto>>(models); ;
+            return _mapper.Map<IEnumerable<Specialization>, IEnumerable<SpecializationDto>>(models); ;
         }
 
         /// <summary>
         /// Method for creating a new entity.
         /// </summary>
         /// <param name="dto">Add Dto.</param>
-        public void Create(SpecializationAddDto dto)
+        public SpecializationDto Create(SpecializationDto dto)
         {
-            _repositorySpecialization.Insert(_mapper.Map<SpecializationAddDto, Specialization>(dto));
+            var specialization = _repositorySpecialization.Insert(_mapper.Map<SpecializationDto, Specialization>(dto));
+            var specializationDto = _mapper.Map<Specialization, SpecializationDto>(specialization);
+            return specializationDto;
         }
 
         /// <summary>
@@ -69,19 +71,19 @@ namespace Faculty.BusinessLayer.Services
         /// </summary>
         /// <param name="id">Id exist entity.</param>
         /// <returns>Modify Dto.</returns>
-        public SpecializationDisplayModifyDto GetById(int id)
+        public SpecializationDto GetById(int id)
         {
             var model = _repositorySpecialization.GetById(id);
-            return _mapper.Map<Specialization, SpecializationDisplayModifyDto>(model);
+            return _mapper.Map<Specialization, SpecializationDto>(model);
         }
 
         /// <summary>
         /// Method for changing a exist entity.
         /// </summary>
         /// <param name="dto">Modify Dto.</param>
-        public void Edit(SpecializationDisplayModifyDto dto)
+        public void Edit(SpecializationDto dto)
         {
-            _repositorySpecialization.Update(_mapper.Map<SpecializationDisplayModifyDto, Specialization>(dto));
+            _repositorySpecialization.Update(_mapper.Map<SpecializationDto, Specialization>(dto));
         }
     }
 }

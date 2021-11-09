@@ -1,53 +1,52 @@
 using Moq;
 using Xunit;
+using System.Net;
 using AutoMapper;
 using System.Linq;
-using FluentAssertions;
+using System.Net.Http;
 using Faculty.AspUI.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
-using Faculty.BusinessLayer.Services;
-using Faculty.DataAccessLayer.Models;
+using Faculty.Common.Dto.Curator;
 using Faculty.AspUI.ViewModels.Curator;
-using Faculty.BusinessLayer.Dto.Curator;
-using Faculty.DataAccessLayer.Repository;
+using Faculty.AspUI.Services.Interfaces;
 
 namespace Faculty.UnitTests.AspUI
 {
     public class CuratorControllerActionsTests
     {
-        private readonly Mock<IRepository<Curator>> _mockRepositoryCurator;
+        private readonly Mock<ICuratorService> _mockCuratorService;
         private readonly IMapper _mapper;
 
         public CuratorControllerActionsTests()
         {
-            _mockRepositoryCurator = new Mock<IRepository<Curator>>();
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
             _mapper = new Mapper(mapperConfiguration);
+            _mockCuratorService = new Mock<ICuratorService>();
         }
 
+        #region Index
+
         [Fact]
-        public void IndexMethod_ReturnsAViewResult_WithAListOfModelDisplay()
+        public void IndexMethod_ReturnsAViewResult_WithAListOfCuratorDisplay()
         {
             // Arrange
-            _mockRepositoryCurator.Setup(repository => repository.GetAll()).Returns(GetTestModels()).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
-            var modelController = new CuratorController(modelService, _mapper);
+            _mockCuratorService.Setup(service => service.GetCurators()).ReturnsAsync(GetCuratorsDto());
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
-            var result = modelController.Index();
+            var result = curatorController.Index().Result;
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            var models = Assert.IsAssignableFrom<IEnumerable<CuratorDisplayModify>>(viewResult.Model);
+            var models = Assert.IsAssignableFrom<IEnumerable<CuratorDisplayModify>>(viewResult.ViewData.Model);
             Assert.Equal(3, models.Count());
-            _mockRepositoryCurator.Verify(r => r.GetAll());
         }
 
-        private static IEnumerable<Curator> GetTestModels()
+        private static IEnumerable<CuratorDto> GetCuratorsDto()
         {
-            var models = new List<Curator>()
+            var curatorsDto = new List<CuratorDto>()
             {
                 new ()
                 {
@@ -75,125 +74,312 @@ namespace Faculty.UnitTests.AspUI
                 }
             };
 
-            return models;
+            return curatorsDto;
         }
 
         [Fact]
-        public void CreateMethod_CallInsertMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectModel()
+        public void IndexMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
         {
             // Arrange
-            var modelAdd = new CuratorAdd { Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
-            var modelDto = _mapper.Map<CuratorAdd, CuratorAddDto>(modelAdd);
-            var model = _mapper.Map<CuratorAddDto, Curator>(modelDto);
-            _mockRepositoryCurator.Setup(repository => repository.Insert(model)).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
-            var modelController = new CuratorController(modelService, _mapper);
+            _mockCuratorService.Setup(service => service.GetCurators()).Throws(new HttpRequestException());
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
-            var result = modelController.Create(modelAdd);
+            var result = curatorController.Index().Result;
 
             // Assert
-            var redirectToAction = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToAction.ActionName);
-            _mockRepositoryCurator.Verify(r => r.Insert(It.IsAny<Curator>()), Times.Once);
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
         }
 
-        [Fact]
-        public void DeleteGetMethod_CallDeleteMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectArgument()
-        {
-            // Arrange
-            const int deleteModelId = 1;
-            var model = new Curator { Id = deleteModelId, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
-            _mockRepositoryCurator.Setup(repository => repository.GetById(deleteModelId)).Returns(model).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
-            var modelController = new CuratorController(modelService, _mapper);
+        #endregion
 
-            // Act
-            var result = modelController.Delete(deleteModelId);
-
-            //Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            model.Should().BeEquivalentTo(viewResult.Model);
-            _mockRepositoryCurator.Verify(r => r.GetById(It.IsAny<int>()), Times.Once);
-        }
+        #region Create
 
         [Fact]
-        public void DeletePostMethod_CallDeleteMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectArgument()
+        public void CreateMethod_ReturnsRedirectToIndexAction_WhenCorrectModel()
         {
             // Arrange
-            var modelModify = new CuratorDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
-            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto);
-            _mockRepositoryCurator.Setup(repository => repository.Delete(model)).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
-            var modelController = new CuratorController(modelService, _mapper);
+            var curatorAdd = new CuratorAdd
+            {
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1",
+                Phone = "+375-29-557-06-11"
+            };
+            var curatorDto = _mapper.Map<CuratorAdd, CuratorDto>(curatorAdd);
+            _mockCuratorService.Setup(service => service.CreateCurator(curatorDto)).ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.Created });
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
-            var result = modelController.Delete(modelModify);
+            var result = curatorController.Create(curatorAdd).Result;
 
             // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            _mockRepositoryCurator.Verify(r => r.Delete(It.IsAny<Curator>()), Times.Once);
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirect.ActionName);
         }
 
         [Fact]
-        public void EditPostMethod_CallUpdateMethodRepository_ReturnsRedirectToIndexAction_WhenCorrectModel()
+        public void CreateMethod_ReturnsAViewResult_WithAModelCuratorAdd_WhenInvalidModel()
         {
             // Arrange
-            var modelModify = new CuratorDisplayModify { Id = 1, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
-            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto);
-            _mockRepositoryCurator.Setup(repository => repository.Update(model)).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
-            var modelController = new CuratorController(modelService, _mapper);
+            var curatorAdd = new CuratorAdd
+            {
+                Surname = "test1",
+                Name = null,
+                Doublename = "test1",
+                Phone = "+375-29-557-06-11"
+            };
+            var curatorDto = _mapper.Map<CuratorAdd, CuratorDto>(curatorAdd);
+            _mockCuratorService.Setup(service => service.CreateCurator(curatorDto)).ReturnsAsync(new HttpResponseMessage());
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
+            curatorController.ModelState.AddModelError(string.Empty, "Invalid name.");
 
             // Act
-            var result = modelController.Edit(modelModify);
-
-            // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            _mockRepositoryCurator.Verify(r => r.Update(It.IsAny<Curator>()), Times.Once);
-        }
-
-        [Fact]
-        public void EditGetMethod_CallGetByIdMethodRepository_ReturnsAViewResultWithModel_WhenCorrectArgument()
-        {
-            // Arrange
-            const int editModelId = 1;
-            var modelModify = new CuratorDisplayModify { Id = editModelId, Surname = "test1", Name = "test1", Doublename = "test1", Phone = "+375-29-557-06-11" };
-            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(modelModify);
-            var model = _mapper.Map<CuratorDisplayModifyDto, Curator>(modelDto);
-            _mockRepositoryCurator.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
-            var modelController = new CuratorController(modelService, _mapper);
-
-            // Act
-            var result = modelController.Edit(editModelId);
+            var result = curatorController.Create(curatorAdd).Result;
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            modelModify.Should().BeEquivalentTo(viewResult.Model);
-            _mockRepositoryCurator.Verify(r => r.GetById(It.IsAny<int>()), Times.Once);
+            var model = Assert.IsAssignableFrom<CuratorAdd>(viewResult.Model);
+            Assert.Equal(curatorAdd, model);
         }
 
         [Fact]
-        public void EditGetMethod_ReturnsRedirectToIndexAction_WhenNotFoundedModel()
+        public void CreateMethod_ReturnsRedirectToLoginActionHomeController_WhenHttpStatusCodeUnauthorized()
         {
             // Arrange
-            const int editModelId = 1;
-            Curator model = default;
-            _mockRepositoryCurator.Setup(repository => repository.GetById(editModelId)).Returns(model).Verifiable();
-            var modelService = new CuratorService(_mockRepositoryCurator.Object, _mapper);
-            var modelController = new CuratorController(modelService, _mapper);
+            var curatorAdd = new CuratorAdd
+            {
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1",
+                Phone = "+375-29-557-06-11"
+            };
+            var curatorDto = _mapper.Map<CuratorAdd, CuratorDto>(curatorAdd);
+            _mockCuratorService.Setup(service => service.CreateCurator(It.IsAny<CuratorDto>())).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
 
             // Act
-            var result = modelController.Edit(editModelId);
+            var result = curatorController.Create(curatorAdd).Result;
 
             // Assert
-            var redirectToAction = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToAction.ActionName);
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Login", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
         }
+
+        [Fact]
+        public void CreateMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
+        {
+            // Arrange
+            var curatorAdd = new CuratorAdd
+            {
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1",
+                Phone = "+375-29-557-06-11"
+            };
+            var curatorDto = _mapper.Map<CuratorAdd, CuratorDto>(curatorAdd);
+            _mockCuratorService.Setup(service => service.CreateCurator(It.IsAny<CuratorDto>())).Throws(new HttpRequestException());
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
+
+            // Act
+            var result = curatorController.Create(curatorAdd).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        #endregion
+
+        #region Delete
+
+        [Fact]
+        public void DeleteMethod_ReturnsRedirectToIndexAction_WhenCorrectArgument()
+        {
+            // Arrange
+            const int idExistCurator = 1;
+            var curatorModify = new CuratorDisplayModify()
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1",
+                Phone = "+375-29-557-06-11"
+            };
+            _mockCuratorService.Setup(service => service.DeleteCurator(idExistCurator))
+                .ReturnsAsync(new HttpResponseMessage {StatusCode = HttpStatusCode.NoContent});
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
+
+            // Act
+            var result = curatorController.Delete(curatorModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirect.ActionName);
+        }
+
+        [Fact]
+        public void DeleteMethod_ReturnsRedirectToLoginActionHomeController_WhenHttpStatusCodeUnauthorized()
+        {
+            // Arrange
+            const int idExistCurator = 1;
+            var curatorModify = new CuratorDisplayModify()
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1",
+                Phone = "+375-29-557-06-11"
+            };
+            _mockCuratorService.Setup(service => service.DeleteCurator(idExistCurator))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
+
+            // Act
+            var result = curatorController.Delete(curatorModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Login", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        [Fact]
+        public void DeleteMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
+        {
+            // Arrange
+            const int idExistCurator = 1;
+            var curatorModify = new CuratorDisplayModify()
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1",
+                Phone = "+375-29-557-06-11"
+            };
+            _mockCuratorService.Setup(service => service.DeleteCurator(idExistCurator)).Throws(new HttpRequestException());
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
+
+            // Act
+            var result = curatorController.Delete(curatorModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        #endregion
+
+        #region Edit
+
+        [Fact]
+        public void EditMethod_ReturnsRedirectToIndexAction_WhenCorrectModel()
+        {
+            // Arrange
+            var curatorModify = new CuratorDisplayModify
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1",
+                Phone = "+375-29-557-06-11"
+            };
+            var curatorDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(curatorModify);
+            _mockCuratorService.Setup(service => service.EditCurator(curatorDto))
+                .ReturnsAsync(new HttpResponseMessage {StatusCode = HttpStatusCode.NoContent});
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
+
+            // Act
+            var result = curatorController.Create(curatorModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirect.ActionName);
+        }
+
+        [Fact]
+        public void EditMethod_ReturnsAViewResult_WithAModelCuratorModify_WhenInvalidModel()
+        {
+            // Arrange
+            var curatorModify = new CuratorDisplayModify
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = null,
+                Doublename = "test1",
+                Phone = "+375-29-557-06-11"
+            };
+            var curatorDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(curatorModify);
+            _mockCuratorService.Setup(service => service.EditCurator(curatorDto))
+                .ReturnsAsync(new HttpResponseMessage());
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
+            curatorController.ModelState.AddModelError(string.Empty, "Invalid name.");
+
+            // Act
+            var result = curatorController.Edit(curatorModify).Result;
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsAssignableFrom<CuratorDisplayModify>(viewResult.Model);
+            Assert.Equal(curatorModify, model);
+        }
+
+        [Fact]
+        public void EditMethod_ReturnsRedirectToLoginActionHomeController_WhenHttpStatusCodeUnauthorized()
+        {
+            // Arrange
+            var curatorModify = new CuratorDisplayModify
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1",
+                Phone = "+375-29-557-06-11"
+            };
+            var curatorDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(curatorModify);
+            _mockCuratorService.Setup(service => service.EditCurator(It.IsAny<CuratorDto>()))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
+
+            // Act
+            var result = curatorController.Edit(curatorModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Login", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        [Fact]
+        public void EditMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
+        {
+            // Arrange
+            var curatorModify = new CuratorDisplayModify
+            {
+                Id = 1,
+                Surname = "test1",
+                Name = "test1",
+                Doublename = "test1",
+                Phone = "+375-29-557-06-11"
+            };
+            var curatorDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(curatorModify);
+            _mockCuratorService.Setup(service => service.EditCurator(It.IsAny<CuratorDto>())).Throws(new HttpRequestException());
+            var curatorController = new CuratorController(_mockCuratorService.Object, _mapper);
+
+            // Act
+            var result = curatorController.Edit(curatorModify).Result;
+
+            // Assert
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        #endregion
     }
 }

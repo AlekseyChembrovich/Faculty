@@ -1,13 +1,11 @@
-﻿using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
+using Faculty.Common.Dto.User;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Faculty.AuthenticationServer.Tools;
-using Faculty.AuthenticationServer.Models;
-using Faculty.AuthenticationServer.Models.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Faculty.AuthenticationServer.Services.Interfaces;
 
 namespace Faculty.AuthenticationServer.Controllers
 {
@@ -16,71 +14,51 @@ namespace Faculty.AuthenticationServer.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : Controller
     {
-        private readonly UserManager<CustomUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IUserService _userService;
 
-        public UsersController(UserManager<CustomUser> userManager, RoleManager<IdentityRole> roleManager, AuthOptions authOptions)
+        public UsersController(IUserService userService)
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
+            _userService = userService;
         }
 
         // GET api/users
         [HttpGet]
-        public ActionResult<IEnumerable<UserDisplay>> GetUsers()
+        public ActionResult<IEnumerable<UserDto>> GetUsers()
         {
-            var users = _userManager.Users.ToList();
-            if (!users.Any())
+            var usersDto = _userService.GetUsers(out var identityResult);
+            if (!identityResult.Succeeded)
             {
                 return NotFound();
             }
 
-            var usersDisplay = users.Select(user => new UserDisplay
-            {
-                Id = user.Id,
-                Login = user.UserName,
-                Roles = _userManager.GetRolesAsync(user).Result,
-                Birthday = user.Birthday
-            }).ToList();
-
-            return Ok(usersDisplay);
+            return Ok(usersDto);
         }
 
         // GET api/users/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDisplay>> GetUsers(string id)
+        public async Task<ActionResult<UserDto>> GetUsers(string id)
         {
-            var identity = await _userManager.FindByIdAsync(id);
-            if (identity == null)
+            var (userDto, identityResult) = await _userService.GetUser(id);
+            if (identityResult == null)
             {
                 return NotFound();
             }
 
-            var model = new UserDisplay
-            {
-                Id = identity.Id,
-                Login = identity.UserName,
-                Roles = _userManager.GetRolesAsync(identity).Result,
-                Birthday = identity.Birthday
-            };
-
-            return Ok(model);
+            return Ok(userDto);
         }
 
         // POST api/users
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public async Task<ActionResult<UserDisplay>> Create(UserAdd model)
+        public async Task<ActionResult<UserDto>> Create(UserAddDto userAddDto)
         {
-            var identity = new CustomUser { UserName = model.Login, Birthday = model.Birthday.Date };
-            var result = await _userManager.CreateAsync(identity, model.Password);
-            if (result.Succeeded == false)
+            var (userDto, identityResult) = await _userService.CreateUser(userAddDto);
+            if (!identityResult.Succeeded)
             {
                 return BadRequest();
             }
 
-            await _userManager.AddToRolesAsync(identity, model.Roles);
-            return CreatedAtAction(nameof(GetUsers), new { id = identity.Id }, model);
+            return CreatedAtAction(nameof(GetUsers), new { id = userDto.Id }, userAddDto);
         }
 
         // DELETE api/users/{id}
@@ -88,32 +66,22 @@ namespace Faculty.AuthenticationServer.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
         public async Task<ActionResult> Delete(string id)
         {
-            var identity = await _userManager.FindByIdAsync(id);
-            if (identity == null)
+            var identityResult = await _userService.DeleteUser(id);
+            if (!identityResult.Succeeded)
             {
                 return NotFound();
             }
 
-            await _userManager.DeleteAsync(identity);
             return NoContent();
         }
 
         // PUT api/users
         [HttpPut]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public async Task<ActionResult> Edit(UserModify userModify)
+        public async Task<ActionResult> Edit(UserDto userDto)
         {
-            var identity = await _userManager.FindByIdAsync(userModify.Id);
-            if (identity == null)
-            {
-                return NotFound();
-            }
-
-            identity.UserName = userModify.Login;
-            identity.Birthday = userModify.Birthday.Date;
-            await UpdateUserRoles(identity, userModify);
-            var resultUpdate = await _userManager.UpdateAsync(identity);
-            if (resultUpdate.Succeeded == false)
+            var identityResult = await _userService.EditUser(userDto);
+            if (!identityResult.Succeeded)
             {
                 return BadRequest();
             }
@@ -121,33 +89,13 @@ namespace Faculty.AuthenticationServer.Controllers
             return NoContent();
         }
 
-        private async Task UpdateUserRoles(CustomUser customUser, UserModify modifyUser)
-        {
-            var roles = await _userManager.GetRolesAsync(customUser);
-            await _userManager.RemoveFromRolesAsync(customUser, roles);
-            await _userManager.AddToRolesAsync(customUser, modifyUser.Roles);
-        }
-
         // PATCH api/users
         [HttpPatch]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
-        public async Task<ActionResult> EditPassword(UserModifyPassword userModifyPassword)
+        public async Task<ActionResult> EditPassword(UserModifyPasswordDto userModifyPasswordDto)
         {
-            var identity = await _userManager.FindByIdAsync(userModifyPassword.Id);
-            if (identity == null)
-            {
-                return NotFound();
-            }
-
-            var resultValidate = await _userManager.PasswordValidators[0].ValidateAsync(_userManager, identity, userModifyPassword.NewPassword);
-            if (resultValidate.Succeeded == false)
-            {
-                return BadRequest();
-            }
-
-            identity.PasswordHash = _userManager.PasswordHasher.HashPassword(identity, userModifyPassword.NewPassword);
-            var resultUpdate = await _userManager.UpdateAsync(identity);
-            if (resultUpdate.Succeeded == false)
+            var identityResult = await _userService.EditPasswordUser(userModifyPasswordDto);
+            if (!identityResult.Succeeded)
             {
                 return BadRequest();
             }
@@ -159,8 +107,8 @@ namespace Faculty.AuthenticationServer.Controllers
         [HttpGet("roles")]
         public ActionResult<IEnumerable<string>> GetRoles()
         {
-            var namesRole = _roleManager.Roles.ToList().Select(x => x.Name).ToList();
-            if (!namesRole.Any())
+            var namesRole = _userService.GetRoles(out var identityResult);
+            if (!identityResult.Succeeded)
             {
                 return NotFound();
             }

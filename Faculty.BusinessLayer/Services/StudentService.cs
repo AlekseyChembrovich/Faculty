@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
 using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.Dto.Student;
+using Faculty.Common.Dto.Student;
 using Faculty.DataAccessLayer.Repository;
 
 namespace Faculty.BusinessLayer.Services
@@ -38,19 +38,21 @@ namespace Faculty.BusinessLayer.Services
         /// Method for receive set of entity.
         /// </summary>
         /// <returns>Dto set.</returns>
-        public IEnumerable<StudentDisplayModifyDto> GetAll()
+        public IEnumerable<StudentDto> GetAll()
         {
             var models = _repositoryStudent.GetAll().ToList();
-            return _mapper.Map<IEnumerable<Student>, IEnumerable<StudentDisplayModifyDto>>(models);
+            return _mapper.Map<IEnumerable<Student>, IEnumerable<StudentDto>>(models);
         }
 
         /// <summary>
         /// Method for creating a new entity.
         /// </summary>
         /// <param name="dto">Add Dto.</param>
-        public void Create(StudentAddDto dto)
+        public StudentDto Create(StudentDto dto)
         {
-            _repositoryStudent.Insert(_mapper.Map<StudentAddDto, Student>(dto));
+            var specialization = _repositoryStudent.Insert(_mapper.Map<StudentDto, Student>(dto));
+            var specializationDto = _mapper.Map<Student, StudentDto>(specialization);
+            return specializationDto;
         }
 
         /// <summary>
@@ -69,19 +71,19 @@ namespace Faculty.BusinessLayer.Services
         /// </summary>
         /// <param name="id">Id exist entity.</param>
         /// <returns>Modify Dto.</returns>
-        public StudentDisplayModifyDto GetById(int id)
+        public StudentDto GetById(int id)
         {
             var model = _repositoryStudent.GetById(id);
-            return _mapper.Map<Student, StudentDisplayModifyDto>(model);
+            return _mapper.Map<Student, StudentDto>(model);
         }
 
         /// <summary>
         /// Method for changing a exist entity.
         /// </summary>
         /// <param name="dto">Modify Dto.</param>
-        public void Edit(StudentDisplayModifyDto dto)
+        public void Edit(StudentDto dto)
         {
-            _repositoryStudent.Update(_mapper.Map<StudentDisplayModifyDto, Student>(dto));
+            _repositoryStudent.Update(_mapper.Map<StudentDto, Student>(dto));
         }
     }
 }

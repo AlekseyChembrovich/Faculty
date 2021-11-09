@@ -33,6 +33,8 @@
     <ProjectReference Include="..\Faculty.AspUI\Faculty.AspUI.csproj" />
     <ProjectReference Include="..\Faculty.AuthenticationServer\Faculty.AuthenticationServer.csproj" />
     <ProjectReference Include="..\Faculty.BusinessLayer\Faculty.BusinessLayer.csproj" />
+    <ProjectReference Include="..\Faculty.Common\Faculty.Common.csproj" />
+    <ProjectReference Include="..\Faculty.ResourceServer\Faculty.ResourceServer.csproj" />
   </ItemGroup>
 
 </Project>

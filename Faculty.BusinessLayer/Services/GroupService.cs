@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
 using Faculty.DataAccessLayer.Models;
-using Faculty.BusinessLayer.Dto.Group;
+using Faculty.Common.Dto.Group;
 using Faculty.BusinessLayer.Interfaces;
 using Faculty.DataAccessLayer.Repository.EntityFramework.Interfaces;
 
@@ -47,9 +47,11 @@ namespace Faculty.BusinessLayer.Services
         /// Method for creating a new entity.
         /// </summary>
         /// <param name="dto">Add Dto.</param>
-        public void Create(GroupAddDto dto)
+        public GroupDto Create(GroupDto dto)
         {
-            _repositoryGroup.Insert(_mapper.Map<GroupAddDto, Group>(dto));
+            var group = _repositoryGroup.Insert(_mapper.Map<GroupDto, Group>(dto));
+            var groupDto = _mapper.Map<Group, GroupDto>(group);
+            return groupDto;
         }
 
         /// <summary>
@@ -68,19 +70,19 @@ namespace Faculty.BusinessLayer.Services
         /// </summary>
         /// <param name="id">Id exist entity.</param>
         /// <returns>Modify Dto.</returns>
-        public GroupModifyDto GetById(int id)
+        public GroupDto GetById(int id)
         {
             var model = _repositoryGroup.GetById(id);
-            return _mapper.Map<Group, GroupModifyDto>(model);
+            return _mapper.Map<Group, GroupDto>(model);
         }
 
         /// <summary>
         /// Method for changing a exist entity.
         /// </summary>
         /// <param name="dto">Modify Dto.</param>
-        public void Edit(GroupModifyDto dto)
+        public void Edit(GroupDto dto)
         {
-            _repositoryGroup.Update(_mapper.Map<GroupModifyDto, Group>(dto));
+            _repositoryGroup.Update(_mapper.Map<GroupDto, Group>(dto));
         }
     }
 }

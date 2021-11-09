@@ -1,11 +1,14 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using Faculty.BusinessLayer.Interfaces;
+using Faculty.Common.Dto.Specialization;
+using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Faculty.AspUI.ViewModels.Specialization;
-using Faculty.BusinessLayer.Dto.Specialization;
 
 namespace Faculty.AspUI.Controllers
 {
@@ -23,59 +26,129 @@ namespace Faculty.AspUI.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var modelsDto = _specializationService.GetAll();
-            var models = _mapper.Map<IEnumerable<SpecializationDisplayModifyDto>, IEnumerable<SpecializationDisplayModify>>(modelsDto);
-            return View(models.ToList());
+            IEnumerable<SpecializationDisplayModify> specializationsDisplay = default;
+            try
+            {
+                specializationsDisplay = _mapper.Map<IEnumerable<SpecializationDto>, IEnumerable<SpecializationDisplayModify>>(await _specializationService.GetSpecializations());
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(specializationsDisplay.ToList());
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public ActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(SpecializationAdd model)
+        public async Task<ActionResult> Create(SpecializationAdd specializationAdd)
         {
-            if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<SpecializationAdd, SpecializationAddDto>(model);
-            _specializationService.Create(modelDto);
+            try
+            {
+                if (ModelState.IsValid == false) return View(specializationAdd);
+                var specializationDto = _mapper.Map<SpecializationAdd, SpecializationDto>(specializationAdd);
+                await _specializationService.CreateSpecialization(specializationDto);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var modelDto = _specializationService.GetById(id);
-            if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<SpecializationDisplayModifyDto, SpecializationDisplayModify>(modelDto);
-            return View(model);
+            SpecializationDisplayModify specializationModify = default;
+            try
+            {
+                specializationModify = _mapper.Map<SpecializationDto, SpecializationDisplayModify>(await _specializationService.GetSpecialization(id));
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(specializationModify);
         }
 
         [HttpPost]
-        public IActionResult Delete(SpecializationDisplayModify model)
+        public async Task<ActionResult> Delete(SpecializationDisplayModify specializationModify)
         {
-            _specializationService.Delete(model.Id);
+            try
+            {
+                await _specializationService.DeleteSpecialization(specializationModify.Id);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            var modelDto = _specializationService.GetById(id);
-            if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<SpecializationDisplayModifyDto, SpecializationDisplayModify>(modelDto);
-            return View(model);
+            SpecializationDisplayModify specializationModify = default;
+            try
+            {
+                specializationModify = _mapper.Map<SpecializationDto, SpecializationDisplayModify>(await _specializationService.GetSpecialization(id));
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(specializationModify);
         }
 
         [HttpPost]
-        public IActionResult Edit(SpecializationDisplayModify model)
+        public async Task<ActionResult> Edit(SpecializationDisplayModify specializationModify)
         {
-            if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<SpecializationDisplayModify, SpecializationDisplayModifyDto>(model);
-            _specializationService.Edit(modelDto);
+            try
+            {
+                if (ModelState.IsValid == false) return View(specializationModify);
+                var specializationDto = _mapper.Map<SpecializationDisplayModify, SpecializationDto>(specializationModify);
+                await _specializationService.EditSpecialization(specializationDto);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
     }

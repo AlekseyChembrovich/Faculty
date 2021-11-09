@@ -2,9 +2,12 @@
 using Xunit;
 using System;
 using System.Net;
+using AutoMapper;
 using System.Linq;
 using System.Net.Http;
 using Xunit.Abstractions;
+using Faculty.AspUI.Tools;
+using Faculty.Common.Dto.User;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using System.Collections.Generic;
@@ -19,9 +22,12 @@ namespace Faculty.UnitTests.AspUI
         private readonly Mock<IUserService> _mockUserService;
         private readonly Mock<IStringLocalizer<UserController>> _mockStringLocalizer;
         private readonly ITestOutputHelper _output;
+        private readonly IMapper _mapper;
 
         public UserControllerActionsTests(ITestOutputHelper output)
         {
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            _mapper = new Mapper(mapperConfiguration);
             _mockUserService = new Mock<IUserService>();
             _mockStringLocalizer = new Mock<IStringLocalizer<UserController>>();
             const string keyErrorMessage = "CommonError";
@@ -35,8 +41,8 @@ namespace Faculty.UnitTests.AspUI
         public void IndexMethod_ReturnsAViewResult_WithAListOfUserDisplay()
         {
             // Arrange
-            _mockUserService.Setup(service => service.GetUsers()).ReturnsAsync(GetTestModels());
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            _mockUserService.Setup(service => service.GetUsers()).ReturnsAsync(GetUsersDto());
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
             var result = userController.Index().Result;
@@ -47,9 +53,9 @@ namespace Faculty.UnitTests.AspUI
             Assert.Equal(3, models.Count());
         }
 
-        private static IEnumerable<UserDisplay> GetTestModels()
+        private static IEnumerable<UserDto> GetUsersDto()
         {
-            var models = new List<UserDisplay>()
+            var usersDto = new List<UserDto>()
             {
                 new ()
                 {
@@ -74,7 +80,7 @@ namespace Faculty.UnitTests.AspUI
                 }
             };
 
-            return models;
+            return usersDto;
         }
 
         [Fact]
@@ -82,7 +88,7 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             _mockUserService.Setup(service => service.GetUsers()).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
             var result = userController.Index().Result;
@@ -98,7 +104,7 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             _mockUserService.Setup(service => service.GetUsers()).Throws(new HttpRequestException());
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
             var result = userController.Index().Result;
@@ -124,8 +130,10 @@ namespace Faculty.UnitTests.AspUI
                 Roles = new List<string> { "administrator" },
                 Birthday = DateTime.Now
             };
-            _mockUserService.Setup(service => service.CreateUser(userAdd)).ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.Created });
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            var userAddDto = _mapper.Map<UserAdd, UserAddDto>(userAdd);
+            _mockUserService.Setup(service => service.CreateUser(userAddDto)).ReturnsAsync(new HttpResponseMessage
+                {StatusCode = HttpStatusCode.Created});
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
             var result = userController.Create(userAdd).Result;
@@ -146,8 +154,10 @@ namespace Faculty.UnitTests.AspUI
                 Roles = new List<string> { "administrator" },
                 Birthday = DateTime.Now
             };
-            _mockUserService.Setup(service => service.CreateUser(userAdd)).ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.Created });
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            var userAddDto = _mapper.Map<UserAdd, UserAddDto>(userAdd);
+            _mockUserService.Setup(service => service.CreateUser(userAddDto)).ReturnsAsync(new HttpResponseMessage
+                {StatusCode = HttpStatusCode.Created});
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
             userController.ModelState.AddModelError(string.Empty, "Invalid password.");
 
             // Act
@@ -170,8 +180,9 @@ namespace Faculty.UnitTests.AspUI
                 Roles = new List<string> { "administrator" },
                 Birthday = DateTime.Now
             };
-            _mockUserService.Setup(service => service.CreateUser(userAdd)).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.BadRequest));
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            _mockUserService.Setup(service => service.CreateUser(It.IsAny<UserAddDto>()))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.BadRequest));
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
             var result = userController.Create(userAdd).Result;
@@ -193,8 +204,9 @@ namespace Faculty.UnitTests.AspUI
                 Roles = new List<string> { "administrator" },
                 Birthday = DateTime.Now
             };
-            _mockUserService.Setup(service => service.CreateUser(userAdd)).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            _mockUserService.Setup(service => service.CreateUser(It.IsAny<UserAddDto>()))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
             var result = userController.Create(userAdd).Result;
@@ -216,8 +228,8 @@ namespace Faculty.UnitTests.AspUI
                 Roles = new List<string> { "administrator" },
                 Birthday = DateTime.Now
             };
-            _mockUserService.Setup(service => service.CreateUser(userAdd)).Throws(new HttpRequestException());
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            _mockUserService.Setup(service => service.CreateUser(It.IsAny<UserAddDto>())).Throws(new HttpRequestException());
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
             var result = userController.Create(userAdd).Result;
@@ -236,15 +248,15 @@ namespace Faculty.UnitTests.AspUI
         public void DeleteMethod_ReturnsRedirectToIndexAction_WhenCorrectArgument()
         {
             // Arrange
-            const string id = "1";
-            _mockUserService.Setup(service => service.DeleteUser(id)).ReturnsAsync(new HttpResponseMessage
+            const string idExistingUser = "1";
+            _mockUserService.Setup(service => service.DeleteUser(idExistingUser)).ReturnsAsync(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.NoContent
             });
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
-            var result = userController.Delete(id).Result;
+            var result = userController.Delete(idExistingUser).Result;
 
             // Assert
             var redirect = Assert.IsType<RedirectToActionResult>(result);
@@ -255,12 +267,13 @@ namespace Faculty.UnitTests.AspUI
         public void DeleteMethod_ReturnsRedirectToLoginActionHomeController_WhenHttpStatusCodeUnauthorized()
         {
             // Arrange
-            const string id = "1";
-            _mockUserService.Setup(service => service.DeleteUser(id)).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            const string idExistingUser = "1";
+            _mockUserService.Setup(service => service.DeleteUser(idExistingUser))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
-            var result = userController.Delete(id).Result;
+            var result = userController.Delete(idExistingUser).Result;
 
             // Assert
             var redirect = Assert.IsType<RedirectToActionResult>(result);
@@ -272,12 +285,12 @@ namespace Faculty.UnitTests.AspUI
         public void DeleteMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
         {
             // Arrange
-            const string id = "1";
-            _mockUserService.Setup(service => service.DeleteUser(id)).Throws(new HttpRequestException());
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            const string idExistingUser = "1";
+            _mockUserService.Setup(service => service.DeleteUser(idExistingUser)).Throws(new HttpRequestException());
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
-            var result = userController.Delete(id).Result;
+            var result = userController.Delete(idExistingUser).Result;
 
             // Assert
             var redirect = Assert.IsType<RedirectToActionResult>(result);
@@ -300,8 +313,10 @@ namespace Faculty.UnitTests.AspUI
                 Roles = new List<string> { "administrator" },
                 Birthday = DateTime.Now
             };
-            _mockUserService.Setup(service => service.EditUser(userModify)).ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            var userDto = _mapper.Map<UserModify, UserDto>(userModify);
+            _mockUserService.Setup(service => service.EditUser(userDto)).ReturnsAsync(new HttpResponseMessage
+                {StatusCode = HttpStatusCode.NoContent});
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
             var result = userController.Edit(userModify).Result;
@@ -322,8 +337,10 @@ namespace Faculty.UnitTests.AspUI
                 Roles = new List<string> { "administrator" },
                 Birthday = DateTime.Now
             };
-            _mockUserService.Setup(service => service.EditUser(userModify)).ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.Created });
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            var userDto = _mapper.Map<UserModify, UserDto>(userModify);
+            _mockUserService.Setup(service => service.EditUser(userDto)).ReturnsAsync(new HttpResponseMessage
+                {StatusCode = HttpStatusCode.Created});
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
             userController.ModelState.AddModelError(string.Empty, "Invalid login.");
 
             // Act
@@ -346,8 +363,9 @@ namespace Faculty.UnitTests.AspUI
                 Roles = new List<string> { "administrator" },
                 Birthday = DateTime.Now
             };
-            _mockUserService.Setup(service => service.EditUser(userModify)).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.BadRequest));
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            _mockUserService.Setup(service => service.EditUser(It.IsAny<UserDto>()))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.BadRequest));
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
             var result = userController.Edit(userModify).Result;
@@ -369,8 +387,9 @@ namespace Faculty.UnitTests.AspUI
                 Roles = new List<string> { "administrator" },
                 Birthday = DateTime.Now
             };
-            _mockUserService.Setup(service => service.EditUser(userModify)).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            _mockUserService.Setup(service => service.EditUser(It.IsAny<UserDto>()))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
             var result = userController.Edit(userModify).Result;
@@ -392,8 +411,8 @@ namespace Faculty.UnitTests.AspUI
                 Roles = new List<string> { "administrator" },
                 Birthday = DateTime.Now
             };
-            _mockUserService.Setup(service => service.EditUser(userModify)).Throws(new HttpRequestException());
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            _mockUserService.Setup(service => service.EditUser(It.IsAny<UserDto>())).Throws(new HttpRequestException());
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
             var result = userController.Edit(userModify).Result;
@@ -412,16 +431,18 @@ namespace Faculty.UnitTests.AspUI
         public void EditPasswordMethod_ReturnsViewResultWithAction_ForCorrectModel()
         {
             // Arrange
-            var userEditPass = new UserModifyPassword
+            var userModifyPassword = new UserModifyPassword
             {
                 Id = Guid.NewGuid().ToString(),
                 NewPassword = "Test123456"
             };
-            _mockUserService.Setup(service => service.EditPasswordUser(userEditPass)).ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.Created });
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            var userModifyPasswordDto = _mapper.Map<UserModifyPassword, UserModifyPasswordDto>(userModifyPassword);
+            _mockUserService.Setup(service => service.EditPasswordUser(userModifyPasswordDto))
+                .ReturnsAsync(new HttpResponseMessage {StatusCode = HttpStatusCode.Created});
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
-            var result = userController.EditPassword(userEditPass).Result;
+            var result = userController.EditPassword(userModifyPassword).Result;
 
             // Assert
             var redirect = Assert.IsType<RedirectToActionResult>(result);
@@ -437,8 +458,10 @@ namespace Faculty.UnitTests.AspUI
                 Id = Guid.NewGuid().ToString(),
                 NewPassword = null
             };
-            _mockUserService.Setup(service => service.EditPasswordUser(userModifyPassword)).ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.Created });
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            var userModifyPasswordDto = _mapper.Map<UserModifyPassword, UserModifyPasswordDto>(userModifyPassword);
+            _mockUserService.Setup(service => service.EditPasswordUser(userModifyPasswordDto))
+                .ReturnsAsync(new HttpResponseMessage {StatusCode = HttpStatusCode.Created});
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
             userController.ModelState.AddModelError(string.Empty, "Invalid login.");
 
             // Act
@@ -459,8 +482,9 @@ namespace Faculty.UnitTests.AspUI
                 Id = Guid.NewGuid().ToString(),
                 NewPassword = null
             };
-            _mockUserService.Setup(service => service.EditPasswordUser(userModifyPassword)).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.BadRequest));
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            _mockUserService.Setup(service => service.EditPasswordUser(It.IsAny<UserModifyPasswordDto>()))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.BadRequest));
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
             var result = userController.EditPassword(userModifyPassword).Result;
@@ -475,16 +499,17 @@ namespace Faculty.UnitTests.AspUI
         public void EditPasswordMethod_ReturnsRedirectToLoginActionHomeController_WhenHttpStatusCodeUnauthorized()
         {
             // Arrange
-            var userEditPass = new UserModifyPassword
+            var userEditPassword = new UserModifyPassword
             {
                 Id = Guid.NewGuid().ToString(),
                 NewPassword = "Test123456"
             };
-            _mockUserService.Setup(service => service.EditPasswordUser(userEditPass)).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            _mockUserService.Setup(service => service.EditPasswordUser(It.IsAny<UserModifyPasswordDto>()))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.Unauthorized));
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
-            var result = userController.EditPassword(userEditPass).Result;
+            var result = userController.EditPassword(userEditPassword).Result;
 
             // Assert
             var redirect = Assert.IsType<RedirectToActionResult>(result);
@@ -496,16 +521,16 @@ namespace Faculty.UnitTests.AspUI
         public void EditPasswordMethod_ReturnsRedirectToErrorActionHomeController_WhenAnyHttpRequestException()
         {
             // Arrange
-            var userEditPass = new UserModifyPassword
+            var userEditPassword = new UserModifyPassword
             {
                 Id = Guid.NewGuid().ToString(),
                 NewPassword = "Test123456"
             };
-            _mockUserService.Setup(service => service.EditPasswordUser(userEditPass)).Throws(new HttpRequestException());
-            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object);
+            _mockUserService.Setup(service => service.EditPasswordUser(It.IsAny<UserModifyPasswordDto>())).Throws(new HttpRequestException());
+            var userController = new UserController(_mockUserService.Object, _mockStringLocalizer.Object, _mapper);
 
             // Act
-            var result = userController.EditPassword(userEditPass).Result;
+            var result = userController.EditPassword(userEditPassword).Result;
 
             // Assert
             var redirect = Assert.IsType<RedirectToActionResult>(result);

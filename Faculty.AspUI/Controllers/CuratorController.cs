@@ -1,10 +1,13 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Faculty.Common.Dto.Curator;
 using Faculty.AspUI.ViewModels.Curator;
-using Faculty.BusinessLayer.Interfaces;
-using Faculty.BusinessLayer.Dto.Curator;
+using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Faculty.AspUI.Controllers
@@ -23,59 +26,125 @@ namespace Faculty.AspUI.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var modelsDto = _curatorService.GetAll();
-            var models = _mapper.Map<IEnumerable<CuratorDisplayModifyDto>, IEnumerable<CuratorDisplayModify>>(modelsDto);
-            return View(models.ToList());
+            IEnumerable<CuratorDisplayModify> curatorsDisplay = default;
+            try
+            {
+                curatorsDisplay = _mapper.Map<IEnumerable<CuratorDto>, IEnumerable<CuratorDisplayModify>>(await _curatorService.GetCurators());
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(curatorsDisplay.ToList());
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public ActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(CuratorAdd model)
+        public async Task<ActionResult> Create(CuratorAdd curatorAdd)
         {
-            if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<CuratorAdd, CuratorAddDto>(model);
-            _curatorService.Create(modelDto);
+            try
+            {
+                if (ModelState.IsValid == false) return View(curatorAdd);
+                var curatorDto = _mapper.Map<CuratorAdd, CuratorDto>(curatorAdd);
+                await _curatorService.CreateCurator(curatorDto);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var modelDto = _curatorService.GetById(id);
-            if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<CuratorDisplayModifyDto, CuratorDisplayModify>(modelDto);
-            return View(model);
+            CuratorDisplayModify curatorModify = default;
+            try
+            {
+                curatorModify = _mapper.Map<CuratorDto, CuratorDisplayModify>(await _curatorService.GetCurator(id));
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(curatorModify);
         }
 
         [HttpPost]
-        public IActionResult Delete(CuratorDisplayModify model)
+        public async Task<ActionResult> Delete(CuratorDisplayModify curatorModify)
         {
-            _curatorService.Delete(model.Id);
+            try
+            {
+                await _curatorService.DeleteCurator(curatorModify.Id);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            var modelDto = _curatorService.GetById(id);
-            if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<CuratorDisplayModifyDto, CuratorDisplayModify>(modelDto);
-            return View(model);
+            CuratorDisplayModify curatorModify = default;
+            try
+            {
+                curatorModify = _mapper.Map<CuratorDto, CuratorDisplayModify>(await _curatorService.GetCurator(id));
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(curatorModify);
         }
 
         [HttpPost]
-        public IActionResult Edit(CuratorDisplayModify model)
+        public async Task<ActionResult> Edit(CuratorDisplayModify curatorModify)
         {
-            if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<CuratorDisplayModify, CuratorDisplayModifyDto>(model);
-            _curatorService.Edit(modelDto);
+            try
+            {
+                if (ModelState.IsValid == false) return View(curatorModify);
+                var curatorDto = _mapper.Map<CuratorDisplayModify, CuratorDto>(curatorModify);
+                await _curatorService.EditCurator(curatorDto);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
     }

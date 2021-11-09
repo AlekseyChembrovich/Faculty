@@ -1,4 +1,5 @@
 ﻿using System;
+using AutoMapper;
 using System.Net;
 using System.Net.Http;
 using Faculty.AspUI.Tools;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using Faculty.Common.Dto.LoginRegister;
 using Microsoft.Extensions.Localization;
 using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Localization;
@@ -23,12 +25,14 @@ namespace Faculty.AspUI.Controllers
         private readonly AuthOptions _authOptions;
         private readonly IAuthService _authService;
         private readonly IStringLocalizer<HomeController> _stringLocalizer;
+        private readonly IMapper _mapper;
 
-        public HomeController(IAuthService authService, IStringLocalizer<HomeController> stringLocalizer, AuthOptions authOptions)
+        public HomeController(IAuthService authService, IStringLocalizer<HomeController> stringLocalizer, AuthOptions authOptions, IMapper mapper)
         {
             _authService = authService;
             _authOptions = authOptions;
             _stringLocalizer = stringLocalizer;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -40,18 +44,19 @@ namespace Faculty.AspUI.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginUser user)
+        public async Task<IActionResult> Login(LoginUser loginUser)
         {
-            if (ModelState.IsValid == false) return View(user);
+            if (ModelState.IsValid == false) return View(loginUser);
             HttpResponseMessage response = default;
             try
             {
-                response = await _authService.Login(user);
+                var authUserDto = _mapper.Map<LoginUser, AuthUserDto>(loginUser);
+                response = await _authService.Login(authUserDto);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
             {
                 ModelState.AddModelError(string.Empty, _stringLocalizer["CommonError"]);
-                return View(user);
+                return View(loginUser);
             }
             catch (HttpRequestException)
             {
@@ -108,17 +113,18 @@ namespace Faculty.AspUI.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterUser user)
+        public async Task<IActionResult> Register(RegisterUser registerUser)
         {
-            if (ModelState.IsValid == false) return View(user);
+            if (ModelState.IsValid == false) return View(registerUser);
             try
             {
-                await _authService.Register(user);
+                var authUserDto = _mapper.Map<RegisterUser, AuthUserDto>(registerUser);
+                await _authService.Register(authUserDto);
             }
             catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.BadRequest)
             {
                 ModelState.AddModelError(string.Empty, _stringLocalizer["CommonError"]);
-                return View(user);
+                return View(registerUser);
             }
             catch (HttpRequestException)
             {

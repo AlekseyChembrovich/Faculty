@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Faculty.BusinessLayer.Dto.Faculty;
+using Faculty.Common.Dto.Faculty;
 
 namespace Faculty.BusinessLayer.Interfaces
 {
@@ -12,7 +12,7 @@ namespace Faculty.BusinessLayer.Interfaces
         /// Method for creating a new entity.
         /// </summary>
         /// <param name="dto">Add Dto.</param>
-        void Create(FacultyAddDto dto);
+        FacultyDto Create(FacultyDto dto);
 
         /// <summary>
         /// Method for deleting a exist entity.
@@ -31,12 +31,12 @@ namespace Faculty.BusinessLayer.Interfaces
         /// </summary>
         /// <param name="id">Id exist entity.</param>
         /// <returns>Modify Dto.</returns>
-        FacultyModifyDto GetById(int id);
+        FacultyDto GetById(int id);
 
         /// <summary>
         /// Method for changing a exist entity.
         /// </summary>
         /// <param name="dto">Modify Dto.</param>
-        void Edit(FacultyModifyDto dto);
+        void Edit(FacultyDto dto);
     }
 }

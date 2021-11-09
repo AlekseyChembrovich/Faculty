@@ -3,6 +3,7 @@ using Xunit;
 using System;
 using System.IO;
 using System.Net;
+using AutoMapper;
 using NSubstitute;
 using System.Net.Http;
 using Xunit.Abstractions;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Faculty.AspUI.Controllers;
 using Microsoft.AspNetCore.Http;
+using Faculty.Common.Dto.LoginRegister;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Faculty.AspUI.Services.Interfaces;
 using Microsoft.Extensions.Localization;
@@ -44,9 +46,12 @@ namespace Faculty.UnitTests.AspUI
         private readonly UserInfo _userInfo;
         private readonly HttpContext _httpContext;
         private readonly ITestOutputHelper _output;
+        private readonly IMapper _mapper;
 
         public HomeControllerActionsTests(ITestOutputHelper output)
         {
+            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile()));
+            _mapper = new Mapper(mapperConfiguration);
             _mockAuthService = new Mock<IAuthService>();
             _mockStringLocalizer = new Mock<IStringLocalizer<HomeController>>();
             const string keyErrorMessage = "CommonError";
@@ -76,8 +81,9 @@ namespace Faculty.UnitTests.AspUI
             // Arrange
             var loginUser = new LoginUser { Login = _userInfo.Login, Password = _userInfo.Password };
             HttpContent content = new StringContent(_userInfo.Token);
-            _mockAuthService.Setup(service => service.Login(loginUser)).ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent, Content = content });
-            var homeController = new HomeController(_mockAuthService.Object, _mockStringLocalizer.Object, _authOptions);
+            _mockAuthService.Setup(service => service.Login(It.IsAny<AuthUserDto>())).ReturnsAsync(new HttpResponseMessage
+                {StatusCode = HttpStatusCode.NoContent, Content = content});
+            var homeController = new HomeController(_mockAuthService.Object, _mockStringLocalizer.Object, _authOptions, _mapper);
             homeController.ControllerContext = new ControllerContext { HttpContext = _httpContext };
 
             // Act
@@ -94,8 +100,9 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var loginUser = new LoginUser { Login = _userInfo.Login, Password = _userInfo.Password };
-            _mockAuthService.Setup(service => service.Login(loginUser)).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.BadRequest));
-            var homeController = new HomeController(_mockAuthService.Object, _mockStringLocalizer.Object, _authOptions);
+            _mockAuthService.Setup(service => service.Login(It.IsAny<AuthUserDto>()))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.BadRequest));
+            var homeController = new HomeController(_mockAuthService.Object, _mockStringLocalizer.Object, _authOptions, _mapper);
 
             // Act
             var result = homeController.Login(loginUser).Result;
@@ -111,8 +118,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var loginUser = new LoginUser { Login = _userInfo.Login, Password = _userInfo.Password };
-            _mockAuthService.Setup(service => service.Login(loginUser)).Throws(new HttpRequestException());
-            var homeController = new HomeController(_mockAuthService.Object, _mockStringLocalizer.Object, _authOptions);
+            _mockAuthService.Setup(service => service.Login(It.IsAny<AuthUserDto>())).Throws(new HttpRequestException());
+            var homeController = new HomeController(_mockAuthService.Object, _mockStringLocalizer.Object, _authOptions, _mapper);
 
             // Act
             var result = homeController.Login(loginUser).Result;
@@ -128,8 +135,9 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var registerUser = new RegisterUser { Login = "User12345678", Password = "User12345678", PasswordConfirm = "User12345678" };
-            _mockAuthService.Setup(service => service.Register(registerUser)).Returns(Task.FromResult(new HttpResponseMessage(HttpStatusCode.NoContent)));
-            var homeController = new HomeController(_mockAuthService.Object, _mockStringLocalizer.Object, _authOptions);
+            _mockAuthService.Setup(service => service.Register(It.IsAny<AuthUserDto>()))
+                .Returns(Task.FromResult(new HttpResponseMessage(HttpStatusCode.NoContent)));
+            var homeController = new HomeController(_mockAuthService.Object, _mockStringLocalizer.Object, _authOptions, _mapper);
 
             // Act
             var result = homeController.Register(registerUser).Result;
@@ -144,8 +152,9 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var registerUser = new RegisterUser { Login = null, Password = "User12345678", PasswordConfirm = "User12345678" };
-            _mockAuthService.Setup(service => service.Register(registerUser)).Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.BadRequest));
-            var homeController = new HomeController(_mockAuthService.Object, _mockStringLocalizer.Object, _authOptions);
+            _mockAuthService.Setup(service => service.Register(It.IsAny<AuthUserDto>()))
+                .Throws(new HttpRequestException(string.Empty, null, HttpStatusCode.BadRequest));
+            var homeController = new HomeController(_mockAuthService.Object, _mockStringLocalizer.Object, _authOptions, _mapper);
 
             // Act
             var result = homeController.Register(registerUser).Result;
@@ -161,8 +170,8 @@ namespace Faculty.UnitTests.AspUI
         {
             // Arrange
             var registerUser = new RegisterUser { Login = "User12345678", Password = "User12345678", PasswordConfirm = "User12345678" };
-            _mockAuthService.Setup(service => service.Register(registerUser)).Throws(new HttpRequestException());
-            var homeController = new HomeController(_mockAuthService.Object, _mockStringLocalizer.Object, _authOptions);
+            _mockAuthService.Setup(service => service.Register(It.IsAny<AuthUserDto>())).Throws(new HttpRequestException());
+            var homeController = new HomeController(_mockAuthService.Object, _mockStringLocalizer.Object, _authOptions, _mapper);
 
             // Act
             var result = homeController.Register(registerUser).Result;

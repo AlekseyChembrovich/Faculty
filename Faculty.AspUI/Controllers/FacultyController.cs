@@ -1,10 +1,19 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Faculty.Common.Dto.Group;
 using System.Collections.Generic;
-using Faculty.BusinessLayer.Interfaces;
+using Faculty.Common.Dto.Faculty;
+using Faculty.Common.Dto.Curator;
+using Faculty.Common.Dto.Student;
+using Faculty.AspUI.ViewModels.Group;
 using Faculty.AspUI.ViewModels.Faculty;
-using Faculty.BusinessLayer.Dto.Faculty;
+using Faculty.AspUI.ViewModels.Curator;
+using Faculty.AspUI.ViewModels.Student;
+using Faculty.AspUI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Faculty.AspUI.Controllers
@@ -29,73 +38,158 @@ namespace Faculty.AspUI.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Index(int? valueFilter = null)
+        public async Task<ActionResult> Index(int? valueFilter = null)
         {
-            var modelsDto = _facultyService.GetAll();
-            var models = _mapper.Map<IEnumerable<FacultyDisplayDto>, IEnumerable<FacultyDisplay>>(modelsDto);
-            var modelsFilter = valueFilter != null ? models.ToList().Where(x => x.CountYearEducation == valueFilter.Value).ToList() : models.ToList();
-            return View(modelsFilter);
+            IEnumerable<FacultyDisplay> facultiesDisplay = default;
+            try
+            {
+                facultiesDisplay = _mapper.Map<IEnumerable<FacultyDisplayDto>, IEnumerable<FacultyDisplay>>(await _facultyService.GetFaculties());
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            var listFacultiesDisplay = facultiesDisplay.ToList();
+            var facultiesFilter = valueFilter != null
+                ? listFacultiesDisplay.Where(x => x.CountYearEducation == valueFilter.Value).ToList()
+                : listFacultiesDisplay.ToList();
+            return View(facultiesFilter.ToList());
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<ActionResult> Create()
         {
-            FillViewBag();
+            try
+            {
+                await FillViewBag();
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(FacultyAdd model)
+        public async Task<ActionResult> Create(FacultyAdd facultyAdd)
         {
-            FillViewBag();
-            if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<FacultyAdd, FacultyAddDto>(model);
-            _facultyService.Create(modelDto);
+            try
+            {
+                await FillViewBag();
+                if (ModelState.IsValid == false) return View(facultyAdd);
+                var facultyDto = _mapper.Map<FacultyAdd, FacultyDto>(facultyAdd);
+                await _facultyService.CreateFaculty(facultyDto);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var modelDto = _facultyService.GetById(id);
-            if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<FacultyModifyDto, FacultyModify>(modelDto);
-            FillViewBag();
-            return View(model);
+            FacultyModify facultyModify = default;
+            try
+            {
+                await FillViewBag();
+                facultyModify = _mapper.Map<FacultyDto, FacultyModify>(await _facultyService.GetFaculty(id));
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(facultyModify);
         }
 
         [HttpPost]
-        public IActionResult Delete(FacultyModify model)
+        public async Task<ActionResult> Delete(FacultyModify facultyModify)
         {
-            _facultyService.Delete(model.Id);
+            try
+            {
+                await _facultyService.DeleteFaculty(facultyModify.Id);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            var modelDto = _facultyService.GetById(id);
-            if (modelDto is null) return RedirectToAction("Index");
-            var model = _mapper.Map<FacultyModifyDto, FacultyModify>(modelDto);
-            FillViewBag();
-            return View(model);
+            FacultyModify facultyModify = default;
+            try
+            {
+                await FillViewBag();
+                facultyModify = _mapper.Map<FacultyDto, FacultyModify>(await _facultyService.GetFaculty(id));
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(facultyModify);
         }
 
         [HttpPost]
-        public IActionResult Edit(FacultyModify model)
+        public async Task<ActionResult> Edit(FacultyModify facultyModify)
         {
-            FillViewBag();
-            if (ModelState.IsValid == false) return View(model);
-            var modelDto = _mapper.Map<FacultyModify, FacultyModifyDto>(model);
-            _facultyService.Edit(modelDto);
+            try
+            {
+                await FillViewBag();
+                if (ModelState.IsValid == false) return View(facultyModify);
+                var facultyDto = _mapper.Map<FacultyModify, FacultyDto>(facultyModify);
+                await _facultyService.EditFaculty(facultyDto);
+            }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            catch (HttpRequestException)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             return RedirectToAction("Index");
         }
 
-        public void FillViewBag()
+        public async Task FillViewBag()
         {
-            ViewBag.Groups = _groupService.GetAll();
-            ViewBag.Students = _studentService.GetAll();
-            ViewBag.Curators = _curatorService.GetAll();
+            ViewBag.Groups = _mapper.Map<IEnumerable<GroupDisplayDto>, IEnumerable<GroupDisplay>>(await _groupService.GetGroups());
+            ViewBag.Students = _mapper.Map<IEnumerable<StudentDto>, IEnumerable<StudentDisplayModify>>(await _studentService.GetStudents());
+            ViewBag.Curators = _mapper.Map<IEnumerable<CuratorDto>, IEnumerable<CuratorDisplayModify>>(await _curatorService.GetCurators());
         }
     }
 }

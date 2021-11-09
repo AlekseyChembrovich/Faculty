@@ -1,3 +1,4 @@
+using AutoMapper;
 using System.Security.Claims;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Hosting;
@@ -6,11 +7,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Faculty.AuthenticationServer.Tools;
 using Microsoft.Extensions.Configuration;
 using Faculty.AuthenticationServer.Models;
-using Faculty.AuthenticationServer.Tools;
+using Faculty.AuthenticationServer.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Faculty.AuthenticationServer.Services.Interfaces;
 
 namespace Faculty.AuthenticationServer
 {
@@ -32,6 +35,8 @@ namespace Faculty.AuthenticationServer
             services.AddSwaggerConfiguration();
             services.AddControllers();
             services.AddCors();
+            services.AddControllerServices();
+            services.AddMapper();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -105,6 +110,12 @@ namespace Faculty.AuthenticationServer
             });
         }
 
+        public static void AddControllerServices(this IServiceCollection services)
+        {
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
+        }
+
         public static void AddSwaggerConfiguration(this IServiceCollection services)
         {
             services.AddSwaggerGen(c =>
@@ -153,6 +164,15 @@ namespace Faculty.AuthenticationServer
                     options.Password.RequireUppercase = false;
                     options.Password.RequireDigit = false;
                 }).AddEntityFrameworkStores<CustomIdentityContext>();
+        }
+
+        public static void AddMapper(this IServiceCollection services)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var userManager = serviceProvider.GetService<UserManager<CustomUser>>();
+            services.AddSingleton<AutoMapper.IConfigurationProvider>(x =>
+                new MapperConfiguration(cfg => cfg.AddProfile(new SourceMappingProfile(userManager))));
+            services.AddSingleton<IMapper, Mapper>();
         }
     }
 }
