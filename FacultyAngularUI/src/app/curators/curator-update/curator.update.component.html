@@ -1,0 +1,70 @@
+<h1>Edit</h1>
+<h4>Curator</h4>
+<hr/>
+
+<div class="row">
+  <div class="col-md-4">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label for="surname">Surname</label>
+        <input id="surname" name="surname" class="form-control" formControlName="surname"/>
+        <div *ngIf="form.get('surname')?.invalid && form.get('surname')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'surname')">
+            Surname is required.
+          </small>
+          <small *ngIf="this.form.hasError('maxlength', 'surname')">
+            The maximum length of a surname is 50 letters.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text" class="form-control" formControlName="name"/>
+        <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'name')">
+            Name is required.
+          </small>
+          <small *ngIf="this.form.hasError('maxlength', 'name')">
+            The maximum length of a name is 50 letters.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="doublename">Doublename</label>
+        <input id="doublename" name="doublename" type="text" class="form-control" formControlName="doublename"/>
+        <div *ngIf="form.get('doublename')?.invalid && form.get('doublename')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'doublename')">
+            Doublename is required.
+          </small>
+          <small *ngIf="this.form.hasError('maxlength', 'doublename')">
+            The maximum length of a doublename is 50 letters.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" class="form-control" formControlName="phone"/>
+        <div *ngIf="form.get('phone')?.invalid && form.get('phone')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'phone')">
+            Phone is required.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary mt-3 mb-3">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div>
+  <a href="/curator/index">Back to list</a>
+</div>

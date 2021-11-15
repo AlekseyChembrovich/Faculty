@@ -1,41 +1,49 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import {NgModule, Provider} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
-import { Routes, RouterModule } from '@angular/router';
-const appRoutes: Routes = [
-  { path: '', component: CuratorsListComponent },
-  { path: 'curator/index', component: CuratorsListComponent },
-  { path: 'curator/create', component: CuratorCreateComponent },
-  { path: '**', component: CuratorsListComponent }
-];
+import {AppComponent} from './app.component';
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import {AuthInterceptor} from "./authentication/services/auth.interceptor";
 
-import { AppComponent } from './app.component';
-import { CuratorsListComponent } from "./components/curator.components/curators.list.component/curators.list.component";
-import { HeaderComponent } from "./components/header.component/header.component";
-import { FooterComponent } from "./components/footer.component/footer.component";
-import { HttpClientModule } from "@angular/common/http";
-import { CuratorsService } from "./services/curator.service";
-import { CuratorCreateComponent } from "./components/curator.components/curator.create.component/curator.create.component";
+import {AppRoutingModule} from "./app.routing.module";
+import {CuratorsModule} from "./curators/curators.module";
+import {AuthenticationModule} from "./authentication/authentication.module";
+import {FacultiesModule} from "./faculties/faculties.module";
+import {GroupsModule} from "./groups/groups.module";
+import {SpecializationsModule} from "./specializations/specializations.module";
+import {StudentsModule} from "./students/students.module";
+import {LayoutComponent} from "./shared/components/layout/layout.component";
+import {FooterComponent} from "./shared/components/footer/footer.component";
+import {HeaderComponent} from "./shared/components/header/header.component";
+
+const INTERCEPTOR_PROVIDER: Provider = {
+  provide: HTTP_INTERCEPTORS,
+  useClass: AuthInterceptor,
+  multi: true
+}
 
 @NgModule({
   declarations: [
     AppComponent,
-    CuratorsListComponent,
-    CuratorCreateComponent,
     HeaderComponent,
+    LayoutComponent,
     FooterComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule.forRoot(appRoutes)
+    AppRoutingModule,
+    CuratorsModule,
+    FacultiesModule,
+    GroupsModule,
+    SpecializationsModule,
+    StudentsModule,
+    AuthenticationModule
   ],
-  providers: [ CuratorsService ],
+  providers: [
+    INTERCEPTOR_PROVIDER
+  ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule {
-
 }

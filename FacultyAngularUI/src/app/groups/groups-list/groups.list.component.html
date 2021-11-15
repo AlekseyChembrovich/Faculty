@@ -1,0 +1,28 @@
+<h1>List groups</h1>
+
+<div class="container mb-2">
+  <a *ngIf="this.authService.isAdmin" routerLink="/group/create" class="btn btn-primary">Create</a>
+</div>
+
+<table class="table">
+  <thead>
+  <tr>
+    <th scope="col">Number</th>
+    <th scope="col">Name</th>
+    <th scope="col">Specialization</th>
+    <th scope="col"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let group of groups; index as i">
+    <td>{{i + 1}}</td>
+    <td>{{group.name}}</td>
+    <td>{{group.specializationName}}</td>
+    <td>
+      <button class="btn btn-primary me-2" (click)="delete(group.id!)">Delete</button>
+      <a routerLink="/group/edit/{{group.id}}" class="btn btn-primary">Edit</a>
+    </td>
+  </tr>
+  </tbody>
+</table>

@@ -1,0 +1,59 @@
+<h1>Create</h1>
+<h4>Student</h4>
+<hr/>
+
+<div class="row">
+  <div class="col-md-4">
+    <form [formGroup]="this.form" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label for="surname">Surname</label>
+        <input id="surname" type="text" class="form-control" formControlName="surname"/>
+        <div *ngIf="form.get('surname')?.invalid && form.get('surname')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'surname')">
+            Surname is required.
+          </small>
+          <small *ngIf="this.form.hasError('maxlength', 'surname')">
+            The maximum length of a surname is 50 letters.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text" class="form-control" formControlName="name"/>
+        <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'name')">
+            Name is required.
+          </small>
+          <small *ngIf="this.form.hasError('maxlength', 'name')">
+            The maximum length of a name is 50 letters.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="doublename">Doublename</label>
+        <input id="doublename" name="doublename" type="text" class="form-control" formControlName="doublename"/>
+        <div *ngIf="form.get('doublename')?.invalid && form.get('doublename')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'doublename')">
+            Doublename is required.
+          </small>
+          <small *ngIf="this.form.hasError('maxlength', 'doublename')">
+            The maximum length of a doublename is 50 letters.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group mt-3 mb-3">
+        <button type="submit" class="btn btn-primary" [disabled]="this.form.invalid">Create</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div>
+  <a routerLink="/student/index" class="h6">Back to list</a>
+</div>

@@ -1,0 +1,54 @@
+<h1>Login</h1>
+<hr/>
+
+<div class="row">
+  <div class="col-md-4">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label for="login" class="col-form-label">Login</label>
+        <input id="login" name="login" class="form-control" formControlName="login"/>
+        <div *ngIf="form.get('login')?.invalid && form.get('login')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'login')">
+            Length is required.
+          </small>
+          <small *ngIf="this.form.hasError('maxlength', 'login')">
+            The maximum length of a login is 30 letters.
+          </small>
+          <small *ngIf="this.form.hasError('minlength', 'login')">
+            The minimum length of a login is 10 letters.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="col-form-label">Password</label>
+        <input id="password" name="password" class="form-control" formControlName="password"/>
+        <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'password')">
+            Password is required.
+          </small>
+          <small *ngIf="this.form.hasError('maxlength', 'password')">
+            The maximum length of a password is 50 letters.
+          </small>
+          <small *ngIf="this.form.hasError('minlength', 'password')">
+            The minimum length of a password is 8 letters.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group mt-2 mb-2">
+        <button type="submit" class="btn btn-primary">Login</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="mb-4">
+  <a routerLink="/register">Don't have an account? Create it!</a>
+</div>
+
+<div>
+  <a routerLink="/faculty/index">Back to list</a>
+</div>

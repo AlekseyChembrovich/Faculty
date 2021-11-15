@@ -1,0 +1,84 @@
+<h1>Edit</h1>
+<h4>Faculty</h4>
+<hr/>
+
+<div class="row">
+  <div class="col-md-4">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div *ngIf="faculty" class="form-group">
+        <label for="startDateEducation">Start date education</label>
+        <input id="startDateEducation" type="date" [ngModel]="faculty.startDateEducation | date:'yyyy-MM-dd'" class="form-control" formControlName="startDateEducation"/>
+        <div *ngIf="form.get('startDateEducation')?.invalid && form.get('startDateEducation')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'startDateEducation')">
+            Start date education is required.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="countYearEducation">Count year education</label>
+        <input id="countYearEducation" type="number" value="0" class="form-control" formControlName="countYearEducation"/>
+        <div *ngIf="form.get('countYearEducation')?.invalid && form.get('countYearEducation')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'countYearEducation')">
+            Count year education is required.
+          </small>
+          <small *ngIf="this.form.hasError('min', 'countYearEducation') || this.form.hasError('max', 'countYearEducation')">
+            Count year education should be between 3 and 5 year.
+          </small>
+        </div>
+      </div>
+
+      <div *ngIf="faculty" class="form-group">
+        <label for="groups">Group</label>
+        <select *ngIf="groups" id="groups" class="form-select" formControlName="groupId" [(ngModel)]="faculty.groupId">
+          <option *ngFor="let group of groups" value="{{group.id}}">{{group.name}}</option>
+        </select>
+
+        <div *ngIf="form.get('groupId')?.invalid && form.get('groupId')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'groupId')">
+            Group is required.
+          </small>
+        </div>
+      </div>
+
+      <div *ngIf="faculty" class="form-group">
+        <label for="students">Student</label>
+        <select *ngIf="students" id="students" class="form-select" formControlName="studentId" [(ngModel)]="faculty.studentId">
+          <option *ngFor="let student of students" value="{{student.id}}">{{student.name}}</option>
+        </select>
+
+        <div *ngIf="form.get('studentId')?.invalid && form.get('studentId')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'studentId')">
+            Student is required.
+          </small>
+        </div>
+      </div>
+
+      <div *ngIf="faculty" class="form-group">
+        <label for="curators">Curator</label>
+        <select *ngIf="curators" id="curators" class="form-select" formControlName="curatorId" [(ngModel)]="faculty.curatorId">
+          <option *ngFor="let curator of curators" value="{{curator.id}}">{{curator.name}}</option>
+        </select>
+
+        <div *ngIf="form.get('curatorId')?.invalid && form.get('curatorId')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'curatorId')">
+            Curator is required.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary mt-3 mb-3">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div>
+  <a href="/faculty/index" class="h6">Back to list</a>
+</div>

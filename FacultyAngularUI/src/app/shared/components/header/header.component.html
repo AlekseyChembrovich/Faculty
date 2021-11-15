@@ -1,0 +1,17 @@
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark pt-3">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse d-flex align-items-center justify-content-between" id="navbarNavAltMarkup">
+        <div class="navbar-nav w-50 ms-5 text-white">
+          <a routerLink="/faculty/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">Faculty</a>
+          <a routerLink="/group/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">Group</a>
+          <a routerLink="/specialization/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">Specialization</a>
+          <a routerLink="/student/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">Student</a>
+          <a routerLink="/curator/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">Curator</a>
+        </div>
+
+        <app-auth-header class="w-50"></app-auth-header>
+      </div>
+    </div>
+  </nav>
+</header>

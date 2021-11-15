@@ -29,7 +29,10 @@ namespace Faculty.AuthenticationServer.Controllers
                 return BadRequest();
             }
 
-            return Ok(token);
+            return Ok(new
+            {
+                jwtToken = token
+            });
         }
 
         // POST api/auth/register

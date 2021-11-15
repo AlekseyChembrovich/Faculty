@@ -1,0 +1,30 @@
+<h1>List students</h1>
+
+<div class="container mb-2">
+  <a routerLink="/student/create" class="btn btn-primary">Create</a>
+</div>
+
+<table class="table">
+  <thead>
+  <tr>
+    <th scope="col">Number</th>
+    <th scope="col">Surname</th>
+    <th scope="col">Name</th>
+    <th scope="col">Doublename</th>
+    <th scope="col"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let student of students; index as i">
+    <td>{{i + 1}}</td>
+    <td>{{student.surname}}</td>
+    <td>{{student.name}}</td>
+    <td>{{student.doublename}}</td>
+    <td>
+      <button class="btn btn-primary me-2" (click)="delete(student.id!)">Delete</button>
+      <a href="/student/edit/{{student.id}}" class="btn btn-primary">Edit</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
