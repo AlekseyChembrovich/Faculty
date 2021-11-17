@@ -14,6 +14,7 @@ using Faculty.AuthenticationServer.Tools;
 using Faculty.AuthenticationServer.Models;
 using Faculty.AuthenticationServer.Controllers;
 using Faculty.AuthenticationServer.Services;
+using Newtonsoft.Json;
 
 namespace Faculty.UnitTests.AuthenticationServer
 {
@@ -69,8 +70,8 @@ namespace Faculty.UnitTests.AuthenticationServer
 
             // Assert
             var objectResult = Assert.IsType<OkObjectResult>(result.Result);
-            var jwt = Assert.IsType<string>(objectResult.Value);
-            Assert.NotNull(jwt);
+            var jsonToken = objectResult.Value.ToString();
+            Assert.NotNull(jsonToken);
         }
 
         [Fact]
