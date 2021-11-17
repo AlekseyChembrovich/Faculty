@@ -1,7 +1,7 @@
 <h1>List students</h1>
 
 <div class="container mb-2">
-  <a routerLink="/student/create" class="btn btn-primary">Create</a>
+  <a *ngIf="this.authService.isAdmin" routerLink="/student/create" class="btn btn-primary">Create</a>
 </div>
 
 <table class="table">

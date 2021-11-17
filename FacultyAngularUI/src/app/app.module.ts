@@ -15,10 +15,18 @@ import {StudentsModule} from "./students/students.module";
 import {LayoutComponent} from "./shared/components/layout/layout.component";
 import {FooterComponent} from "./shared/components/footer/footer.component";
 import {HeaderComponent} from "./shared/components/header/header.component";
+import {UsersModule} from "./users/users.module";
+import {ErrorInterceptor} from "./shared/services/error.interceptor";
 
-const INTERCEPTOR_PROVIDER: Provider = {
+const AUTH_INTERCEPTOR: Provider = {
   provide: HTTP_INTERCEPTORS,
   useClass: AuthInterceptor,
+  multi: true
+}
+
+const ERROR_INTERCEPTOR: Provider = {
+  provide: HTTP_INTERCEPTORS,
+  useClass: ErrorInterceptor,
   multi: true
 }
 
@@ -38,10 +46,12 @@ const INTERCEPTOR_PROVIDER: Provider = {
     GroupsModule,
     SpecializationsModule,
     StudentsModule,
-    AuthenticationModule
+    AuthenticationModule,
+    UsersModule
   ],
   providers: [
-    INTERCEPTOR_PROVIDER
+    AUTH_INTERCEPTOR,
+    ERROR_INTERCEPTOR
   ],
   bootstrap: [ AppComponent ]
 })

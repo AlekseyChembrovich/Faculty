@@ -11,9 +11,8 @@ export class AuthService {
   private readonly nameAdminRole = "administrator";
   private readonly nameClaimRole = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
   private readonly nameClaimLogin = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
-
-  public authOptions: AuthOptions | undefined;
   private jwtHelper: JwtHelperService = new JwtHelperService();
+  public authOptions: AuthOptions | undefined;
 
   constructor(private httpClient: HttpClient) {
   }
@@ -22,6 +21,7 @@ export class AuthService {
     this.httpClient.post<AuthOptions>(this.baseUrl + '/login', loginUser)
       .subscribe(response => {
         this.authOptions = response;
+        console.log("Response", response);
         let token =  this.authOptions.jwtToken;
         console.log(this.jwtHelper.decodeToken(token!));
         localStorage.setItem(this.keyToken, token);

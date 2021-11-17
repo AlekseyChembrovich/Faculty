@@ -19,6 +19,13 @@ import {SpecializationCreateComponent} from "./specializations/specialization-cr
 import {SpecializationUpdateComponent} from "./specializations/specialization-update/specialization.update.component";
 import {StudentCreateComponent} from "./students/student-create/student.create.component";
 import {StudentUpdateComponent} from "./students/student-update/student.update.component";
+import {UsersListComponent} from "./users/users-list/users.list.component";
+import {UserCreateComponent} from "./users/user-create/user.create.component";
+import {UserUpdateComponent} from "./users/user-update/user.update.component";
+import {UserUpdatePasswordComponent} from "./users/user-update-password/user.update.password.component";
+import {AuthGuard} from "./auth.guard/auth.guard";
+import {ServerError} from "./shared/components/errors/server-error/server.error";
+import {NotFoundError} from "./shared/components/errors/not-found-error/not.found.error";
 
 const appRoutes: Routes = [
   {
@@ -26,34 +33,54 @@ const appRoutes: Routes = [
       { path: '', redirectTo: 'faculty/index', pathMatch: 'full' },
       { path: '', component: FacultiesListComponent },
       { path: 'faculty/index', component: FacultiesListComponent },
-      { path: 'faculty/create', component: FacultyCreateComponent },
-      { path: 'faculty/edit/:id', component: FacultyUpdateComponent },
+      { path: 'faculty/create', component: FacultyCreateComponent, canActivate: [ AdminGuard ] },
+      { path: 'faculty/edit/:id', component: FacultyUpdateComponent, canActivate: [ AdminGuard ] },
 
       { path: 'group/index', component: GroupsListComponent },
-      { path: 'group/create', component: GroupCreateComponent },
-      { path: 'group/edit/:id', component: GroupUpdateComponent },
+      { path: 'group/create', component: GroupCreateComponent, canActivate: [ AdminGuard ] },
+      { path: 'group/edit/:id', component: GroupUpdateComponent, canActivate: [ AdminGuard ] },
 
       { path: 'specialization/index', component: SpecializationsListComponent },
-      { path: 'specialization/create', component: SpecializationCreateComponent },
-      { path: 'specialization/edit/:id', component: SpecializationUpdateComponent },
+      { path: 'specialization/create', component: SpecializationCreateComponent, canActivate: [ AdminGuard ] },
+      { path: 'specialization/edit/:id', component: SpecializationUpdateComponent, canActivate: [ AdminGuard ] },
 
       { path: 'student/index', component: StudentsListComponent },
-      { path: 'student/create', component: StudentCreateComponent },
-      { path: 'student/edit/:id', component: StudentUpdateComponent },
+      { path: 'student/create', component: StudentCreateComponent, canActivate: [ AdminGuard ] },
+      { path: 'student/edit/:id', component: StudentUpdateComponent, canActivate: [ AdminGuard ] },
 
       { path: 'curator/index', component: CuratorsListComponent },
-      { path: 'curator/create', component: CuratorCreateComponent, canActivateChild: [ AdminGuard ] },
-      { path: 'curator/edit/:id', component: CuratorUpdateComponent, canActivateChild: [ AdminGuard ] },
+      { path: 'curator/create', component: CuratorCreateComponent, canActivate: [ AdminGuard ] },
+      { path: 'curator/edit/:id', component: CuratorUpdateComponent, canActivate: [ AdminGuard ] },
+
+      { path: 'user/index', component: UsersListComponent, canActivate: [ AdminGuard ] },
+      { path: 'user/create', component: UserCreateComponent, canActivate: [ AdminGuard ] },
+      { path: 'user/edit/:id', component: UserUpdateComponent, canActivate: [ AdminGuard ] },
+      { path: 'user/edit-password/:id', component: UserUpdatePasswordComponent, canActivate: [ AdminGuard ] },
 
       { path: 'login', component: LoginComponent },
-      { path: 'register', component: RegistrationComponent }
+      { path: 'register', component: RegistrationComponent },
+      { path: 'notfound-error', component: NotFoundError },
+      { path: 'server-error', component: ServerError },
+      { path: '**', redirectTo: '/notfound-error' }
     ]
   }
 ];
 
 @NgModule({
-  exports: [RouterModule],
-  imports: [RouterModule.forRoot(appRoutes)]
+  declarations: [
+    ServerError,
+    NotFoundError
+  ],
+  exports: [
+    RouterModule
+  ],
+  imports: [
+    RouterModule.forRoot(appRoutes)
+  ],
+  providers: [
+    AuthGuard,
+    AdminGuard
+  ]
 })
 export class AppRoutingModule {
 }

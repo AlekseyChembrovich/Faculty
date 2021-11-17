@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SpecializationDto } from "../models/specialization.dto";
 import { SpecializationService } from "../services/specialization.service";
+import {AuthService} from "../../authentication/services/auth.service";
 
 @Component({
   selector: 'app-specializations-list',
@@ -9,7 +10,8 @@ import { SpecializationService } from "../services/specialization.service";
 export class SpecializationsListComponent implements OnInit {
   specializations: SpecializationDto[] = [];
 
-  constructor(private specializationService: SpecializationService){
+  constructor(private specializationService: SpecializationService,
+              public authService: AuthService){
   }
 
   ngOnInit() {

@@ -1,0 +1,74 @@
+<h1>Create</h1>
+<h4>User</h4>
+<hr/>
+
+<div class="row">
+  <div class="col-md-4">
+    <form [formGroup]="this.form" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label for="login">Login</label>
+        <input id="login" type="text" class="form-control" formControlName="login"/>
+        <div *ngIf="form.get('login')?.invalid && form.get('login')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'login')">
+            Login is required.
+          </small>
+          <small *ngIf="this.form.hasError('maxlength', 'login')">
+            The maximum length of a login is 30 letters.
+          </small>
+          <small *ngIf="this.form.hasError('minlength', 'login')">
+            The minimum length of a login is 10 letters.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" type="text" class="form-control" formControlName="password"/>
+        <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'password')">
+            Password is required.
+          </small>
+          <small *ngIf="this.form.hasError('maxlength', 'password')">
+            The maximum length of a password is 50 letters.
+          </small>
+          <small *ngIf="this.form.hasError('minlength', 'password')">
+            The minimum length of a password is 8 letters.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="roles">
+        <label for="roles">Roles</label>
+        <ul id="roles" class="list-group">
+          <li class="list-group-item" *ngFor="let role of roles; let i = index">
+            <div class="form-check">
+              <input id="{{role}}" type="checkbox" [value]="role" class="form-check-input" (change)="onCheckChange($event)" />
+              <label for="{{role}}" class="form-check-label">{{role}}</label>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="form-group">
+        <label for="birthday">Birthday</label>
+        <input id="birthday" type="date" [ngModel]="nowDate | date:'yyyy-MM-dd'" class="form-control" formControlName="birthday"/>
+        <div *ngIf="form.get('birthday')?.invalid && form.get('birthday')?.touched"
+             class="text-danger" >
+          <small *ngIf="this.form.hasError('required', 'birthday')">
+            Birthday is required.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group mt-3 mb-3">
+        <button type="submit" class="btn btn-primary" [disabled]="this.form.invalid">Create</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div>
+  <a routerLink="/user/index" class="h6">Back to list</a>
+</div>

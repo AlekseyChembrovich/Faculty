@@ -2,6 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../services/auth.service";
 import {AuthUserDto} from "../models/auth.user.dto";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -10,7 +11,8 @@ import {AuthUserDto} from "../models/auth.user.dto";
 export class LoginComponent implements OnInit {
   public form: FormGroup = new FormGroup({ });
 
-  constructor(private authService: AuthService){
+  constructor(private authService: AuthService,
+              private router: Router){
   }
 
   ngOnInit() : void {
@@ -25,6 +27,6 @@ export class LoginComponent implements OnInit {
   submit() : void {
     let loginUser: AuthUserDto = new AuthUserDto(this.form.value.login, this.form.value.password);
     this.authService.login(loginUser);
-    window.location.href="/";
+    this.router.navigate(['']);
   }
 }

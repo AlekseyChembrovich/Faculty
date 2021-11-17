@@ -11,7 +11,7 @@
   <div class="w-75 d-flex align-items-center justify-content-start">
     <a *ngIf="!isAuth" routerLink="/login" class="w-25 btn btn-outline-primary me-5">Login</a>
     <a *ngIf="isAuth" routerLink="/logout" class="w-25 btn btn-outline-primary me-5" (click)="logout()">Logout</a>
-    <a *ngIf="isAdmin" routerLink="/users/index" class="w-25 btn btn-outline-primary me-5">Users</a>
+    <a *ngIf="isAdmin" routerLink="/user/index" class="w-25 btn btn-outline-primary me-5">Users</a>
     <h5 *ngIf="isAuth" class="w-25 text-white text-right">
       Login:
       <span class="badge bg-secondary">{{login}}</span>

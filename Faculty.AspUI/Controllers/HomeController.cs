@@ -2,6 +2,7 @@
 using AutoMapper;
 using System.Net;
 using System.Net.Http;
+using Newtonsoft.Json;
 using Faculty.AspUI.Tools;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -63,7 +64,9 @@ namespace Faculty.AspUI.Controllers
                 return RedirectToAction("Error", "Home");
             }
 
-            var token = await response.Content.ReadAsStringAsync();
+            var tokenJson = await response.Content.ReadAsStringAsync();
+            var objectWithToken = JsonConvert.DeserializeObject<dynamic>(tokenJson);
+            string token = objectWithToken.jwtToken.ToString();
             var principal = ValidateToken(token);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties
             {

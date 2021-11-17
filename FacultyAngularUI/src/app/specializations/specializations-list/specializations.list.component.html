@@ -1,7 +1,7 @@
 <h1>List specializations</h1>
 
 <div class="container mb-2">
-  <a routerLink="/specialization/create" class="btn btn-primary">Create</a>
+  <a *ngIf="this.authService.isAdmin" routerLink="/specialization/create" class="btn btn-primary">Create</a>
 </div>
 
 <table class="table">

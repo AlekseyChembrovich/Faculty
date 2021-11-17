@@ -25,6 +25,6 @@ export class AuthHeaderComponent implements OnInit {
 
   public logout(){
     this.authService.logout();
-    window.location.href = "/";
+    this.router.navigate(['']);
   }
 }
