@@ -31,8 +31,8 @@
             </div>
           </li>
         </ul>
-        <div *ngIf="form.get('roles')?.invalid" class="text-danger" >
-          <small *ngIf="this.form.hasError('HasRoleValidator', 'roles')">
+        <div *ngIf="form.get('roles')?.invalid && form.get('roles')?.touched" class="text-danger" >
+          <small *ngIf="this.form.hasError('hasRoleValidator')">
             {{'User.Error.RoleRequired' | translate}}
           </small>
         </div>

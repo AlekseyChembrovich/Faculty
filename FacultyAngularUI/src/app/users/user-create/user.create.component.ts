@@ -24,7 +24,8 @@ export class UserCreateComponent implements OnInit {
   public error$: Subject<string> = new Subject<string>();
 
   constructor(private userService: UserService,
-              private router: Router) {
+              private router: Router)
+  {
   }
 
   ngOnInit() : void {
@@ -66,20 +67,26 @@ export class UserCreateComponent implements OnInit {
   }
 
   onCheckChange(event: any) {
-    const formArray: FormArray = this.form.get('roles') as FormArray;
+    const roles: FormArray = this.form.get('roles') as FormArray;
     if(event.target.checked){
-      formArray.push(new FormControl(event.target.value));
+      roles.push(new FormControl(event.target.value));
     }
     else {
       let i: number = 0;
-      formArray.controls.forEach((ctrl: AbstractControl) => {
+      roles.controls.forEach((ctrl: AbstractControl) => {
         if(ctrl.value == event.target.value) {
-          formArray.removeAt(i);
+          roles.removeAt(i);
           return;
         }
         i++;
       });
     }
-    console.log(formArray);
+
+    if (roles.length <= 0) {
+      this.form.get('roles')?.markAsTouched();
+    }
+    else {
+      this.form.get('roles')?.markAsUntouched();
+    }
   }
 }

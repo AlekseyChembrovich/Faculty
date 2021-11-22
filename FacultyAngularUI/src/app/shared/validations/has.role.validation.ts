@@ -2,5 +2,11 @@ import {AbstractControl, FormArray, ValidationErrors, ValidatorFn} from "@angula
 
 export const HasRoleValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const roles: FormArray = control.get('roles') as FormArray;
-  return roles.length <= 0 ? { hasRoleValidator: true } : null;
+  if (roles.length <= 0) {
+    roles.setErrors({"should has one and more roles": true});
+    return { hasRoleValidator: true }
+  }
+
+  roles.setErrors(null);
+  return null;
 };

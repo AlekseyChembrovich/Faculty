@@ -19,8 +19,8 @@ export class UserUpdateComponent implements OnInit {
 
   constructor(private userService: UserService,
               private activatedRoute: ActivatedRoute,
-              private router: Router,
-              private formBuilder: FormBuilder) {
+              private router: Router)
+  {
   }
 
   ngOnInit() : void {
@@ -37,12 +37,8 @@ export class UserUpdateComponent implements OnInit {
       login: new FormControl('',
         [ Validators.required, Validators.maxLength(30), Validators.minLength(10) ]),
       roles: new FormArray([]),
-      birthday: new FormControl('',
-        [ Validators.required ])
-    },
-      {
-        validators: HasRoleValidator
-      });
+      birthday: new FormControl('', [ Validators.required ])
+    }, { validators: HasRoleValidator });
 
     const formArray: FormArray = this.form.get('roles') as FormArray;
     this.userService.getUser(id).subscribe(response => {
@@ -78,37 +74,26 @@ export class UserUpdateComponent implements OnInit {
   }
 
   onCheckChange(event: any) {
-    const formArray: FormArray = this.form.get('roles') as FormArray;
+    const roles: FormArray = this.form.get('roles') as FormArray;
     if(event.target.checked){
-      formArray.push(new FormControl(event.target.value));
+      roles.push(new FormControl(event.target.value));
     }
     else {
       let i: number = 0;
-      formArray.controls.forEach((ctrl: AbstractControl) => {
+      roles.controls.forEach((ctrl: AbstractControl) => {
         if(ctrl.value == event.target.value) {
-          formArray.removeAt(i);
+          roles.removeAt(i);
           return;
         }
         i++;
       });
     }
-    console.log(formArray);
-  }
 
-  private MustHasValue(targetControlName: string) {
-    return (formGroup : FormGroup) => {
-      const formArray: FormArray = this.form.get('roles') as FormArray;
-      console.log("formArray", formArray);
-      if (formArray?.errors && !formArray.errors['MustHasValue']) {
-        return;
-      }
-
-      if (formArray.controls.length <= 0) {
-        formArray.setErrors({ MustHasValue:true });
-      }
-      else {
-        formArray.setErrors(null);
-      }
-    };
+    if (roles.length <= 0) {
+      this.form.get('roles')?.markAsTouched();
+    }
+    else {
+      this.form.get('roles')?.markAsUntouched();
+    }
   }
 }
