@@ -1,5 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 
+* {
+  font-size: 1.015em;
+}
+
 footer {
   position: fixed;
   height: auto;

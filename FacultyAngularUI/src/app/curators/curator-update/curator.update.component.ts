@@ -1,6 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {CuratorDto} from "../models/curator.dto";
+import {CuratorModel} from "../models/curator.model";
 import {CuratorsService} from "../services/curator.service";
 import {ActivatedRoute, Router} from "@angular/router";
 
@@ -10,7 +10,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 })
 export class CuratorUpdateComponent implements OnInit {
   public form: FormGroup = new FormGroup({ });
-  private curator: CuratorDto | undefined;
+  private curator: CuratorModel | undefined;
 
   constructor(private curatorsService: CuratorsService,
               private activatedRoute: ActivatedRoute,
@@ -32,7 +32,7 @@ export class CuratorUpdateComponent implements OnInit {
       doublename: new FormControl('',
         [ Validators.required, Validators.maxLength(50) ]),
       phone: new FormControl('',
-        [ Validators.required ])
+        [ Validators.required, Validators.pattern("^\\+375-[0-9]{2}-[0-9]{3}-[0-9]{2}-[0-9]{2}$") ])
     });
 
     this.curatorsService.getCurator(id).subscribe(response => {
@@ -47,7 +47,7 @@ export class CuratorUpdateComponent implements OnInit {
   }
 
   submit() : void {
-    let curator: CuratorDto = new CuratorDto(this.form.value.surname,
+    let curator: CuratorModel = new CuratorModel(this.form.value.surname,
       this.form.value.name, this.form.value.doublename, this.form.value.phone, this.curator?.id);
     this.curatorsService.updateCurator(curator).subscribe(response => {
       console.log(response);

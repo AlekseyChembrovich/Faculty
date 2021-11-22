@@ -1,64 +1,69 @@
-<h1>Register</h1>
+<h1>{{'Registration.CaptionOperation' | translate}}</h1>
 <hr/>
 
 <div class="row">
   <div class="col-md-4">
     <form [formGroup]="form" (ngSubmit)="submit()">
       <div class="form-group">
-        <label for="login" class="col-form-label">Login</label>
+        <label for="login" class="col-form-label">{{'Registration.Login' | translate}}</label>
         <input id="login" name="login" class="form-control" formControlName="login"/>
-        <div *ngIf="form.get('login')?.invalid && form.get('login')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('login')?.invalid && form.get('login')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'login')">
-            Length is required.
+            {{'Registration.Error.LoginRequired' | translate}}
           </small>
           <small *ngIf="this.form.hasError('maxlength', 'login')">
-            The maximum length of a login is 30 letters.
+            {{'Registration.Error.LoginMaximumLength' | translate}}
           </small>
           <small *ngIf="this.form.hasError('minlength', 'login')">
-            The minimum length of a login is 10 letters.
+            {{'Registration.Error.LoginMinimumLength' | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="password" class="col-form-label">Password</label>
+        <label for="password" class="col-form-label">{{'Registration.Password' | translate}}</label>
         <input id="password" name="password" class="form-control" formControlName="password"/>
-        <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'password')">
-            Password is required.
+            {{'Registration.Error.PasswordRequired' | translate}}
           </small>
           <small *ngIf="this.form.hasError('maxlength', 'password')">
-            The maximum length of a password is 50 letters.
+            {{'Registration.Error.PasswordMaximumLength' | translate}}
           </small>
           <small *ngIf="this.form.hasError('minlength', 'password')">
-            The minimum length of a password is 8 letters.
+            {{'Registration.Error.PasswordMinimumLength' | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="confirmPassword" class="col-form-label">Confirm password</label>
+        <label for="confirmPassword" class="col-form-label">{{'Registration.ConfirmPassword' | translate}}</label>
         <input id="confirmPassword" name="confirmPassword" class="form-control" formControlName="confirmPassword"/>
-        <div *ngIf="form.get('confirmPassword')?.invalid && form.get('confirmPassword')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('confirmPassword')?.invalid && form.get('confirmPassword')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'confirmPassword')">
-            Confirm password is required.
+            {{'Registration.Error.ConfirmPasswordRequired' | translate}}
           </small>
           <small *ngIf="this.form.hasError('MustMatch', 'confirmPassword')">
-            Confirm password should be equal password.
+            {{'Registration.Error.ConfirmPasswordEqual' | translate}}
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div *ngIf="error$ | async as message" class="text-danger" >
+          <small>
+            {{message | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group mt-2 mb-2">
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" class="btn btn-primary">{{'Registration.CaptionOperation' | translate}}</button>
       </div>
     </form>
   </div>
 </div>
 
 <div>
-  <a routerLink="/faculty/index">Back to list</a>
+  <a routerLink="/faculty/index" class="h6">{{'Registration.BackToList' | translate}}</a>
 </div>

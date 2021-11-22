@@ -1,16 +1,17 @@
-<h1>List curators</h1>
+<h1>{{'Curator.List' | translate}}</h1>
+
 <div class="container mb-2">
-  <a *ngIf="this.authService.isAdmin" routerLink="/curator/create" class="btn btn-primary">Create</a>
+  <a *ngIf="this.authService.isAdmin" routerLink="/curator/create" class="btn btn-primary">{{'Curator.Create' | translate}}</a>
 </div>
 
 <table class="table">
   <thead>
   <tr>
-    <th scope="col">Number</th>
-    <th scope="col">Surname</th>
-    <th scope="col">Name</th>
-    <th scope="col">Doublename</th>
-    <th scope="col">Phone</th>
+    <th scope="col">{{'Curator.ColNumber' | translate}}</th>
+    <th scope="col">{{'Curator.ColSurname' | translate}}</th>
+    <th scope="col">{{'Curator.ColName' | translate}}</th>
+    <th scope="col">{{'Curator.ColDoublename' | translate}}</th>
+    <th scope="col">{{'Curator.ColPhone' | translate}}</th>
     <th scope="col"></th>
   </tr>
   </thead>
@@ -23,8 +24,8 @@
     <td>{{curator.doublename}}</td>
     <td>{{curator.phone}}</td>
     <td>
-      <button class="btn btn-primary me-2" (click)="delete(curator.id!)">Delete</button>
-      <a routerLink="/curator/edit/{{curator.id}}" class="btn btn-primary">Edit</a>
+      <a routerLink="/curator/delete/{{curator.id}}" class="btn btn-primary me-2">{{'Curator.Delete' | translate}}</a>
+      <a routerLink="/curator/edit/{{curator.id}}" class="btn btn-primary">{{'Curator.Edit' | translate}}</a>
     </td>
   </tr>
   </tbody>

@@ -38,7 +38,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                 this.router.navigateByUrl("/login");
                 break;
               case 404:
-                console.log("notfound-error");
+                console.log("notfound-error", error);
                 this.router.navigateByUrl("/notfound-error");
                 break;
               case 500:

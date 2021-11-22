@@ -1,84 +1,78 @@
-<h1>Create</h1>
-<h4>Faculty</h4>
+<h1>{{'Faculty.CreateForm.CaptionOperation' | translate}}</h1>
+<h4>{{'Faculty.CreateForm.CaptionModel' | translate}}</h4>
 <hr/>
 
 <div class="row">
   <div class="col-md-4">
     <form [formGroup]="this.form" (ngSubmit)="submit()">
       <div class="form-group">
-        <label for="startDateEducation">Start date education</label>
+        <label for="startDateEducation">{{'Faculty.CreateForm.StartDateEducation' | translate}}</label>
         <input id="startDateEducation" type="date" [ngModel]="nowDate | date:'yyyy-MM-dd'" class="form-control" formControlName="startDateEducation"/>
         <div *ngIf="form.get('startDateEducation')?.invalid && form.get('startDateEducation')?.touched"
         class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'startDateEducation')">
-            Start date education is required.
+            {{'Faculty.Error.StartDateEducationRequired' | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="countYearEducation">Count year education</label>
+        <label for="countYearEducation">{{'Faculty.CreateForm.CountYearEducation' | translate}}</label>
         <input id="countYearEducation" type="number" value="0" class="form-control" formControlName="countYearEducation"/>
         <div *ngIf="form.get('countYearEducation')?.invalid && form.get('countYearEducation')?.touched"
              class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'countYearEducation')">
-            Count year education is required.
+            {{'Faculty.Error.CountYearEducationRequired' | translate}}
           </small>
           <small *ngIf="this.form.hasError('min', 'countYearEducation') || this.form.hasError('max', 'countYearEducation')">
-            Count year education should be between 3 and 5 year.
+            {{'Faculty.Error.CountYearEducationBetween' | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="group">Group</label>
+        <label for="group">{{'Faculty.CreateForm.Group' | translate}}</label>
         <select *ngIf="groups" id="group" class="form-select" formControlName="groupId">
           <option *ngFor="let group of groups" value="{{group.id}}">{{group.name}}</option>
         </select>
-
-        <div *ngIf="form.get('groupId')?.invalid && form.get('groupId')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('groupId')?.invalid && form.get('groupId')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'groupId')">
-            Group is required.
+            {{'Faculty.Error.GroupRequired' | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="student">Student</label>
+        <label for="student">{{'Faculty.CreateForm.Student' | translate}}</label>
         <select *ngIf="students" id="student" class="form-select" formControlName="studentId">
           <option *ngFor="let student of students" value="{{student.id}}">{{student.surname}}</option>
         </select>
-
-        <div *ngIf="form.get('studentId')?.invalid && form.get('studentId')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('studentId')?.invalid && form.get('studentId')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'studentId')">
-            Student is required.
+            {{'Faculty.Error.StudentRequired' | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="curator">Curator</label>
+        <label for="curator">{{'Faculty.CreateForm.Curator' | translate}}</label>
         <select *ngIf="curators" id="curator" class="form-select" formControlName="curatorId">
           <option *ngFor="let curator of curators" value="{{curator.id}}">{{curator.surname}}</option>
         </select>
-
-        <div *ngIf="form.get('curatorId')?.invalid && form.get('curatorId')?.touched"
-             class="text-danger">
+        <div *ngIf="form.get('curatorId')?.invalid && form.get('curatorId')?.touched" class="text-danger">
           <small *ngIf="this.form.hasError('required', 'curatorId')">
-            Curator is required.
+            {{'Faculty.Error.CuratorRequired' | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group mt-3 mb-3">
-        <button type="submit" class="btn btn-primary" [disabled]="this.form.invalid">Create</button>
+        <button type="submit" class="btn btn-primary" [disabled]="this.form.invalid">{{'Faculty.CreateForm.CaptionOperation' | translate}}</button>
       </div>
     </form>
   </div>
 </div>
 
 <div>
-  <a routerLink="/faculty/index" class="h6">Back to list</a>
+  <a routerLink="/faculty/index" class="h6">{{'Faculty.CreateForm.BackToList' | translate}}</a>
 </div>

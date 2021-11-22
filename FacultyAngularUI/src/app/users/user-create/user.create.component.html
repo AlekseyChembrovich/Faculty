@@ -1,23 +1,22 @@
-<h1>Create</h1>
-<h4>User</h4>
+<h1>{{'User.CreateForm.CaptionOperation' | translate}}</h1>
+<h4>{{'User.CreateForm.CaptionModel' | translate}}</h4>
 <hr/>
 
 <div class="row">
   <div class="col-md-4">
     <form [formGroup]="this.form" (ngSubmit)="submit()">
       <div class="form-group">
-        <label for="login">Login</label>
+        <label for="login">{{'User.CreateForm.Login' | translate}}</label>
         <input id="login" type="text" class="form-control" formControlName="login"/>
-        <div *ngIf="form.get('login')?.invalid && form.get('login')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('login')?.invalid && form.get('login')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'login')">
-            Login is required.
+            {{'User.Error.LoginRequired' | translate}}
           </small>
           <small *ngIf="this.form.hasError('maxlength', 'login')">
-            The maximum length of a login is 30 letters.
+            {{'User.Error.LoginMaximumLength' | translate}}
           </small>
           <small *ngIf="this.form.hasError('minlength', 'login')">
-            The minimum length of a login is 10 letters.
+            {{'User.Error.LoginMinimumLength' | translate}}
           </small>
         </div>
       </div>
@@ -25,22 +24,21 @@
       <div class="form-group">
         <label for="password">Password</label>
         <input id="password" type="text" class="form-control" formControlName="password"/>
-        <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'password')">
-            Password is required.
+            {{'User.Error.PasswordRequired' | translate}}
           </small>
           <small *ngIf="this.form.hasError('maxlength', 'password')">
-            The maximum length of a password is 50 letters.
+            {{'User.Error.PasswordMaximumLength' | translate}}
           </small>
           <small *ngIf="this.form.hasError('minlength', 'password')">
-            The minimum length of a password is 8 letters.
+            {{'User.Error.PasswordMinimumLength' | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group" *ngIf="roles">
-        <label for="roles">Roles</label>
+        <label for="roles">{{'User.EditForm.Roles' | translate}}</label>
         <ul id="roles" class="list-group">
           <li class="list-group-item" *ngFor="let role of roles; let i = index">
             <div class="form-check">
@@ -49,26 +47,38 @@
             </div>
           </li>
         </ul>
+        <div *ngIf="form.get('roles')?.invalid" class="text-danger" >
+          <small *ngIf="this.form.hasError('HasRoleValidator', 'roles')">
+            {{'User.Error.RoleRequired' | translate}}
+          </small>
+        </div>
       </div>
 
       <div class="form-group">
-        <label for="birthday">Birthday</label>
+        <label for="birthday">{{'User.CreateForm.Birthday' | translate}}</label>
         <input id="birthday" type="date" [ngModel]="nowDate | date:'yyyy-MM-dd'" class="form-control" formControlName="birthday"/>
-        <div *ngIf="form.get('birthday')?.invalid && form.get('birthday')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('birthday')?.invalid && form.get('birthday')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'birthday')">
-            Birthday is required.
+            {{'User.Error.BirthdayRequired' | translate}}
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div *ngIf="error$ | async as message" class="text-danger" >
+          <small>
+            {{message | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group mt-3 mb-3">
-        <button type="submit" class="btn btn-primary" [disabled]="this.form.invalid">Create</button>
+        <button type="submit" class="btn btn-primary" [disabled]="this.form.invalid">{{'User.CreateForm.CaptionOperation' | translate}}</button>
       </div>
     </form>
   </div>
 </div>
 
 <div>
-  <a routerLink="/user/index" class="h6">Back to list</a>
+  <a routerLink="/user/index" class="h6">{{'User.CreateForm.BackToList' | translate}}</a>
 </div>

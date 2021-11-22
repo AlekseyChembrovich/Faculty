@@ -1,7 +1,7 @@
 import {Component, OnInit} from "@angular/core";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
-import {StudentDto} from "../models/student.dto";
+import {StudentModel} from "../models/student.model";
 import {StudentService} from "../services/student.service";
 
 @Component({
@@ -10,7 +10,7 @@ import {StudentService} from "../services/student.service";
 })
 export class StudentUpdateComponent implements OnInit {
   public form: FormGroup = new FormGroup({ });
-  private student: StudentDto | undefined;
+  private student: StudentModel | undefined;
 
   constructor(private studentService: StudentService,
               private activatedRoute: ActivatedRoute,
@@ -44,7 +44,7 @@ export class StudentUpdateComponent implements OnInit {
   }
 
   submit() : void {
-    let student: StudentDto = new StudentDto(this.form.value.surname,
+    let student: StudentModel = new StudentModel(this.form.value.surname,
       this.form.value.name, this.form.value.doublename, this.student?.id);
     this.studentService.updateStudent(student).subscribe(response => {
       console.log(response);

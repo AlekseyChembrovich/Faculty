@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {GroupDisplayDto} from "../models/group.display.dto";
-import {GroupDto} from "../models/group.dto";
+import {GroupDisplayModel} from "../models/group.display.model";
+import {GroupModel} from "../models/group.model";
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +13,14 @@ export class GroupService {
   }
 
   public getGroups() {
-    return this.httpClient.get<GroupDisplayDto[]>(this.baseUrl);
+    return this.httpClient.get<GroupDisplayModel[]>(this.baseUrl);
   }
 
   public getGroup(id: number) {
-    return this.httpClient.get<GroupDto>(this.baseUrl + `/${id}`);
+    return this.httpClient.get<GroupModel>(this.baseUrl + `/${id}`);
   }
 
-  public createGroup(group: GroupDto) {
+  public createGroup(group: GroupModel) {
     return this.httpClient.post(this.baseUrl, group);
   }
 
@@ -28,7 +28,7 @@ export class GroupService {
     return this.httpClient.delete(this.baseUrl + `/${id}`);
   }
 
-  public updateGroup(group: GroupDto) {
+  public updateGroup(group: GroupModel) {
     return this.httpClient.put(this.baseUrl, group);
   }
 }

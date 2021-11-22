@@ -1,6 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {CuratorDto} from "../models/curator.dto";
+import {CuratorModel} from "../models/curator.model";
 import {CuratorsService} from "../services/curator.service";
 import {Router} from "@angular/router";
 
@@ -30,7 +30,7 @@ export class CuratorCreateComponent implements OnInit {
 
   submit() : void {
     if (this.form.invalid) return;
-    let curator: CuratorDto = new CuratorDto(this.form.value.surname,
+    let curator: CuratorModel = new CuratorModel(this.form.value.surname,
       this.form.value.name, this.form.value.doublename, this.form.value.phone, 0);
     this.curatorsService.createCurator(curator).subscribe(response => {
       console.log(response);

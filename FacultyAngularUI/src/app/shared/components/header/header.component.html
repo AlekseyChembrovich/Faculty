@@ -3,11 +3,11 @@
     <div class="container-fluid">
       <div class="collapse navbar-collapse d-flex align-items-center justify-content-between" id="navbarNavAltMarkup">
         <div class="navbar-nav w-50 ms-5 text-white">
-          <a routerLink="/faculty/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">Faculty</a>
-          <a routerLink="/group/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">Group</a>
-          <a routerLink="/specialization/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">Specialization</a>
-          <a routerLink="/student/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">Student</a>
-          <a routerLink="/curator/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">Curator</a>
+          <a routerLink="/faculty/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">{{'Header.Faculty' | translate}}</a>
+          <a routerLink="/group/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">{{'Header.Group' | translate}}</a>
+          <a routerLink="/specialization/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">{{'Header.Specialization' | translate}}</a>
+          <a routerLink="/student/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">{{'Header.Student' | translate}}</a>
+          <a routerLink="/curator/index" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand h1">{{'Header.Curator' | translate}}</a>
         </div>
 
         <app-auth-header class="w-50"></app-auth-header>

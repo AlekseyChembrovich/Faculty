@@ -1,0 +1,27 @@
+<h1>{{'Group.DeleteForm.CaptionOperation' | translate}}</h1>
+<h4>{{'Group.DeleteForm.CaptionModel' | translate}}</h4>
+<hr/>
+
+<div class="row w-50">
+  <form *ngIf="group">
+    <div class="form-group">
+      <label class="col-form-label-lg">{{'Group.DeleteForm.ConfirmMessage' | translate}}</label>
+      <div>
+        <button type="submit" (click)="delete()" class="btn btn-primary me-3">{{'Group.DeleteForm.CaptionOperation' | translate}}</button>
+        <a routerLink="/group/index" class="btn btn-primary">{{'Group.DeleteForm.BackToList' | translate}}</a>
+      </div>
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label for="name" class="col-form-label">{{'Group.DeleteForm.Name' | translate}}</label>
+      <input id="name" value="{{group.name}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+    <hr>
+
+    <div *ngIf="specialization" class="form-group">
+      <label for="specialization" class="col-form-label">{{'Group.DeleteForm.Specialization' | translate}}</label>
+      <input id="specialization" value="{{specialization.name}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+  </form>
+</div>

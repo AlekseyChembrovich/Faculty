@@ -1,15 +1,15 @@
-<h1>List groups</h1>
+<h1>{{'Group.List' | translate}}</h1>
 
 <div class="container mb-2">
-  <a *ngIf="this.authService.isAdmin" routerLink="/group/create" class="btn btn-primary">Create</a>
+  <a *ngIf="this.authService.isAdmin" routerLink="/group/create" class="btn btn-primary">{{'Group.Create' | translate}}</a>
 </div>
 
 <table class="table">
   <thead>
   <tr>
-    <th scope="col">Number</th>
-    <th scope="col">Name</th>
-    <th scope="col">Specialization</th>
+    <th scope="col">{{'Group.ColNumber' | translate}}</th>
+    <th scope="col">{{'Group.ColName' | translate}}</th>
+    <th scope="col">{{'Group.ColSpecialization' | translate}}</th>
     <th scope="col"></th>
   </tr>
   </thead>
@@ -20,8 +20,8 @@
     <td>{{group.name}}</td>
     <td>{{group.specializationName}}</td>
     <td>
-      <button class="btn btn-primary me-2" (click)="delete(group.id!)">Delete</button>
-      <a routerLink="/group/edit/{{group.id}}" class="btn btn-primary">Edit</a>
+      <a routerLink="/group/delete/{{group.id}}" class="btn btn-primary me-2">{{'Group.Delete' | translate}}</a>
+      <a routerLink="/group/edit/{{group.id}}" class="btn btn-primary">{{'Group.Edit' | translate}}</a>
     </td>
   </tr>
   </tbody>

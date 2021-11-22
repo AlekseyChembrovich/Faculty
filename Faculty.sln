@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faculty.AuthenticationServe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faculty.ResourceServer", "Faculty.ResourceServer\Faculty.ResourceServer.csproj", "{A1E7AC70-93B1-4925-8AB4-18DB04F46A9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faculty.Common", "Faculty.Common\Faculty.Common.csproj", "{6F694964-9C87-4E11-A3A9-0B8DC0C97224}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faculty.Common", "Faculty.Common\Faculty.Common.csproj", "{6F694964-9C87-4E11-A3A9-0B8DC0C97224}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

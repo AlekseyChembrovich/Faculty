@@ -1,0 +1,304 @@
+{
+  "Header": {
+    "Faculty": "Факультет",
+    "Group": "Группа",
+    "Specialization": "Специализация",
+    "Student": "Студент",
+    "Curator": "Куратор",
+    "Login": "Ввойти",
+    "Logout": "Выйти",
+    "Users": "Пользователи",
+    "UserLogin": "Логин:"
+  },
+  "Faculty": {
+    "List": "Список факультета",
+    "Create": "Создать",
+    "ColNumber": "Номер",
+    "ColStartDateEducation": "Дата начала обучения",
+    "ColCountYearEducation": "Кол-во лет обучения",
+    "ColStudent": "Студент",
+    "ColGroup": "Группа",
+    "ColCurator": "Куратор",
+    "Delete": "Удалить",
+    "Edit": "Изменить",
+    "Error": {
+      "StartDateEducationRequired": "Дата начала обучения обязательна",
+      "CountYearEducationRequired": "Кол-во лет обучения обязателено",
+      "CountYearEducationBetween": "Кол-во лет обучения должно быть между 3 и 5 годами.",
+      "GroupRequired": "Группа обязательна",
+      "StudentRequired": "Студент обязателен",
+      "CuratorRequired": "Куратор обязателен"
+    },
+    "CreateForm": {
+      "CaptionOperation": "Создать",
+      "CaptionModel": "Факультет",
+      "StartDateEducation": "Дата начала обучения",
+      "CountYearEducation": "Кол-во лет обучения",
+      "Group": "Группа",
+      "Student": "Студент",
+      "Curator": "Куратор",
+      "BackToList": "Вернуться к списку"
+    },
+    "EditForm": {
+      "CaptionOperation": "Изменить",
+      "CaptionModel": "Факультет",
+      "StartDateEducation": "Дата начала обучения",
+      "CountYearEducation": "Кол-во лет обучения",
+      "Group": "Группа",
+      "Student": "Студент",
+      "Curator": "Куратор",
+      "BackToList": "Вернуться к списку"
+    },
+    "DeleteForm": {
+      "CaptionOperation": "Удалить",
+      "CaptionModel": "Факультет",
+      "StartDateEducation": "Дата начала обучения",
+      "CountYearEducation": "Кол-во лет обучения",
+      "Group": "Группа",
+      "Student": "Студент",
+      "Curator": "Куратор",
+      "BackToList": "Вернуться к списку",
+      "ConfirmMessage": "Вы хотите выполнить операцию удаления?"
+    }
+  },
+  "Curator": {
+    "List": "Список кураторов",
+    "Create": "Создать",
+    "ColNumber": "Номер",
+    "ColSurname": "Фамилия",
+    "ColName": "Имя",
+    "ColDoublename": "Фамилия",
+    "ColPhone": "Телефон",
+    "Delete": "Удалить",
+    "Edit": "Изменить",
+    "Error": {
+      "SurnameRequired": "Фамилия обязательна",
+      "SurnameMaximumLength": "Максимальная длинная фамилии состовляет 50 символов",
+      "NameRequired": "Имя обязательна",
+      "NameMaximumLength": "Максимальная длинная имени состовляет 50 символов",
+      "DoublenameRequired": "Отчество обязательна",
+      "DoublenameMaximumLength": "Максимальная длинная отчества состовляет 50 символов",
+      "PhoneRequired": "Телефон обязательна",
+      "PhonePattern": "Телефон не совподает с шаблоном (пример: +375-29-111-22-33)"
+    },
+    "CreateForm": {
+      "CaptionOperation": "Создать",
+      "CaptionModel": "Куратор",
+      "Surname": "Фамилия",
+      "Name": "Имя",
+      "Doublename": "Отчество",
+      "Phone": "Телефон",
+      "BackToList": "Вернуться к списку"
+    },
+    "EditForm": {
+      "CaptionOperation": "Изменить",
+      "CaptionModel": "Куратор",
+      "Surname": "Фамилия",
+      "Name": "Имя",
+      "Doublename": "Отчество",
+      "Phone": "Телефон",
+      "BackToList": "Вернуться к списку"
+    },
+    "DeleteForm": {
+      "CaptionOperation": "Удалить",
+      "CaptionModel": "Куратор",
+      "Surname": "Фамилия",
+      "Name": "Имя",
+      "Doublename": "Отчество",
+      "Phone": "Телефон",
+      "BackToList": "Вернуться к списку",
+      "ConfirmMessage": "Вы хотите выполнить операцию удаления?"
+    }
+  },
+  "Student": {
+    "List": "Список студентов",
+    "Create": "Создать",
+    "ColNumber": "Номер",
+    "ColSurname": "Фамилия",
+    "ColName": "Имя",
+    "ColDoublename": "Фамилия",
+    "Delete": "Удалить",
+    "Edit": "Изменить",
+    "Error": {
+      "SurnameRequired": "Фамилия обязательна",
+      "SurnameMaximumLength": "Максимальная длинная фамилии состовляет 50 символов",
+      "NameRequired": "Имя обязательна",
+      "NameMaximumLength": "Максимальная длинная имени состовляет 50 символов",
+      "DoublenameRequired": "Отчество обязательна",
+      "DoublenameMaximumLength": "Максимальная длинная отчества состовляет 50 символов"
+    },
+    "CreateForm": {
+      "CaptionOperation": "Создать",
+      "CaptionModel": "Студент",
+      "Surname": "Фамилия",
+      "Name": "Имя",
+      "Doublename": "Отчество",
+      "BackToList": "Вернуться к списку"
+    },
+    "EditForm": {
+      "CaptionOperation": "Изменить",
+      "CaptionModel": "Студент",
+      "Surname": "Фамилия",
+      "Name": "Имя",
+      "Doublename": "Отчество",
+      "BackToList": "Вернуться к списку"
+    },
+    "DeleteForm": {
+      "CaptionOperation": "Удалить",
+      "CaptionModel": "Студент",
+      "Surname": "Фамилия",
+      "Name": "Имя",
+      "Doublename": "Отчество",
+      "BackToList": "Вернуться к списку",
+      "ConfirmMessage": "Вы хотите выполнить операцию удаления?"
+    }
+  },
+  "Specialization": {
+    "List": "Список специализаций",
+    "Create": "Создать",
+    "ColNumber": "Номер",
+    "ColName": "Название",
+    "Delete": "Удалить",
+    "Edit": "Изменить",
+    "Error": {
+      "NameRequired": "Название обязательно",
+      "NameMaximumLength": "Максимальная длинная названия состовляет 50 символов"
+    },
+    "CreateForm": {
+      "CaptionOperation": "Создать",
+      "CaptionModel": "Специализация",
+      "Name": "Название",
+      "BackToList": "Вернуться к списку"
+    },
+    "EditForm": {
+      "CaptionOperation": "Изменить",
+      "CaptionModel": "Специализация",
+      "Name": "Название",
+      "BackToList": "Вернуться к списку"
+    },
+    "DeleteForm": {
+      "CaptionOperation": "Удалить",
+      "CaptionModel": "Специализация",
+      "Name": "Название",
+      "BackToList": "Вернуться к списку",
+      "ConfirmMessage": "Вы хотите выполнить операцию удаления?"
+    }
+  },
+  "Group": {
+    "List": "Список групп",
+    "Create": "Создать",
+    "ColNumber": "Номер",
+    "ColName": "Название",
+    "ColSpecialization": "Специализация",
+    "Delete": "Удалить",
+    "Edit": "Изменить",
+    "Error": {
+      "NameRequired": "Название обязательно",
+      "NameMaximumLength": "Максимальная длинная названия состовляет 50 символов",
+      "SpecializationRequired": "Специализация обязательна"
+    },
+    "CreateForm": {
+      "CaptionOperation": "Создать",
+      "CaptionModel": "Группа",
+      "Name": "Название",
+      "Specialization": "Специализация",
+      "BackToList": "Вернуться к списку"
+    },
+    "EditForm": {
+      "CaptionOperation": "Изменить",
+      "CaptionModel": "Группа",
+      "Name": "Название",
+      "Specialization": "Специализация",
+      "BackToList": "Вернуться к списку"
+    },
+    "DeleteForm": {
+      "CaptionOperation": "Удалить",
+      "CaptionModel": "Группа",
+      "Name": "Название",
+      "Specialization": "Специализация",
+      "BackToList": "Вернуться к списку",
+      "ConfirmMessage": "Вы хотите выполнить операцию удаления?"
+    }
+  },
+  "User": {
+    "List": "Список пользователей",
+    "Create": "Создать",
+    "ColNumber": "Номер",
+    "ColLogin": "Логин",
+    "ColRoles": "Роли",
+    "ColBirthday": "Дата рождения",
+    "EditPassword": "Изменить пароль",
+    "Delete": "Удалить",
+    "Edit": "Изменить",
+    "Error": {
+      "LoginRequired": "Логин обязателен",
+      "LoginMaximumLength": "Максимальная длинна логина состовляет 30 символов",
+      "LoginMinimumLength": "Минимальная длинна логина состовляет 10 символов",
+      "PasswordRequired": "Пароль обязателен",
+      "PasswordMaximumLength": "Максимальная длинна пароля состовляет 50 символов",
+      "PasswordMinimumLength": "Минимальная длинна пароля состовляет 8 символов",
+      "RoleRequired": "Роль обязательна",
+      "BirthdayRequired": "Дата рожения обязательна"
+    },
+    "CreateForm": {
+      "CaptionOperation": "Создать",
+      "CaptionModel": "Пользователь",
+      "Login": "Логин",
+      "Password": "Пароль",
+      "Roles": "Роли",
+      "Birthday": "Дата рождения",
+      "BackToList": "Вернуться к списку"
+    },
+    "EditForm": {
+      "CaptionOperation": "Изменить",
+      "CaptionModel": "Пользователь",
+      "Login": "Логин",
+      "Roles": "Роли",
+      "Birthday": "Дата рождения",
+      "BackToList": "Вернуться к списку"
+    },
+    "EditPasswordForm": {
+      "CaptionOperation": "Изменить пароль",
+      "CaptionModel": "Пользователь",
+      "NewPassword": "Новый пароль",
+      "BackToList": "Вернуться к списку"
+    }
+  },
+  "Login": {
+    "CaptionOperation": "Ввойти",
+    "Login": "Логин",
+    "Password": "Пароль",
+    "CreateAccount": "Нет учетной записи? Создай её!",
+    "BackToList": "Вернуться к списку",
+    "Error": {
+      "LoginRequired": "Логин обязателен",
+      "LoginMaximumLength": "Максимальная длинна логина состовляет 30 символов",
+      "LoginMinimumLength": "Минимальная длинна логина состовляет 10 символов",
+      "PasswordRequired": "Пароль обязателен",
+      "PasswordMaximumLength": "Максимальная длинна пароля состовляет 50 символов",
+      "PasswordMinimumLength": "Минимальная длинна пароля состовляет 8 символов"
+    }
+  },
+  "Registration": {
+    "CaptionOperation": "Зарегистрироваться",
+    "Login": "Логин",
+    "Password": "Пароль",
+    "ConfirmPassword": "Подтверждение пароля",
+    "BackToList": "Вернуться к списку",
+    "Error": {
+      "LoginRequired": "Логин обязателен",
+      "LoginMaximumLength": "Максимальная длинна логина состовляет 30 символов",
+      "LoginMinimumLength": "Минимальная длинна логина состовляет 10 символов",
+      "PasswordRequired": "Пароль обязателен",
+      "PasswordMaximumLength": "Максимальная длинна пароля состовляет 50 символов",
+      "PasswordMinimumLength": "Минимальная длинна пароля состовляет 8 символов",
+      "ConfirmPasswordRequired": "Подтверждение пароля обязательно",
+      "ConfirmPasswordEqual": "Подтверждение пароля должно быть равно паролю"
+    }
+  },
+  "ServerError": {
+    "400": "Проверьте свой логин или пароль",
+    "404": "Упс... Контент не найден ;(",
+    "Common": "Упс... Произошла ошибка на сервере ;("
+  }
+}

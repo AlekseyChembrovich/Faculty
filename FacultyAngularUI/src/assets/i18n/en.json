@@ -1,0 +1,305 @@
+{
+  "Header": {
+    "Faculty": "Faculty",
+    "Group": "Group",
+    "Specialization": "Specialization",
+    "Student": "Student",
+    "Curator": "Curator",
+    "Login": "Login",
+    "Logout": "Logout",
+    "Users": "Users",
+    "UserLogin": "Login:"
+  },
+  "Faculty": {
+    "List": "Faculty list",
+    "Create": "Create",
+    "ColNumber": "Number",
+    "ColStartDateEducation": "Start date education",
+    "ColCountYearEducation": "Count year education",
+    "ColStudent": "Student",
+    "ColGroup": "Group",
+    "ColCurator": "Curator",
+    "Delete": "Delete",
+    "Edit": "Edit",
+    "Error": {
+      "StartDateEducationRequired": "Start date education is required",
+      "CountYearEducationRequired": "Count year education is required",
+      "CountYearEducationBetween": "Count year education should be between 3 and 5 year.",
+      "GroupRequired": "Group is required",
+      "StudentRequired": "Student is required",
+      "CuratorRequired": "Curator is required"
+    },
+    "CreateForm": {
+      "CaptionOperation": "Create",
+      "CaptionModel": "Faculty",
+      "StartDateEducation": "Start date education",
+      "CountYearEducation": "Count year education",
+      "Group": "Group",
+      "Student": "Student",
+      "Curator": "Curator",
+      "BackToList": "Back to list"
+    },
+    "EditForm": {
+      "CaptionOperation": "Delete",
+      "CaptionModel": "Faculty",
+      "StartDateEducation": "Start date education",
+      "CountYearEducation": "Count year education",
+      "Group": "Group",
+      "Student": "Student",
+      "Curator": "Curator",
+      "BackToList": "Back to list",
+      "ConfirmMessage": "Do you want to execute the delete operation?"
+    },
+    "DeleteForm": {
+      "CaptionOperation": "Delete",
+      "CaptionModel": "Faculty",
+      "StartDateEducation": "Start date education",
+      "CountYearEducation": "Count year education",
+      "Group": "Group",
+      "Student": "Student",
+      "Curator": "Curator",
+      "BackToList": "Back to list",
+      "ConfirmMessage": "Do you want to execute the delete operation?"
+    }
+  },
+  "Curator": {
+    "List": "Curator list",
+    "Create": "Create",
+    "ColNumber": "Number",
+    "ColSurname": "Surname",
+    "ColName": "Name",
+    "ColDoublename": "Doublename",
+    "ColPhone": "Phone",
+    "Delete": "Delete",
+    "Edit": "Edit",
+    "Error": {
+      "SurnameRequired": "Surname is required",
+      "SurnameMaximumLength": "The maximum length of a surname is 50 letters",
+      "NameRequired": "Name is required",
+      "NameMaximumLength": "The maximum length of a name is 50 letters",
+      "DoublenameRequired": "Doublename is required",
+      "DoublenameMaximumLength": "The maximum length of a doublename is 50 letters",
+      "PhoneRequired": "Phone is required",
+      "PhonePattern": "Phone don't match pattern phone (example: +375-29-111-22-33)"
+    },
+    "CreateForm": {
+      "CaptionOperation": "Create",
+      "CaptionModel": "Curator",
+      "Surname": "Surname",
+      "Name": "Name",
+      "Doublename": "Doublename",
+      "Phone": "Phone",
+      "BackToList": "Back to list"
+    },
+    "EditForm": {
+      "CaptionOperation": "Edit",
+      "CaptionModel": "Curator",
+      "Surname": "Surname",
+      "Name": "Name",
+      "Doublename": "Doublename",
+      "Phone": "Phone",
+      "BackToList": "Back to list"
+    },
+    "DeleteForm": {
+      "CaptionOperation": "Delete",
+      "CaptionModel": "Curator",
+      "Surname": "Surname",
+      "Name": "Name",
+      "Doublename": "Doublename",
+      "Phone": "Phone",
+      "BackToList": "Back to list",
+      "ConfirmMessage": "Do you want to execute the delete operation?"
+    }
+  },
+  "Student": {
+    "List": "Student list",
+    "Create": "Create",
+    "ColNumber": "Number",
+    "ColSurname": "Surname",
+    "ColName": "Name",
+    "ColDoublename": "Doublename",
+    "Delete": "Delete",
+    "Edit": "Edit",
+    "Error": {
+      "SurnameRequired": "Surname is required",
+      "SurnameMaximumLength": "The maximum length of a surname is 50 letters",
+      "NameRequired": "Name is required",
+      "NameMaximumLength": "The maximum length of a name is 50 letters",
+      "DoublenameRequired": "Doublename is required",
+      "DoublenameMaximumLength": "The maximum length of a doublename is 50 letters"
+    },
+    "CreateForm": {
+      "CaptionOperation": "Create",
+      "CaptionModel": "Student",
+      "Surname": "Surname",
+      "Name": "Name",
+      "Doublename": "Doublename",
+      "BackToList": "Back to list"
+    },
+    "EditForm": {
+      "CaptionOperation": "Edit",
+      "CaptionModel": "Student",
+      "Surname": "Surname",
+      "Name": "Name",
+      "Doublename": "Doublename",
+      "BackToList": "Back to list"
+    },
+    "DeleteForm": {
+      "CaptionOperation": "Delete",
+      "CaptionModel": "Student",
+      "Surname": "Surname",
+      "Name": "Name",
+      "Doublename": "Doublename",
+      "BackToList": "Back to list",
+      "ConfirmMessage": "Do you want to execute the delete operation?"
+    }
+  },
+  "Specialization": {
+    "List": "Specializations list",
+    "Create": "Create",
+    "ColNumber": "Number",
+    "ColName": "Name",
+    "Delete": "Delete",
+    "Edit": "Edit",
+    "Error": {
+      "NameRequired": "Name is required",
+      "NameMaximumLength": "The maximum length of a name is 50 letters"
+    },
+    "CreateForm": {
+      "CaptionOperation": "Create",
+      "CaptionModel": "Specialization",
+      "Name": "Name",
+      "BackToList": "Back to list"
+    },
+    "EditForm": {
+      "CaptionOperation": "Edit",
+      "CaptionModel": "Specialization",
+      "Name": "Name",
+      "BackToList": "Back to list"
+    },
+    "DeleteForm": {
+      "CaptionOperation": "Delete",
+      "CaptionModel": "Specialization",
+      "Name": "Name",
+      "BackToList": "Back to list",
+      "ConfirmMessage": "Do you want to execute the delete operation?"
+    }
+  },
+  "Group": {
+    "List": "Group list",
+    "Create": "Create",
+    "ColNumber": "Number",
+    "ColName": "Name",
+    "ColSpecialization": "Specialization",
+    "Delete": "Delete",
+    "Edit": "Edit",
+    "Error": {
+      "NameRequired": "Name is required",
+      "NameMaximumLength": "The maximum length of a name is 50 letters",
+      "SpecializationRequired": "Specialization is required"
+    },
+    "CreateForm": {
+      "CaptionOperation": "Create",
+      "CaptionModel": "Group",
+      "Name": "Name",
+      "Specialization": "Specialization",
+      "BackToList": "Back to list"
+    },
+    "EditForm": {
+      "CaptionOperation": "Edit",
+      "CaptionModel": "Group",
+      "Name": "Name",
+      "Specialization": "Specialization",
+      "BackToList": "Back to list"
+    },
+    "DeleteForm": {
+      "CaptionOperation": "Delete",
+      "CaptionModel": "Group",
+      "Name": "Name",
+      "Specialization": "Specialization",
+      "BackToList": "Back to list",
+      "ConfirmMessage": "Do you want to execute the delete operation?"
+    }
+  },
+  "User": {
+    "List": "User list",
+    "Create": "Create",
+    "ColNumber": "Number",
+    "ColLogin": "Login",
+    "ColRoles": "Roles",
+    "ColBirthday": "Birthday",
+    "EditPassword": "Edit password",
+    "Delete": "Delete",
+    "Edit": "Edit",
+    "Error": {
+      "LoginRequired": "Login is required",
+      "LoginMaximumLength": "The maximum length of a login is 30 letters",
+      "LoginMinimumLength": "The minimum length of a login is 10 letters",
+      "PasswordRequired": "Password is required",
+      "PasswordMaximumLength": "The maximum length of a password is 50 letters",
+      "PasswordMinimumLength": "The minimum length of a password is 8 letters",
+      "RoleRequired": "Role is required",
+      "BirthdayRequired": "Birthday is required"
+    },
+    "CreateForm": {
+      "CaptionOperation": "Create",
+      "CaptionModel": "User",
+      "Login": "Login",
+      "Password": "Password",
+      "Roles": "Roles",
+      "Birthday": "Birthday",
+      "BackToList": "Back to list"
+    },
+    "EditForm": {
+      "CaptionOperation": "Edit",
+      "CaptionModel": "User",
+      "Login": "Login",
+      "Password": "Password",
+      "Birthday": "Birthday",
+      "BackToList": "Back to list"
+    },
+    "EditPasswordForm": {
+      "CaptionOperation": "Edit password",
+      "CaptionModel": "User",
+      "NewPassword": "New password",
+      "BackToList": "Back to list"
+    }
+  },
+  "Login": {
+    "CaptionOperation": "Login",
+    "Login": "Login",
+    "Password": "Password",
+    "CreateAccount": "Don't have an account? Create it!",
+    "BackToList": "Back to list",
+    "Error": {
+      "LoginRequired": "Login is required",
+      "LoginMaximumLength": "The maximum length of a login is 30 letters",
+      "LoginMinimumLength": "The minimum length of a login is 10 letters",
+      "PasswordRequired": "Password is required",
+      "PasswordMaximumLength": "The maximum length of a password is 50 letters",
+      "PasswordMinimumLength": "The minimum length of a password is 8 letters"
+    }
+  },
+  "Registration": {
+    "CaptionOperation": "Register",
+    "Login": "Login",
+    "Password": "Password",
+    "ConfirmPassword": "Confirm password",
+    "BackToList": "Back to list",
+    "Error": {
+      "LoginRequired": "Login is required",
+      "LoginMaximumLength": "The maximum length of a login is 30 letters",
+      "LoginMinimumLength": "The minimum length of a login is 10 letters",
+      "PasswordRequired": "Password is required",
+      "PasswordMaximumLength": "The maximum length of a password is 50 letters",
+      "PasswordMinimumLength": "The minimum length of a password is 8 letters",
+      "ConfirmPasswordRequired": "Confirm password is required",
+      "ConfirmPasswordEqual": "Confirm password should be equal password"
+    }
+  },
+  "ServerError": {
+    "400": "Сheck your username or password",
+    "404": "Oops... Content not found ;(",
+    "Common": "Oops... Happened an error on the server ;("
+  }
+}

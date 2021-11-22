@@ -5,12 +5,14 @@ import {GroupUpdateComponent} from "./group-update/group.update.component";
 import {BrowserModule} from "@angular/platform-browser";
 import {CommonModule} from "../shared/modules/common.module";
 import {GroupService} from "./services/group.service";
+import {GroupDeleteComponent} from "./group-delete/group.delete.component";
 
 @NgModule({
   declarations: [
     GroupsListComponent,
     GroupCreateComponent,
-    GroupUpdateComponent
+    GroupUpdateComponent,
+    GroupDeleteComponent
   ],
   imports: [
     BrowserModule,

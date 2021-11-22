@@ -1,31 +1,30 @@
-<h1>Edit</h1>
-<h4>Specialization</h4>
+<h1>{{'Specialization.EditForm.CaptionOperation' | translate}}</h1>
+<h4>{{'Specialization.EditForm.CaptionModel' | translate}}</h4>
 <hr/>
 
 <div class="row">
   <div class="col-md-4">
     <form [formGroup]="form" (ngSubmit)="submit()">
       <div class="form-group">
-        <label for="name">Name</label>
+        <label for="name">{{'Specialization.EditForm.Name' | translate}}</label>
         <input id="name" name="name" type="text" class="form-control" formControlName="name"/>
-        <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'name')">
-            Name is required.
+            {{'Specialization.Error.NameRequired' | translate}}
           </small>
           <small *ngIf="this.form.hasError('maxlength', 'name')">
-            The maximum length of a name is 50 letters.
+            {{'Specialization.Error.NameMaximumLength' | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group">
-        <button type="submit" class="btn btn-primary mt-3 mb-3">Save</button>
+        <button type="submit" class="btn btn-primary mt-3 mb-3">{{'Specialization.EditForm.CaptionOperation' | translate}}</button>
       </div>
     </form>
   </div>
 </div>
 
 <div>
-  <a href="/specialization/index">Back to list</a>
+  <a routerLink="/specialization/index" class="h6">{{'Specialization.EditForm.BackToList' | translate}}</a>
 </div>

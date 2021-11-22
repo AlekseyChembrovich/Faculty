@@ -1,0 +1,39 @@
+<h1>{{'Curator.DeleteForm.CaptionOperation' | translate}}</h1>
+<h4>{{'Curator.DeleteForm.CaptionModel' | translate}}</h4>
+<hr/>
+
+<div class="row w-50">
+  <form *ngIf="curator">
+    <div class="form-group">
+      <label class="col-form-label-lg">{{'Curator.DeleteForm.ConfirmMessage' | translate}}</label>
+      <div>
+        <button type="submit" (click)="delete()" class="btn btn-primary me-3">{{'Curator.DeleteForm.CaptionOperation' | translate}}</button>
+        <a routerLink="/curator/index" class="btn btn-primary">{{'Curator.DeleteForm.BackToList' | translate}}</a>
+      </div>
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label for="surname" class="col-form-label">{{'Curator.DeleteForm.Surname' | translate}}</label>
+      <input id="surname" value="{{curator.surname}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label for="name" class="col-form-label">{{'Curator.DeleteForm.Name' | translate}}</label>
+      <input id="name" value="{{curator.name}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label for="doublename" class="col-form-label">{{'Curator.DeleteForm.Doublename' | translate}}</label>
+      <input id="doublename" value="{{curator.doublename}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label for="phone" class="col-form-label">{{'Curator.DeleteForm.Phone' | translate}}</label>
+      <input id="phone" value="{{curator.phone}}" class="form-control" readonly="readonly" />
+    </div>
+  </form>
+</div>

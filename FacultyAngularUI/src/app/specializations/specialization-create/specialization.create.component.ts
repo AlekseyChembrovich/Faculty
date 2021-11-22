@@ -2,7 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {SpecializationService} from "../services/specialization.service";
-import {SpecializationDto} from "../models/specialization.dto";
+import {SpecializationModel} from "../models/specialization.model";
 
 @Component({
   selector: 'app-specialization-create',
@@ -24,7 +24,7 @@ export class SpecializationCreateComponent implements OnInit {
 
   submit() : void {
     if (this.form.invalid) return;
-    let specialization: SpecializationDto = new SpecializationDto(this.form.value.name, 0);
+    let specialization: SpecializationModel = new SpecializationModel(this.form.value.name, 0);
     this.specializationService.createSpecialization(specialization).subscribe(response => {
       console.log(response);
       this.router.navigateByUrl('/specialization/index');

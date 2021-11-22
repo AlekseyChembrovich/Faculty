@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {CuratorDto} from "../models/curator.dto";
+import {CuratorModel} from "../models/curator.model";
 
 @Injectable()
 export class CuratorsService {
@@ -10,14 +10,14 @@ export class CuratorsService {
   }
 
   public getCurators() {
-    return this.httpClient.get<CuratorDto[]>(this.baseUrl);
+    return this.httpClient.get<CuratorModel[]>(this.baseUrl);
   }
 
   public getCurator(id: number) {
-    return this.httpClient.get<CuratorDto>(this.baseUrl + `/${id}`);
+    return this.httpClient.get<CuratorModel>(this.baseUrl + `/${id}`);
   }
 
-  public createCurator(curator: CuratorDto) {
+  public createCurator(curator: CuratorModel) {
     return this.httpClient.post(this.baseUrl, curator);
   }
 
@@ -25,7 +25,7 @@ export class CuratorsService {
     return this.httpClient.delete(this.baseUrl + `/${id}`);
   }
 
-  public updateCurator(curator: CuratorDto) {
+  public updateCurator(curator: CuratorModel) {
     return this.httpClient.put(this.baseUrl, curator);
   }
 }

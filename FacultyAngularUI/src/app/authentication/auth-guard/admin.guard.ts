@@ -7,13 +7,17 @@ import {
   UrlTree
 } from "@angular/router";
 import {Observable} from "rxjs";
-import {AuthService} from "../authentication/services/auth.service";
+import {AuthService} from "../services/auth.service";
 import {Injectable} from "@angular/core";
+import {AuthenticatedGuard} from "./authenticated.guard";
 
 @Injectable()
-export class AuthGuard implements CanActivate, CanActivateChild {
+export class AdminGuard implements CanActivate, CanActivateChild {
   constructor(private authService: AuthService,
-              private router: Router) {
+              private router: Router,
+              private authGuard: AuthenticatedGuard)
+  {
+    console.log("constructor");
   }
 
   canActivate(
@@ -23,12 +27,19 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     Promise<boolean | UrlTree> |
     boolean |
     UrlTree
-
   {
-    if (!this.authService.isAuth) {
+    if(!this.authGuard.canActivate(route, state)) {
       this.router.navigate(['/login']);
+      console.log("Guard False 1");
       return false;
     }
+
+    if (!this.authService.isAdmin) {
+      this.router.navigate(['/login']);
+      console.log("Guard False 2");
+      return false;
+    }
+    console.log("Guard True");
     return true;
   }
 
@@ -41,6 +52,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     UrlTree
 
   {
+    console.log("canActivateChild");
     return this.canActivate(childRoute, state);
   }
 }

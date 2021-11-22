@@ -1,8 +1,17 @@
 import {Component, OnInit} from "@angular/core";
-import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from "@angular/forms";
+import {
+  AbstractControl,
+  FormArray,
+  FormControl,
+  FormGroup,
+  Validators
+} from "@angular/forms";
 import {Router} from "@angular/router";
-import {UserAddDto} from "../models/user.add.dto";
+import {UserAddModel} from "../models/user.add.model";
 import {UserService} from "../services/user.service";
+import {HasRoleValidator} from "../../shared/validations/has.role.validation";
+import {HttpErrorResponse} from "@angular/common/http";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-user-create',
@@ -12,6 +21,7 @@ export class UserCreateComponent implements OnInit {
   public form: FormGroup = new FormGroup({ });
   public nowDate: Date = new Date();
   public roles: Array<string> = [];
+  public error$: Subject<string> = new Subject<string>();
 
   constructor(private userService: UserService,
               private router: Router) {
@@ -30,19 +40,29 @@ export class UserCreateComponent implements OnInit {
       roles: new FormArray([]),
       birthday: new FormControl('',
         [ Validators.required ])
-    });
+    }, { validators: HasRoleValidator });
   }
 
   submit() : void {
     let formArray: FormArray =  this.form.get('roles') as FormArray;
     let namesRole: Array<string> = [];
     formArray.controls.forEach(x => namesRole.push(x.value));
-    let user: UserAddDto = new UserAddDto(this.form.value.login,
+    let user: UserAddModel = new UserAddModel(this.form.value.login,
       namesRole, this.form.value.birthday, this.form.value.password);
     this.userService.createUser(user).subscribe(response => {
-      console.log("Response", response);
-      this.router.navigateByUrl('/user/index');
-    });
+        console.log("Response", response);
+      },
+      error => {
+        console.log("Error", error)
+        if (error instanceof HttpErrorResponse)  {
+          if (error.status == 400){
+            this.error$.next('ServerError.400');
+          }
+        }
+      },
+      () => {
+        this.router.navigateByUrl('/user/index');
+      });
   }
 
   onCheckChange(event: any) {

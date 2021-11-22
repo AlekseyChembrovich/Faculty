@@ -2,9 +2,9 @@ import {Component, OnInit} from "@angular/core";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {GroupService} from "../services/group.service";
-import {GroupDto} from "../models/group.dto";
+import {GroupModel} from "../models/group.model";
 import {SpecializationService} from "../../specializations/services/specialization.service";
-import {SpecializationDto} from "../../specializations/models/specialization.dto";
+import {SpecializationModel} from "../../specializations/models/specialization.model";
 
 @Component({
   selector: 'app-curator-update',
@@ -12,8 +12,8 @@ import {SpecializationDto} from "../../specializations/models/specialization.dto
 })
 export class GroupUpdateComponent implements OnInit {
   public form: FormGroup = new FormGroup({ });
-  public specializations: SpecializationDto[] = [];
-  public group: GroupDto | undefined;
+  public specializations: SpecializationModel[] = [];
+  public group: GroupModel | undefined;
 
   constructor(private groupService: GroupService,
               private specializationService: SpecializationService,
@@ -23,7 +23,7 @@ export class GroupUpdateComponent implements OnInit {
 
   ngOnInit() : void {
     this.specializationService.getSpecializations().subscribe(response => {
-      response.forEach(data => this.specializations.push(new SpecializationDto(data.name, data.id)))
+      response.forEach(data => this.specializations.push(new SpecializationModel(data.name, data.id)))
       console.log("Specializations", this.specializations);
     })
 
@@ -50,7 +50,7 @@ export class GroupUpdateComponent implements OnInit {
   }
 
   submit(): void {
-    let group: GroupDto = new GroupDto(this.form.value.name, this.form.value.specializationId, this.group?.id);
+    let group: GroupModel = new GroupModel(this.form.value.name, this.form.value.specializationId, this.group?.id);
     this.groupService.updateGroup(group).subscribe(response => {
       console.log(response);
       this.router.navigateByUrl('/curator/index');

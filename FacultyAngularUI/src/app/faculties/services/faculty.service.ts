@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {FacultyDisplayDto} from "../models/faculty.display.dto";
-import {FacultyDto} from "../models/faculty.dto";
+import {FacultyDisplayModel} from "../models/faculty.display.model";
+import {FacultyModel} from "../models/faculty.model";
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +13,14 @@ export class FacultyService {
   }
 
   public getFaculties() {
-    return this.httpClient.get<FacultyDisplayDto[]>(this.baseUrl);
+    return this.httpClient.get<FacultyDisplayModel[]>(this.baseUrl);
   }
 
   public getFaculty(id: number) {
-    return this.httpClient.get<FacultyDto>(this.baseUrl + `/${id}`);
+    return this.httpClient.get<FacultyModel>(this.baseUrl + `/${id}`);
   }
 
-  public createFaculty(faculty: FacultyDto) {
+  public createFaculty(faculty: FacultyModel) {
     return this.httpClient.post(this.baseUrl, faculty);
   }
 
@@ -28,7 +28,7 @@ export class FacultyService {
     return this.httpClient.delete(this.baseUrl + `/${id}`);
   }
 
-  public updateFaculty(faculty: FacultyDto) {
+  public updateFaculty(faculty: FacultyModel) {
     return this.httpClient.put(this.baseUrl, faculty);
   }
 }

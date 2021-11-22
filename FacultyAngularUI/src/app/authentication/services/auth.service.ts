@@ -1,42 +1,41 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {AuthUserDto} from "../models/auth.user.dto";
-import {AuthOptions} from "../models/auth.options";
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {AuthUserModel} from "../models/auth.user.model";
 import {JwtHelperService} from "@auth0/angular-jwt";
+import {tap} from "rxjs";
 
 @Injectable()
 export class AuthService {
-  private readonly baseUrl: string = 'https://localhost:44342/api/auth';
+  private readonly baseApiUrl: string = 'https://localhost:44342/api/auth';
   private readonly keyToken = "access_token";
   private readonly nameAdminRole = "administrator";
-  private readonly nameClaimRole = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+  private readonly nameClaimRole = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
   private readonly nameClaimLogin = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
   private jwtHelper: JwtHelperService = new JwtHelperService();
-  public authOptions: AuthOptions | undefined;
+  public jsonToken: { jwtToken: string } | undefined;
 
   constructor(private httpClient: HttpClient) {
   }
 
-  public login(loginUser: AuthUserDto): void {
-    this.httpClient.post<AuthOptions>(this.baseUrl + '/login', loginUser)
-      .subscribe(response => {
-        this.authOptions = response;
-        console.log("Response", response);
-        let token =  this.authOptions.jwtToken;
-        console.log(this.jwtHelper.decodeToken(token!));
+  public login(loginUser: AuthUserModel) {
+    return  this.httpClient.post<{jwtToken: string}>(this.baseApiUrl + '/login', loginUser)
+      .pipe(
+        tap(response => {
+        this.jsonToken = response;
+        let token =  this.jsonToken.jwtToken;
         localStorage.setItem(this.keyToken, token);
-      });
+      }));
   }
 
   public logout(): void {
     localStorage.clear();
   }
 
-  public register(loginUser: AuthUserDto): void {
-    this.httpClient.post(this.baseUrl + '/register', loginUser).subscribe(response => console.log(response) );
+  public register(loginUser: AuthUserModel) {
+    return this.httpClient.post(this.baseApiUrl + '/register', loginUser);
   }
 
-  public get isAuth(): boolean {
+  public get isAuthenticated(): boolean {
     let token = localStorage.getItem(this.keyToken);
     if (token === null) return false;
     let jwtDate = this.jwtHelper.decodeToken(token);

@@ -1,0 +1,33 @@
+<h1>{{'Student.DeleteForm.CaptionOperation' | translate}}</h1>
+<h4>{{'Student.DeleteForm.CaptionModel' | translate}}</h4>
+<hr/>
+
+<div class="row w-50">
+  <form *ngIf="student">
+    <div class="form-group">
+      <label class="col-form-label-lg">{{'Student.DeleteForm.ConfirmMessage' | translate}}</label>
+      <div>
+        <button type="submit" (click)="delete()" class="btn btn-primary me-3">{{'Student.DeleteForm.CaptionOperation' | translate}}</button>
+        <a routerLink="/student/index" class="btn btn-primary">{{'Student.DeleteForm.BackToList' | translate}}</a>
+      </div>
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label for="surname" class="col-form-label">{{'Student.DeleteForm.Surname' | translate}}</label>
+      <input id="surname" value="{{student.surname}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label for="name" class="col-form-label">{{'Student.DeleteForm.Name' | translate}}</label>
+      <input id="name" value="{{student.name}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label for="doublename" class="col-form-label">{{'Student.DeleteForm.Doublename' | translate}}</label>
+      <input id="doublename" value="{{student.doublename}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+  </form>
+</div>

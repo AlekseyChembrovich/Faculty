@@ -2,7 +2,9 @@ import {Component, OnInit} from "@angular/core";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../services/auth.service";
 import {Router} from "@angular/router";
-import {AuthUserDto} from "../models/auth.user.dto";
+import {AuthUserModel} from "../models/auth.user.model";
+import {HttpErrorResponse} from "@angular/common/http";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-register',
@@ -10,6 +12,7 @@ import {AuthUserDto} from "../models/auth.user.dto";
 })
 export class RegistrationComponent implements OnInit {
   public form: FormGroup = new FormGroup({ });
+  public error$: Subject<string> = new Subject<string>();
 
   constructor(private authService: AuthService,
               private router: Router,
@@ -30,9 +33,21 @@ export class RegistrationComponent implements OnInit {
   }
 
   submit() : void {
-    let authUser: AuthUserDto = new AuthUserDto(this.form.value.login, this.form.value.password);
-    this.authService.register(authUser);
-    this.router.navigate(['/login'])
+    let authUser: AuthUserModel = new AuthUserModel(this.form.value.login, this.form.value.password);
+    this.authService.register(authUser).subscribe(response => {
+        console.log("Response", response);
+      },
+      error => {
+        console.log("Error", error)
+        if (error instanceof HttpErrorResponse)  {
+          if (error.status == 400){
+            this.error$.next('ServerError.400');
+          }
+        }
+      },
+      () => {
+        this.router.navigate(['/login']);
+      });
   }
 
   private MustMatch(targetControlName: string, matchingControlName: string) {

@@ -1,9 +1,11 @@
 import {Component, OnInit} from "@angular/core";
-import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
-import {UserAddDto} from "../models/user.add.dto";
 import {UserService} from "../services/user.service";
-import {UserDto} from "../models/user.dto";
+import {UserModel} from "../models/user.model";
+import {HasRoleValidator} from "../../shared/validations/has.role.validation";
+import {Subject} from "rxjs";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-user-update',
@@ -12,11 +14,13 @@ import {UserDto} from "../models/user.dto";
 export class UserUpdateComponent implements OnInit {
   public form: FormGroup = new FormGroup({ });
   public roles: Array<string> = [];
-  public user: UserDto | undefined;
+  public user: UserModel | undefined;
+  public error$: Subject<string> = new Subject<string>();
 
   constructor(private userService: UserService,
               private activatedRoute: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private formBuilder: FormBuilder) {
   }
 
   ngOnInit() : void {
@@ -35,7 +39,10 @@ export class UserUpdateComponent implements OnInit {
       roles: new FormArray([]),
       birthday: new FormControl('',
         [ Validators.required ])
-    });
+    },
+      {
+        validators: HasRoleValidator
+      });
 
     const formArray: FormArray = this.form.get('roles') as FormArray;
     this.userService.getUser(id).subscribe(response => {
@@ -52,13 +59,22 @@ export class UserUpdateComponent implements OnInit {
     let formArray: FormArray =  this.form.get('roles') as FormArray;
     let namesRole: Array<string> = [];
     formArray.controls.forEach(x => namesRole.push(x.value));
-    let user: UserDto = new UserDto(this.form.value.login,
+    let user: UserModel = new UserModel(this.form.value.login,
       namesRole, this.form.value.birthday, this.user?.id);
-    console.log(user);
     this.userService.updateUser(user).subscribe(response => {
-      console.log("Response", response);
-      this.router.navigateByUrl('/user/index');
-    });
+        console.log("Response", response);
+      },
+      error => {
+        console.log("Error", error)
+        if (error instanceof HttpErrorResponse)  {
+          if (error.status == 400){
+            this.error$.next('ServerError.400');
+          }
+        }
+      },
+      () => {
+        this.router.navigateByUrl('/user/index');
+      });
   }
 
   onCheckChange(event: any) {
@@ -77,5 +93,22 @@ export class UserUpdateComponent implements OnInit {
       });
     }
     console.log(formArray);
+  }
+
+  private MustHasValue(targetControlName: string) {
+    return (formGroup : FormGroup) => {
+      const formArray: FormArray = this.form.get('roles') as FormArray;
+      console.log("formArray", formArray);
+      if (formArray?.errors && !formArray.errors['MustHasValue']) {
+        return;
+      }
+
+      if (formArray.controls.length <= 0) {
+        formArray.setErrors({ MustHasValue:true });
+      }
+      else {
+        formArray.setErrors(null);
+      }
+    };
   }
 }

@@ -1,29 +1,28 @@
-<h1>Create</h1>
-<h4>User</h4>
+<h1>{{'User.EditForm.CaptionOperation' | translate}}</h1>
+<h4>{{'User.EditForm.CaptionModel' | translate}}</h4>
 <hr/>
 
 <div class="row">
   <div class="col-md-4">
     <form [formGroup]="this.form" (ngSubmit)="submit()">
       <div class="form-group">
-        <label for="login">Login</label>
+        <label for="login">{{'User.EditForm.Login' | translate}}</label>
         <input id="login" type="text" class="form-control" formControlName="login"/>
-        <div *ngIf="form.get('login')?.invalid && form.get('login')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('login')?.invalid && form.get('login')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'login')">
-            Login is required.
+            {{'User.Error.LoginRequired' | translate}}
           </small>
           <small *ngIf="this.form.hasError('maxlength', 'login')">
-            The maximum length of a login is 30 letters.
+            {{'User.Error.LoginMaximumLength' | translate}}
           </small>
           <small *ngIf="this.form.hasError('minlength', 'login')">
-            The minimum length of a login is 10 letters.
+            {{'User.Error.LoginMinimumLength' | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group" *ngIf="roles && user">
-        <label for="roles">Roles</label>
+        <label for="roles">{{'User.EditForm.Roles' | translate}}</label>
         <ul id="roles" class="list-group">
           <li class="list-group-item" *ngFor="let role of roles; let i = index">
             <div class="form-check">
@@ -32,26 +31,38 @@
             </div>
           </li>
         </ul>
+        <div *ngIf="form.get('roles')?.invalid" class="text-danger" >
+          <small *ngIf="this.form.hasError('HasRoleValidator', 'roles')">
+            {{'User.Error.RoleRequired' | translate}}
+          </small>
+        </div>
       </div>
 
       <div class="form-group" *ngIf="user">
-        <label for="birthday">Birthday</label>
+        <label for="birthday">{{'User.EditForm.Birthday' | translate}}</label>
         <input id="birthday" type="date" [ngModel]="user.birthday | date:'yyyy-MM-dd'" class="form-control" formControlName="birthday"/>
-        <div *ngIf="form.get('birthday')?.invalid && form.get('birthday')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('birthday')?.invalid && form.get('birthday')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'birthday')">
-            Birthday is required.
+            {{'User.Error.BirthdayRequired' | translate}}
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div *ngIf="error$ | async as message" class="text-danger" >
+          <small>
+            {{message | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group mt-3 mb-3">
-        <button type="submit" class="btn btn-primary" [disabled]="this.form.invalid">Create</button>
+        <button type="submit" class="btn btn-primary" [disabled]="this.form.invalid">{{'User.EditForm.CaptionOperation' | translate}}</button>
       </div>
     </form>
   </div>
 </div>
 
 <div>
-  <a routerLink="/user/index" class="h6">Back to list</a>
+  <a routerLink="/user/index" class="h6">{{'User.EditForm.BackToList' | translate}}</a>
 </div>

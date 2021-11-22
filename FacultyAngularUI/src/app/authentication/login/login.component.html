@@ -1,54 +1,60 @@
-<h1>Login</h1>
+<h1>{{'Login.CaptionOperation' | translate}}</h1>
 <hr/>
 
 <div class="row">
   <div class="col-md-4">
     <form [formGroup]="form" (ngSubmit)="submit()">
       <div class="form-group">
-        <label for="login" class="col-form-label">Login</label>
+        <label for="login" class="col-form-label">{{'Login.Login' | translate}}</label>
         <input id="login" name="login" class="form-control" formControlName="login"/>
-        <div *ngIf="form.get('login')?.invalid && form.get('login')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('login')?.invalid && form.get('login')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'login')">
-            Length is required.
+            {{'Login.Error.LoginRequired' | translate}}
           </small>
           <small *ngIf="this.form.hasError('maxlength', 'login')">
-            The maximum length of a login is 30 letters.
+            {{'Login.Error.LoginMaximumLength' | translate}}
           </small>
           <small *ngIf="this.form.hasError('minlength', 'login')">
-            The minimum length of a login is 10 letters.
+            {{'Login.Error.LoginMinimumLength' | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="password" class="col-form-label">Password</label>
+        <label for="password" class="col-form-label">{{'Login.Password' | translate}}</label>
         <input id="password" name="password" class="form-control" formControlName="password"/>
-        <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
-             class="text-danger" >
+        <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-danger" >
           <small *ngIf="this.form.hasError('required', 'password')">
-            Password is required.
+            {{'Login.Error.PasswordRequired' | translate}}
           </small>
           <small *ngIf="this.form.hasError('maxlength', 'password')">
-            The maximum length of a password is 50 letters.
+            {{'Login.Error.PasswordMaximumLength' | translate}}
           </small>
           <small *ngIf="this.form.hasError('minlength', 'password')">
-            The minimum length of a password is 8 letters.
+            {{'Login.Error.PasswordMinimumLength' | translate}}
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div *ngIf="error$ | async as message" class="text-danger" >
+          <small>
+            {{message | translate}}
           </small>
         </div>
       </div>
 
       <div class="form-group mt-2 mb-2">
-        <button type="submit" class="btn btn-primary">Login</button>
+        <button type="submit" class="btn btn-primary">{{'Login.CaptionOperation' | translate}}</button>
       </div>
     </form>
   </div>
 </div>
 
 <div class="mb-4">
-  <a routerLink="/register">Don't have an account? Create it!</a>
+  <a routerLink="/register" class="h6">{{'Login.CreateAccount' | translate}}</a>
 </div>
 
 <div>
-  <a routerLink="/faculty/index">Back to list</a>
+  <a routerLink="/faculty/index" class="h6">{{'Login.BackToList' | translate}}</a>
 </div>

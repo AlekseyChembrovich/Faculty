@@ -1,14 +1,16 @@
+<h1>{{'User.List' | translate}}</h1>
+
 <div class="container mb-3">
-  <a href="/user/create" class="btn btn-primary">Create</a>
+  <a routerLink="/user/create" class="btn btn-primary">{{'User.Create' | translate}}</a>
 </div>
 
 <table class="table">
   <thead>
   <tr>
-    <th scope="col">Number</th>
-    <th scope="col">Login</th>
-    <th scope="col">Roles</th>
-    <th scope="col">Birthday</th>
+    <th scope="col">{{'User.ColNumber' | translate}}</th>
+    <th scope="col">{{'User.ColLogin' | translate}}</th>
+    <th scope="col">{{'User.ColRoles' | translate}}</th>
+    <th scope="col">{{'User.ColBirthday' | translate}}</th>
     <th scope="col"></th>
   </tr>
   </thead>
@@ -20,9 +22,9 @@
     <td>{{user.roles}}</td>
     <td>{{user.birthday | date}}</td>
     <td>
-      <a href="/user/edit-password/{{user.id}}" class="btn btn-warning text-white">Edit password</a>
-      <button class="btn btn-danger ms-3 me-3" (click)="delete(user.id!)">Delete</button>
-      <a href="/user/edit/{{user.id}}" class="btn btn-success">Edit</a>
+      <a routerLink="/user/edit-password/{{user.id}}" class="btn btn-warning text-white">{{'User.EditPassword' | translate}}</a>
+      <button class="btn btn-danger ms-3 me-3" (click)="delete(user.id!)">{{'User.Delete' | translate}}</button>
+      <a routerLink="/user/edit/{{user.id}}" class="btn btn-success">{{'User.Edit' | translate}}</a>
     </td>
   </tr>
   </tbody>

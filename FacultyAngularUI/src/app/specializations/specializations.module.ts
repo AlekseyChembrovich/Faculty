@@ -5,12 +5,14 @@ import {BrowserModule} from "@angular/platform-browser";
 import {CommonModule} from "../shared/modules/common.module";
 import {SpecializationCreateComponent} from "./specialization-create/specialization.create.component";
 import {SpecializationUpdateComponent} from "./specialization-update/specialization.update.component";
+import {SpecializationDeleteComponent} from "./specialization-delete/specialization.delete.component";
 
 @NgModule({
   declarations: [
     SpecializationsListComponent,
     SpecializationCreateComponent,
-    SpecializationUpdateComponent
+    SpecializationUpdateComponent,
+    SpecializationDeleteComponent
   ],
   imports: [
     BrowserModule,

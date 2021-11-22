@@ -1,14 +1,14 @@
-<h1>List specializations</h1>
+<h1>{{'Specialization.List' | translate}}</h1>
 
 <div class="container mb-2">
-  <a *ngIf="this.authService.isAdmin" routerLink="/specialization/create" class="btn btn-primary">Create</a>
+  <a *ngIf="this.authService.isAdmin" routerLink="/specialization/create" class="btn btn-primary">{{'Specialization.Create' | translate}}</a>
 </div>
 
 <table class="table">
   <thead>
   <tr>
-    <th scope="col">Number</th>
-    <th scope="col">Name</th>
+    <th scope="col">{{'Specialization.ColNumber' | translate}}</th>
+    <th scope="col">{{'Specialization.ColName' | translate}}</th>
     <th scope="col"></th>
   </tr>
   </thead>
@@ -18,8 +18,8 @@
     <td>{{i + 1}}</td>
     <td>{{specialization.name}}</td>
     <td>
-      <button class="btn btn-primary me-2" (click)="delete(specialization.id!)">Delete</button>
-      <a href="/specialization/edit/{{specialization.id}}" class="btn btn-primary">Edit</a>
+      <a routerLink="/specialization/delete/{{specialization.id}}" class="btn btn-primary me-2">{{'Specialization.Delete' | translate}}</a>
+      <a routerLink="/specialization/edit/{{specialization.id}}" class="btn btn-primary">{{'Specialization.Edit' | translate}}</a>
     </td>
   </tr>
   </tbody>

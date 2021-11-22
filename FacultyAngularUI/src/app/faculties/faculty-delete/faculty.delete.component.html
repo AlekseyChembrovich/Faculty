@@ -1,0 +1,45 @@
+<h1>{{'Faculty.DeleteForm.CaptionOperation' | translate}}</h1>
+<h4>{{'Faculty.DeleteForm.CaptionModel' | translate}}</h4>
+<hr/>
+
+<div class="row w-50">
+  <form *ngIf="faculty">
+    <div class="form-group">
+      <label class="col-form-label-lg">{{'Faculty.DeleteForm.ConfirmMessage' | translate}}</label>
+      <div>
+        <button type="submit" (click)="delete()" class="btn btn-primary me-3">{{'Faculty.DeleteForm.CaptionOperation' | translate}}</button>
+        <a routerLink="/faculty/index" class="btn btn-primary">{{'Faculty.DeleteForm.BackToList' | translate}}</a>
+      </div>
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label for="startDateEducation" class="col-form-label">{{'Faculty.DeleteForm.StartDateEducation' | translate}}</label>
+      <input id="startDateEducation" type="date" name="startDateEducation" [ngModel]="faculty.startDateEducation | date:'yyyy-MM-dd'" class="form-control" readonly="readonly"/>
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label for="countYearEducation" class="col-form-label">{{'Faculty.DeleteForm.CountYearEducation' | translate}}</label>
+      <input id="countYearEducation" type="number" value="{{faculty.countYearEducation}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+    <hr>
+
+    <div *ngIf="group" class="form-group">
+      <label for="group" class="col-form-label">{{'Faculty.DeleteForm.Group' | translate}}</label>
+      <input id="group" value="{{group.name}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+    <hr>
+
+    <div *ngIf="student" class="form-group">
+      <label for="student" class="col-form-label">{{'Faculty.DeleteForm.Student' | translate}}</label>
+      <input id="student" value="{{student.surname}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+    <hr>
+
+    <div *ngIf="curator" class="form-group">
+      <label for="curator" class="col-form-label">{{'Faculty.DeleteForm.Curator' | translate}}</label>
+      <input id="curator" value="{{curator.name}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+  </form>
+</div>

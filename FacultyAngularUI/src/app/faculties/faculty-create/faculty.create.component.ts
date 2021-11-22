@@ -5,10 +5,10 @@ import {FacultyService} from "../services/faculty.service";
 import {GroupService} from "../../groups/services/group.service";
 import {StudentService} from "../../students/services/student.service";
 import {CuratorsService} from "../../curators/services/curator.service";
-import {StudentDto} from "../../students/models/student.dto";
-import {CuratorDto} from "../../curators/models/curator.dto";
-import {GroupDisplayDto} from "../../groups/models/group.display.dto";
-import {FacultyDto} from "../models/faculty.dto";
+import {StudentModel} from "../../students/models/student.model";
+import {CuratorModel} from "../../curators/models/curator.model";
+import {GroupDisplayModel} from "../../groups/models/group.display.model";
+import {FacultyModel} from "../models/faculty.model";
 
 @Component({
   selector: 'app-group-create',
@@ -16,9 +16,9 @@ import {FacultyDto} from "../models/faculty.dto";
 })
 export class FacultyCreateComponent implements OnInit {
   public form: FormGroup = new FormGroup({ });
-  public groups: GroupDisplayDto[] = [];
-  public students: StudentDto[] = [];
-  public curators: CuratorDto[] = [];
+  public groups: GroupDisplayModel[] = [];
+  public students: StudentModel[] = [];
+  public curators: CuratorModel[] = [];
   public nowDate: Date = new Date();
 
   constructor(private facultyService: FacultyService,
@@ -28,17 +28,17 @@ export class FacultyCreateComponent implements OnInit {
               private router: Router)
   {
     this.groupService.getGroups().subscribe(response => {
-      response.forEach(data => this.groups.push(new GroupDisplayDto(data.name, data.specializationName, data.id)))
+      response.forEach(data => this.groups.push(new GroupDisplayModel(data.name, data.specializationName, data.id)))
       console.log("Groups", this.groups);
     });
 
     this.studentService.getStudents().subscribe(response => {
-      response.forEach(data => this.students.push(new StudentDto(data.surname, data.name, data.doublename, data.id)))
+      response.forEach(data => this.students.push(new StudentModel(data.surname, data.name, data.doublename, data.id)))
       console.log("Students", this.students);
     });
 
     this.curatorsService.getCurators().subscribe(response => {
-      response.forEach(data => this.curators.push(new CuratorDto(data.surname, data.name, data.doublename, data.phone, data.id)))
+      response.forEach(data => this.curators.push(new CuratorModel(data.surname, data.name, data.doublename, data.phone, data.id)))
       console.log("Curators", this.curators);
     });
   }
@@ -60,7 +60,7 @@ export class FacultyCreateComponent implements OnInit {
 
   submit() : void {
     if (this.form.invalid) return;
-    let faculty: FacultyDto = new FacultyDto(this.form.value.startDateEducation, this.form.value.countYearEducation,
+    let faculty: FacultyModel = new FacultyModel(this.form.value.startDateEducation, this.form.value.countYearEducation,
       this.form.value.studentId, this.form.value.groupId, this.form.value.curatorId, 0);
     this.facultyService.createFaculty(faculty).subscribe(response => {
       console.log(response);

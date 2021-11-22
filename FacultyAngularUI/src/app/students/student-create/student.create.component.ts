@@ -2,7 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {StudentService} from "../services/student.service";
-import {StudentDto} from "../models/student.dto";
+import {StudentModel} from "../models/student.model";
 
 @Component({
   selector: 'app-student-create',
@@ -28,7 +28,7 @@ export class StudentCreateComponent implements OnInit {
 
   submit() : void {
     if (this.form.invalid) return;
-    let student: StudentDto = new StudentDto(this.form.value.surname,
+    let student: StudentModel = new StudentModel(this.form.value.surname,
       this.form.value.name, this.form.value.doublename, 0);
     this.studentService.createStudent(student).subscribe(response => {
       console.log(response);

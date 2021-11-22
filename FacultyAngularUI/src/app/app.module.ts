@@ -2,7 +2,7 @@ import {NgModule, Provider} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AppComponent} from './app.component';
-import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import {AuthInterceptor} from "./authentication/services/auth.interceptor";
 
 import {AppRoutingModule} from "./app.routing.module";
@@ -17,6 +17,8 @@ import {FooterComponent} from "./shared/components/footer/footer.component";
 import {HeaderComponent} from "./shared/components/header/header.component";
 import {UsersModule} from "./users/users.module";
 import {ErrorInterceptor} from "./shared/services/error.interceptor";
+import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
+import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 
 const AUTH_INTERCEPTOR: Provider = {
   provide: HTTP_INTERCEPTORS,
@@ -47,7 +49,16 @@ const ERROR_INTERCEPTOR: Provider = {
     SpecializationsModule,
     StudentsModule,
     AuthenticationModule,
-    UsersModule
+    UsersModule,
+    HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      },
+      defaultLanguage: 'en'
+    })
   ],
   providers: [
     AUTH_INTERCEPTOR,
@@ -56,4 +67,8 @@ const ERROR_INTERCEPTOR: Provider = {
   bootstrap: [ AppComponent ]
 })
 export class AppModule {
+}
+
+export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
+  return new TranslateHttpLoader(http);
 }

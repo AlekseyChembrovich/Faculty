@@ -5,12 +5,14 @@ import {BrowserModule} from "@angular/platform-browser";
 import {StudentCreateComponent} from "./student-create/student.create.component";
 import {StudentUpdateComponent} from "./student-update/student.update.component";
 import {CommonModule} from "../shared/modules/common.module";
+import {StudentDeleteComponent} from "./student-delete/student.delete.component";
 
 @NgModule({
   declarations: [
     StudentsListComponent,
     StudentCreateComponent,
-    StudentUpdateComponent
+    StudentUpdateComponent,
+    StudentDeleteComponent
   ],
   imports: [
     BrowserModule,

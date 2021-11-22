@@ -1,16 +1,16 @@
-<h1>List students</h1>
+<h1>{{'Student.List' | translate}}</h1>
 
 <div class="container mb-2">
-  <a *ngIf="this.authService.isAdmin" routerLink="/student/create" class="btn btn-primary">Create</a>
+  <a *ngIf="this.authService.isAdmin" routerLink="/student/create" class="btn btn-primary">{{'Student.Create' | translate}}</a>
 </div>
 
 <table class="table">
   <thead>
   <tr>
-    <th scope="col">Number</th>
-    <th scope="col">Surname</th>
-    <th scope="col">Name</th>
-    <th scope="col">Doublename</th>
+    <th scope="col">{{'Student.ColNumber' | translate}}</th>
+    <th scope="col">{{'Student.ColSurname' | translate}}</th>
+    <th scope="col">{{'Student.ColName' | translate}}</th>
+    <th scope="col">{{'Student.ColDoublename' | translate}}</th>
     <th scope="col"></th>
   </tr>
   </thead>
@@ -22,8 +22,8 @@
     <td>{{student.name}}</td>
     <td>{{student.doublename}}</td>
     <td>
-      <button class="btn btn-primary me-2" (click)="delete(student.id!)">Delete</button>
-      <a href="/student/edit/{{student.id}}" class="btn btn-primary">Edit</a>
+      <a routerLink="/student/delete/{{student.id}}" class="btn btn-primary me-2">{{'Student.Delete' | translate}}</a>
+      <a routerLink="/student/edit/{{student.id}}" class="btn btn-primary">{{'Student.Edit' | translate}}</a>
     </td>
   </tr>
   </tbody>

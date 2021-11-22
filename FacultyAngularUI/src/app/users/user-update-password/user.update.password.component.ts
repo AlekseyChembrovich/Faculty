@@ -2,7 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {UserService} from "../services/user.service";
-import {UserEditPasswordDto} from "../models/user.edit.password.dto";
+import {UserEditPasswordModel} from "../models/user.edit.password.model";
 
 @Component({
   selector: 'app-user-update-password',
@@ -30,7 +30,7 @@ export class UserUpdatePasswordComponent implements OnInit {
   }
 
   submit() : void {
-    let user: UserEditPasswordDto = new UserEditPasswordDto(this.form.value.newPassword, this.idUser);
+    let user: UserEditPasswordModel = new UserEditPasswordModel(this.form.value.newPassword, this.idUser);
     this.userService.updatePasswordUser(user).subscribe(response => {
       console.log("Response", response);
       this.router.navigateByUrl('/user/index');

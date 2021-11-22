@@ -1,0 +1,22 @@
+<h1>{{'Specialization.DeleteForm.CaptionOperation' | translate}}</h1>
+<h4>{{'Specialization.DeleteForm.CaptionModel' | translate}}</h4>
+<hr/>
+
+<div class="row w-50">
+  <form *ngIf="specialization">
+    <div class="form-group">
+      <label class="col-form-label-lg">{{'Specialization.DeleteForm.ConfirmMessage' | translate}}</label>
+      <div>
+        <button type="submit" (click)="delete()" class="btn btn-primary me-3">{{'Specialization.DeleteForm.CaptionOperation' | translate}}</button>
+        <a routerLink="/specialization/index" class="btn btn-primary">{{'Specialization.DeleteForm.BackToList' | translate}}</a>
+      </div>
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label for="name" class="col-form-label">{{'Specialization.DeleteForm.Name' | translate}}</label>
+      <input id="name" value="{{specialization.name}}" type="text" class="form-control" readonly="readonly" />
+    </div>
+    <hr>
+  </form>
+</div>

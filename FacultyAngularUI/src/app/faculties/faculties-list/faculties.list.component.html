@@ -1,18 +1,18 @@
-<h1>List faculties</h1>
+<h1>{{'Faculty.List' | translate}}</h1>
 
 <div class="container mb-2">
-  <a *ngIf="this.authService.isAdmin" routerLink="/faculty/create" class="btn btn-primary">Create</a>
+  <a *ngIf="this.authService.isAdmin" routerLink="/faculty/create" class="btn btn-primary">{{'Faculty.Create' | translate}}</a>
 </div>
 
 <table class="table">
   <thead>
   <tr>
-    <th scope="col">Number</th>
-    <th scope="col">Start date education</th>
-    <th scope="col">Count year education</th>
-    <th scope="col">Student</th>
-    <th scope="col">Group</th>
-    <th scope="col">Student</th>
+    <th scope="col">{{'Faculty.ColNumber' | translate}}</th>
+    <th scope="col">{{'Faculty.ColStartDateEducation' | translate}}</th>
+    <th scope="col">{{'Faculty.ColCountYearEducation' | translate}}</th>
+    <th scope="col">{{'Faculty.ColStudent' | translate}}</th>
+    <th scope="col">{{'Faculty.ColGroup' | translate}}</th>
+    <th scope="col">{{'Faculty.ColCurator' | translate}}</th>
     <th scope="col"></th>
   </tr>
   </thead>
@@ -26,8 +26,8 @@
     <td>{{faculty.groupName}}</td>
     <td>{{faculty.curatorSurname}}</td>
     <td>
-      <a class="btn btn-primary me-2" (click)="delete(faculty.id!)">Delete</a>
-      <a routerLink="/faculty/edit/{{faculty.id}}" class="btn btn-primary">Edit</a>
+      <a routerLink="/faculty/delete/{{faculty.id}}" class="btn btn-primary me-2">{{'Faculty.Delete' | translate}}</a>
+      <a routerLink="/faculty/edit/{{faculty.id}}" class="btn btn-primary">{{'Faculty.Edit' | translate}}</a>
     </td>
   </tr>
   </tbody>

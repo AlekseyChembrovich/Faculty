@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {UserDto} from "../models/user.dto";
+import {UserModel} from "../models/user.model";
 import {UserService} from "../services/user.service";
 
 @Component({
@@ -7,7 +7,7 @@ import {UserService} from "../services/user.service";
   templateUrl: './users.list.component.html'
 })
 export class UsersListComponent implements OnInit {
-  users: UserDto[] = [];
+  users: UserModel[] = [];
 
   constructor(private userService: UserService){
   }
@@ -15,7 +15,7 @@ export class UsersListComponent implements OnInit {
   ngOnInit() {
     this.userService.getUsers().subscribe((data)=>{
       console.log("Before", this.users);
-      data.forEach(x => this.users.push(new UserDto(x.login, x.roles, x.birthday, x.id)))
+      data.forEach(x => this.users.push(new UserModel(x.login, x.roles, x.birthday, x.id)))
       console.log("After", this.users);
     });
   }

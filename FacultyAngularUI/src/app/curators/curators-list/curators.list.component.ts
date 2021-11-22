@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CuratorDto} from "../models/curator.dto";
+import {CuratorModel} from "../models/curator.model";
 import {CuratorsService} from "../services/curator.service";
 import {AuthService} from "../../authentication/services/auth.service";
 import {Router} from "@angular/router";
@@ -9,7 +9,7 @@ import {Router} from "@angular/router";
   templateUrl: './curators.list.component.html'
 })
 export class CuratorsListComponent implements OnInit {
-  curators: CuratorDto[] = [];
+  curators: CuratorModel[] = [];
 
   constructor(private router: Router,
               private curatorsService: CuratorsService,
@@ -18,14 +18,8 @@ export class CuratorsListComponent implements OnInit {
 
   ngOnInit() {
     this.curatorsService.getCurators().subscribe((data)=>{
-      data.forEach(x => this.curators.push(new CuratorDto(x.surname, x.name, x.doublename, x.phone, x.id)))
+      data.forEach(x => this.curators.push(new CuratorModel(x.surname, x.name, x.doublename, x.phone, x.id)))
       console.log("After", this.curators);
     });
-  }
-
-  public delete(id: number) : void {
-    if (id === undefined) return;
-    this.curatorsService.deleteCurator(id).subscribe(response => console.log(response) );
-    this.curators = this.curators.filter(x => x.id != id);
   }
 }

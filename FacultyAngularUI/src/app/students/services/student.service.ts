@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {StudentDto} from "../models/student.dto";
+import {StudentModel} from "../models/student.model";
 
 @Injectable({
   providedIn: 'root'
@@ -12,14 +12,14 @@ export class StudentService {
   }
 
   public getStudents() {
-    return this.httpClient.get<StudentDto[]>(this.baseUrl);
+    return this.httpClient.get<StudentModel[]>(this.baseUrl);
   }
 
   public getStudent(id: number) {
-    return this.httpClient.get<StudentDto>(this.baseUrl + `/${id}`);
+    return this.httpClient.get<StudentModel>(this.baseUrl + `/${id}`);
   }
 
-  public createStudent(student: StudentDto) {
+  public createStudent(student: StudentModel) {
     return this.httpClient.post(this.baseUrl, student);
   }
 
@@ -27,7 +27,7 @@ export class StudentService {
     return this.httpClient.delete(this.baseUrl + `/${id}`);
   }
 
-  public updateStudent(student: StudentDto) {
+  public updateStudent(student: StudentModel) {
     return this.httpClient.put(this.baseUrl, student);
   }
 }

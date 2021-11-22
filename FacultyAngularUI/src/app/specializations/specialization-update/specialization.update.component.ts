@@ -2,7 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {SpecializationService} from "../services/specialization.service";
-import {SpecializationDto} from "../models/specialization.dto";
+import {SpecializationModel} from "../models/specialization.model";
 
 @Component({
   selector: 'app-specialization-update',
@@ -10,7 +10,7 @@ import {SpecializationDto} from "../models/specialization.dto";
 })
 export class SpecializationUpdateComponent implements OnInit {
   public form: FormGroup = new FormGroup({ });
-  private specialization: SpecializationDto | undefined;
+  private specialization: SpecializationModel | undefined;
 
   constructor(private specializationService: SpecializationService,
               private activatedRoute: ActivatedRoute,
@@ -38,7 +38,7 @@ export class SpecializationUpdateComponent implements OnInit {
   }
 
   submit() : void {
-    let specialization: SpecializationDto = new SpecializationDto(this.form.value.name, this.specialization?.id);
+    let specialization: SpecializationModel = new SpecializationModel(this.form.value.name, this.specialization?.id);
     this.specializationService.updateSpecialization(specialization).subscribe(response => {
       console.log(response);
       this.router.navigateByUrl('/specialization/index');

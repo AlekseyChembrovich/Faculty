@@ -1,19 +1,19 @@
 <div class="w-100 d-flex align-items-center justify-content-center me-5">
   <div class="w-25 me-5">
     <form>
-      <select class="form-select">
-        <option>English</option>
-        <option>Русский</option>
+      <select class="form-select" (change)="onChangeLanguage($event.target)">
+        <option value="en">English</option>
+        <option value="ru">Русский</option>
       </select>
     </form>
   </div>
 
   <div class="w-75 d-flex align-items-center justify-content-start">
-    <a *ngIf="!isAuth" routerLink="/login" class="w-25 btn btn-outline-primary me-5">Login</a>
-    <a *ngIf="isAuth" routerLink="/logout" class="w-25 btn btn-outline-primary me-5" (click)="logout()">Logout</a>
-    <a *ngIf="isAdmin" routerLink="/user/index" class="w-25 btn btn-outline-primary me-5">Users</a>
+    <a *ngIf="!isAuth" routerLink="/login" class="w-25 btn btn-outline-primary me-5">{{'Header.Login' | translate}}</a>
+    <a *ngIf="isAuth" routerLink="/logout" class="w-25 btn btn-outline-primary me-5" (click)="logout()">{{'Header.Logout' | translate}}</a>
+    <a *ngIf="isAdmin" routerLink="/user/index" class="w-25 btn btn-outline-primary me-5">{{'Header.Users' | translate}}</a>
     <h5 *ngIf="isAuth" class="w-25 text-white text-right">
-      Login:
+      {{'Header.UserLogin' | translate}}
       <span class="badge bg-secondary">{{login}}</span>
     </h5>
   </div>

@@ -1,8 +1,10 @@
 import {Component, OnInit} from "@angular/core";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../services/auth.service";
-import {AuthUserDto} from "../models/auth.user.dto";
+import {AuthUserModel} from "../models/auth.user.model";
 import {Router} from "@angular/router";
+import {HttpErrorResponse} from "@angular/common/http";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-login',
@@ -10,8 +12,9 @@ import {Router} from "@angular/router";
 })
 export class LoginComponent implements OnInit {
   public form: FormGroup = new FormGroup({ });
+  public error$: Subject<string> = new Subject<string>();
 
-  constructor(private authService: AuthService,
+  constructor(public authService: AuthService,
               private router: Router){
   }
 
@@ -25,8 +28,22 @@ export class LoginComponent implements OnInit {
   }
 
   submit() : void {
-    let loginUser: AuthUserDto = new AuthUserDto(this.form.value.login, this.form.value.password);
-    this.authService.login(loginUser);
-    this.router.navigate(['']);
+    let loginUser: AuthUserModel = new AuthUserModel(this.form.value.login, this.form.value.password);
+    this.authService.login(loginUser).subscribe(response => {
+        console.log("Response", response);
+      },
+      error => {
+        console.log("Error", error)
+        if (error instanceof HttpErrorResponse)  {
+          if (error.status == 400){
+            this.error$.next('ServerError.400');
+          }
+        }
+      },
+      () => {
+        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+        this.router.onSameUrlNavigation = 'reload';
+        this.router.navigate(['/faculty/index']);
+      });
   }
 }

@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {UserDto} from "../models/user.dto";
-import {UserAddDto} from "../models/user.add.dto";
-import {UserEditPasswordDto} from "../models/user.edit.password.dto";
+import {UserModel} from "../models/user.model";
+import {UserAddModel} from "../models/user.add.model";
+import {UserEditPasswordModel} from "../models/user.edit.password.model";
 
 @Injectable()
 export class UserService {
@@ -12,18 +12,18 @@ export class UserService {
   }
 
   public getUsers() {
-    return this.httpClient.get<UserDto[]>(this.baseUrl);
+    return this.httpClient.get<UserModel[]>(this.baseUrl);
   }
 
   public getUser(id: string) {
-    return this.httpClient.get<UserDto>(this.baseUrl + `/${id}`);
+    return this.httpClient.get<UserModel>(this.baseUrl + `/${id}`);
   }
 
   public getRoles() {
     return this.httpClient.get<Array<string>>(this.baseUrl + `/roles`);
   }
 
-  public createUser(user: UserAddDto) {
+  public createUser(user: UserAddModel) {
     return this.httpClient.post(this.baseUrl, user);
   }
 
@@ -31,11 +31,11 @@ export class UserService {
     return this.httpClient.delete(this.baseUrl + `/${id}`);
   }
 
-  public updateUser(user: UserDto) {
+  public updateUser(user: UserModel) {
     return this.httpClient.put(this.baseUrl, user);
   }
 
-  public updatePasswordUser(user: UserEditPasswordDto) {
+  public updatePasswordUser(user: UserEditPasswordModel) {
     return this.httpClient.patch(this.baseUrl, user);
   }
 }
