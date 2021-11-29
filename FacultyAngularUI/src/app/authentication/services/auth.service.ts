@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {AuthUserModel} from "../models/auth.user.model";
 import {JwtHelperService} from "@auth0/angular-jwt";
 import {tap} from "rxjs";
+import {environment} from "../../../environments/environment";
 
 @Injectable()
 export class AuthService {
-  private readonly baseApiUrl: string = 'https://localhost:44342/api/auth';
+  private readonly baseApiUrl: string = "";
   private readonly keyToken = "access_token";
   private readonly nameAdminRole = "administrator";
   private readonly nameClaimRole = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
@@ -15,6 +16,7 @@ export class AuthService {
   public jsonToken: { jwtToken: string } | undefined;
 
   constructor(private httpClient: HttpClient) {
+    this.baseApiUrl = environment.authApiUrl + 'api/auth';
   }
 
   public login(loginUser: AuthUserModel) {

@@ -2,14 +2,14 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {FacultyDisplayModel} from "../models/faculty.display.model";
 import {FacultyModel} from "../models/faculty.model";
+import {environment} from "../../../environments/environment";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class FacultyService {
-  private readonly baseUrl: string = 'https://localhost:44354/api/faculties';
+  private readonly baseUrl: string = "";
 
   constructor(private httpClient: HttpClient) {
+    this.baseUrl = environment.resourceApiUrl + 'api/faculties';
   }
 
   public getFaculties() {

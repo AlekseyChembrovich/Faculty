@@ -1,12 +1,14 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {CuratorModel} from "../models/curator.model";
+import {environment} from "../../../environments/environment";
 
 @Injectable()
 export class CuratorsService {
-  private readonly baseUrl: string = 'https://localhost:44354/api/curators';
+  private readonly baseUrl: string = "";
 
   constructor(private httpClient: HttpClient) {
+    this.baseUrl = environment.resourceApiUrl + 'api/curators';
   }
 
   public getCurators() {

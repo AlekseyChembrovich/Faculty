@@ -3,12 +3,14 @@ import {HttpClient} from '@angular/common/http';
 import {UserModel} from "../models/user.model";
 import {UserAddModel} from "../models/user.add.model";
 import {UserEditPasswordModel} from "../models/user.edit.password.model";
+import {environment} from "../../../environments/environment";
 
 @Injectable()
 export class UserService {
-  private readonly baseUrl: string = 'https://localhost:44342/api/users';
+  private readonly baseUrl: string = "";
 
   constructor(private httpClient: HttpClient) {
+    this.baseUrl = environment.authApiUrl + 'api/users';
   }
 
   public getUsers() {

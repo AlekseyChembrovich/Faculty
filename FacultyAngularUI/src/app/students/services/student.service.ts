@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {StudentModel} from "../models/student.model";
+import {environment} from "../../../environments/environment";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class StudentService {
-  private readonly baseUrl: string = 'https://localhost:44354/api/students';
+  private readonly baseUrl: string = "";
 
   constructor(private httpClient: HttpClient) {
+    this.baseUrl = environment.resourceApiUrl + 'api/students';
   }
 
   public getStudents() {

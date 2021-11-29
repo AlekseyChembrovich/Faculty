@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {SpecializationModel} from "../models/specialization.model";
+import {environment} from "../../../environments/environment";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class SpecializationService {
-  private readonly baseUrl: string = 'https://localhost:44354/api/specializations';
+  private readonly baseUrl: string = "";
 
   constructor(private httpClient: HttpClient) {
+    this.baseUrl = environment.resourceApiUrl + 'api/specializations';
   }
 
   public getSpecializations() {
