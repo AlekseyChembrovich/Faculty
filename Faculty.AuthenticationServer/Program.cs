@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Faculty.AuthenticationServer.Tools;
 using Faculty.AuthenticationServer.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +36,14 @@ namespace Faculty.AuthenticationServer
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            return Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+            return Host
+                .CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .ConfigureAppConfiguration(config =>
+                {
+                    config.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", false, true);
+                });
         }
     }
 }

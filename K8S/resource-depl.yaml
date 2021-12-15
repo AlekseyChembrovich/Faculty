@@ -1,0 +1,34 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource
+  template:
+    metadata:
+      labels:
+        app: resource
+    spec:
+      containers:
+        - name: resource
+          image: mydockertrail/resource:latest
+          env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Production
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: resource
+  ports:
+  - name: resource
+    protocol: TCP
+    port: 80
+    targetPort: 80

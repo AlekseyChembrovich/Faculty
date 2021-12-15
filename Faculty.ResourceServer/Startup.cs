@@ -1,9 +1,11 @@
+using System;
 using AutoMapper;
 using System.Security.Claims;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using Faculty.ResourceServer.Tools;
 using Microsoft.EntityFrameworkCore;
 using Faculty.BusinessLayer.Services;
@@ -23,14 +25,17 @@ namespace Faculty.ResourceServer
     {
         public IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
+        public IWebHostEnvironment HostEnvironment { get; }
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            HostEnvironment = env;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDatabaseContext(Configuration);
+            services.AddDatabaseContext(Configuration, HostEnvironment.IsProduction());
             services.AddRepositories();
             services.AddControllerServices();
             services.AddMapper();
@@ -41,13 +46,20 @@ namespace Faculty.ResourceServer
             services.AddCors();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
+            logger.LogInformation($"--> Root - {Environment.CurrentDirectory}");
+            logger.LogInformation($"--> Environment - {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
+            logger.LogInformation($"--> Connection string - {Configuration.GetConnectionString("Faculty")}");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Resource server v1"));
+            }
+            else
+            {
             }
 
             app.UseHttpsRedirection();
@@ -63,15 +75,17 @@ namespace Faculty.ResourceServer
             {
                 endpoints.MapControllers();
             });
+
+            PreparingDatabase.PrepSeedData(app, env.IsProduction());
         }
     }
 
     public static class ServiceCollectionExtension
     {
-        public static void AddDatabaseContext(this IServiceCollection services, IConfiguration configuration)
+        public static void AddDatabaseContext(this IServiceCollection services, IConfiguration configuration, bool isProd)
         {
-            var connectionString = configuration["ConnectionString:Faculty"];
-            services.AddDbContext<DatabaseContextEntityFramework>(option => option.UseSqlServer(connectionString));
+            var connectionString = configuration.GetConnectionString("Faculty");
+            services.AddDbContext<DatabaseContextEntityFramework>(option => option.UseSqlServer(connectionString, b => b.MigrationsAssembly("Faculty.ResourceServer")));
         }
 
         public static void AddRepositories(this IServiceCollection services)

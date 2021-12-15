@@ -1,0 +1,13 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: aspui-srv
+spec:
+  type: NodePort
+  selector:
+    app: aspui
+  ports:
+    - name: aspui
+      protocol: TCP
+      port: 80
+      targetPort: 80

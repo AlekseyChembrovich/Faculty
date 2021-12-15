@@ -5,6 +5,8 @@ using System.Globalization;
 using System.Security.Claims;
 using Faculty.AspUI.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
@@ -37,8 +39,21 @@ namespace Faculty.AspUI
             services.AddMapper();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RequestLocalizationOptions> localizationOptions)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RequestLocalizationOptions> localizationOptions, ILogger<Startup> logger)
         {
+            logger.LogInformation($"--> Root - {Environment.CurrentDirectory}");
+            logger.LogInformation($"--> Environment - {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
+            logger.LogInformation($"--> Url authentication server - {Configuration["Url:AuthenticationServer"]}");
+            logger.LogInformation($"--> Url resource server - {Configuration["Url:ResourceServer"]}");
+
+            //appsettings.Development.json
+            if (env.IsDevelopment())
+            {
+            }
+            else
+            {
+            }
+
             app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
             app.UseRouting();

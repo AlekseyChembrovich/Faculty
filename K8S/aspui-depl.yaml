@@ -1,0 +1,34 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aspui-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aspui
+  template:
+    metadata:
+      labels:
+        app: aspui
+    spec:
+      containers:
+        - name: aspui
+          image: mydockertrail/aspui:latest
+          env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Production
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aspui-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: aspui
+  ports:
+  - name: aspui
+    protocol: TCP
+    port: 80
+    targetPort: 80

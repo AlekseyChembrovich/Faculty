@@ -1,6 +1,8 @@
+using System;
 using AutoMapper;
 using System.Security.Claims;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -39,13 +41,20 @@ namespace Faculty.AuthenticationServer
             services.AddMapper();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
+            logger.LogInformation($"--> Root - {Environment.CurrentDirectory}");
+            logger.LogInformation($"--> Environment - {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
+            logger.LogInformation($"--> Connection string - {Configuration.GetConnectionString("Faculty")}");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication server v1"));
+            }
+            else
+            {
             }
 
             app.UseRouting();
@@ -61,6 +70,8 @@ namespace Faculty.AuthenticationServer
             {
                 endpoints.MapControllers();
             });
+
+            PreparingDatabase.PrepSeedData(app, env.IsProduction());
         }
     }
 
@@ -68,8 +79,8 @@ namespace Faculty.AuthenticationServer
     {
         public static void AddDatabaseContext(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("ConStr");
-            services.AddDbContext<CustomIdentityContext>(option => option.UseSqlServer(connectionString));
+            var connectionString = configuration.GetConnectionString("Faculty");
+            services.AddDbContext<CustomIdentityContext>(option => option.UseSqlServer(connectionString, b => b.MigrationsAssembly("Faculty.AuthenticationServer")));
         }
 
         public static void AddAuthenticationWithJwtToken(this IServiceCollection services, IConfiguration configuration)
