@@ -1,0 +1,13 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: angular-srv
+spec:
+  type: NodePort
+  selector:
+    app: angular
+  ports:
+    - name: angular
+      protocol: TCP
+      port: 80
+      targetPort: 80

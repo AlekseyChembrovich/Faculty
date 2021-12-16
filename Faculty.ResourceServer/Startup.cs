@@ -43,7 +43,15 @@ namespace Faculty.ResourceServer
             services.AddAuthenticationWithJwtToken(Configuration);
             services.AddAuthorizationWithRole();
             services.AddControllers();
-            services.AddCors();
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("AnyAccess", policy =>
+                {
+                    policy.AllowAnyOrigin();
+                    policy.AllowAnyMethod();
+                    policy.AllowAnyHeader();
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
@@ -63,11 +71,8 @@ namespace Faculty.ResourceServer
             }
 
             app.UseHttpsRedirection();
-            app.UseCors(x => x
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-            );
+            app.UseHsts();
+            app.UseCors("AnyAccess");
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

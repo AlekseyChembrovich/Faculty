@@ -19,6 +19,7 @@ import {UsersModule} from "./users/users.module";
 import {ErrorInterceptor} from "./shared/services/error.interceptor";
 import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
+import {environment} from "../environments/environment";
 
 const AUTH_INTERCEPTOR: Provider = {
   provide: HTTP_INTERCEPTORS,
@@ -72,3 +73,7 @@ export class AppModule {
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http);
 }
+
+console.log("--> App starts");
+console.log("--> Url authentication server - " + environment.authApiUrl);
+console.log("--> Url resource server - " + environment.resourceApiUrl);

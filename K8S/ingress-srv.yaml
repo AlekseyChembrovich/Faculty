@@ -17,3 +17,17 @@ spec:
                 name: aspui-clusterip-srv
                 port:
                   number: 80
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-clusterip-srv
+                port:
+                  number: 80
+          - path: /res
+            pathType: Prefix
+            backend:
+              service:
+                name: resource-clusterip-srv
+                port:
+                  number: 80

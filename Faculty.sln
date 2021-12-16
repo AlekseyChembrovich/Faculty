@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faculty.Common", "Faculty.C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "K8S", "K8S", "{F5217605-E149-478E-B7BA-A5AD97692D9F}"
 	ProjectSection(SolutionItems) = preProject
+		K8S\angular-depl.yaml = K8S\angular-depl.yaml
+		K8S\angular-np-srv.yaml = K8S\angular-np-srv.yaml
 		K8S\aspui-depl.yaml = K8S\aspui-depl.yaml
 		K8S\aspui-np-srv.yaml = K8S\aspui-np-srv.yaml
 		K8S\auth-depl.yaml = K8S\auth-depl.yaml
